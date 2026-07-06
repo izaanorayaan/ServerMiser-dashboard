@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ServerMiser — All-In-One Discord Engine</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&family=Fira+Code:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+            mono: ['Fira Code', 'monospace']
+          },
+          colors: {
+            brandGreen: '#e2f9b8',
+            brandRed: '#ff3b5c',
+            brandTeal: '#2e7b8f'
+          },
+          keyframes: {
+            scrollLeft: {
+              '0%': { transform: 'translateX(0)' },
+              '100%': { transform: 'translateX(-50%)' }
+            },
+            pulseSlow: {
+              '0%, 100%': { opacity: 1, transform: 'scale(1)' },
+              '50%': { opacity: 0.6, transform: 'scale(0.96)' }
+            }
+          },
+          animation: {
+            scrollLeft: 'scrollLeft 25s linear infinite',
+            pulseSlow: 'pulseSlow 2.5s ease-in-out infinite'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Continuous Marquee Ticker Style */
+    .ticker-wrap {
+      overflow: hidden;
+      display: flex;
+    }
+    .ticker-content {
+      display: inline-flex;
+      white-space: nowrap;
+      animation: scrollLeft 35s linear infinite;
+    }
+    .dark-glow {
+      filter: drop-shadow(0 0 25px rgba(255, 59, 92, 0.45));
+    }
+    .light-glow {
+      filter: drop-shadow(0 0 15px rgba(255, 59, 92, 0.2));
+    }
+  </style>
+</head>
+<body class="bg-[#040406] text-slate-100 transition-colors duration-500 selection:bg-[#ff3b5c]/30 selection:text-[#e2f9b8] relative overflow-x-hidden dark">
+
+  <!-- Dynamic Cursor Follower (Pure JS) -->
+  <div id="cursor-follower" class="hidden md:block fixed pointer-events-none z-50 rounded-full border border-brandGreen w-6 h-6 -translate-x-1/2 -translate-y-1/2 mix-blend-difference transition-transform duration-200 ease-out"></div>
+
+  <!-- Decorative Brand Borders -->
+  <div class="fixed top-0 left-0 right-0 h-1 bg-[#e2f9b8] z-50"></div>
+  <div class="fixed bottom-0 left-0 right-0 h-1 bg-[#ff3b5c] z-50"></div>
+
+  <!-- --- TOP INFINITE SCROLLING TICKER --- -->
+  <div class="bg-brandGreen text-black py-2.5 border-b border-black font-mono font-bold text-[10px] tracking-widest uppercase z-30 relative select-none ticker-wrap">
+    <div class="ticker-content gap-8">
+      <span>● SYSTEM STATUS: OPTIMIZED ● SERVER-MISER V2.4 ● CHANNEL HYPER-DE-CLUTTER ACTIVE ● PRIVACY VERIFIED ● PROTECT PERMISSIONS ● NO MORE DISCORD BLOAT ●</span>
+      <span>● SYSTEM STATUS: OPTIMIZED ● SERVER-MISER V2.4 ● CHANNEL HYPER-DE-CLUTTER ACTIVE ● PRIVACY VERIFIED ● PROTECT PERMISSIONS ● NO MORE DISCORD BLOAT ●</span>
+    </div>
+  </div>
+
+  <!-- --- NAVIGATION HEADER --- -->
+  <header id="main-header" class="sticky top-0 z-40 w-full transition-all duration-500 border-b bg-[#040406]/95 border-slate-900 py-5 px-6">
+    <div class="container mx-auto flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <a href="#" class="flex items-center gap-3 group" onclick="setView('home')">
+        <!-- SVG Vector Brutalist Heart Logo -->
+        <svg id="logo-svg" class="w-10 h-10 transition-transform duration-500 group-hover:rotate-180" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Outer circle base -->
+          <circle cx="100" cy="100" r="92" stroke="#ff3b5c" stroke-width="4" stroke-dasharray="12 6" />
+          <!-- Inner solid background square -->
+          <rect x="52" y="52" width="96" height="96" fill="#0c0d15" stroke="currentColor" stroke-width="2" class="text-slate-200 dark:text-white" />
+          <!-- Heart Core Path -->
+          <path d="M100 132 L68 96 C56 80 72 58 88 74 L100 86 L112 74 C128 58 144 80 132 96 Z" fill="#ff3b5c" stroke="#e2f9b8" stroke-width="2" />
+          <!-- Radar Grid Lines -->
+          <line x1="100" y1="8" x2="100" y2="192" stroke="#e2f9b8" stroke-width="1.5" stroke-opacity="0.3" />
+          <line x1="8" y1="100" x2="192" y2="100" stroke="#e2f9b8" stroke-width="1.5" stroke-opacity="0.3" />
+        </svg>
+        <div class="flex flex-col">
+          <span id="brand-text" class="font-display font-black text-xl tracking-tighter leading-none text-slate-100 group-hover:text-brandGreen transition-colors">
+            SERVERMISER
+          </span>
+          <span class="font-mono text-[8px] tracking-widest uppercase mt-0.5 text-brandTeal">
+            ALL-IN-ONE DISCORD ENGINE
+          </span>
+        </div>
+      </a>
+
+      <!-- Navigation & Mode Controls -->
+      <div class="flex items-center gap-6">
+        <nav class="hidden md:flex items-center gap-8 font-mono text-xs tracking-widest uppercase">
+          <button onclick="setView('home')" id="nav-home" class="transition-colors relative py-1 text-brandGreen font-bold">
+            Home
+            <span class="absolute bottom-0 left-0 w-full h-0.5 bg-brandGreen" id="nav-indicator"></span>
+          </button>
+          <button onclick="setView('sandbox')" id="nav-sandbox" class="transition-colors relative py-1 text-slate-400 hover:text-white">
+            Sandbox
+          </button>
+          <button onclick="setView('commands')" id="nav-commands" class="transition-colors relative py-1 text-slate-400 hover:text-white">
+            Manual
+          </button>
+          <button onclick="setView('analytics')" id="nav-analytics" class="transition-colors relative py-1 text-slate-400 hover:text-white">
+            Telemetry
+          </button>
+        </nav>
+
+        <!-- Dark/Light Mode Button -->
+        <button onclick="toggleDarkMode()" class="p-2 border border-slate-800 bg-slate-950/80 hover:bg-slate-900 text-slate-400 hover:text-white rounded-none cursor-pointer" title="Toggle Theme">
+          <i data-lucide="sun" id="theme-icon" class="w-4 h-4 text-amber-400"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- --- MAIN CONTENT SECTIONS CONTAINER --- -->
+  <main class="container mx-auto px-6 py-12">
+
+    <!-- ==============================================
+         VIEW: HOME
+         ============================================== -->
+    <div id="view-home" class="space-y-28">
+      
+      <!-- HERO LANDING BANNER -->
+      <section class="py-12 md:py-24 relative">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          
+          <div class="lg:col-span-7 space-y-8">
+            <div class="inline-flex items-center gap-2 px-3 py-1 bg-slate-950 border border-slate-800 text-[10px] font-mono tracking-widest text-brandGreen uppercase">
+              <span class="w-2 h-2 rounded-full bg-[#ff3b5c] animate-ping"></span>
+              <span>Discord Certified v2.4</span>
+            </div>
+
+            <h1 class="font-display font-black text-4xl sm:text-5xl md:text-6xl lg:text-7xl uppercase tracking-tighter leading-none text-slate-100">
+              OPTIMIZE YOUR SERVER <br class="hidden sm:block">
+              WITHOUT THE <span class="text-[#ff3b5c]">BLOAT</span>.
+            </h1>
+
+            <p class="font-sans text-sm sm:text-base text-slate-400 max-w-xl leading-relaxed">
+              Ditch the 10 separate single-purpose bots. ServerMiser is the highly performant Discord engine combining auto-layouts, support tickets, leveling meters, and precise moderation sweeps into one cohesive client.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 pt-4">
+              <button onclick="openInviteModal()" class="px-8 py-4 bg-[#ff3b5c] text-white font-mono text-xs tracking-widest font-black uppercase border-2 border-black shadow-[4px_4px_0px_#e2f9b8] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer">
+                INVITE TO DISCORD
+              </button>
+              <button onclick="setView('sandbox')" class="px-8 py-4 bg-transparent border-2 border-slate-800 text-slate-200 font-mono text-xs tracking-widest font-black uppercase hover:border-[#2e7b8f] hover:text-brandTeal transition-all cursor-pointer">
+                TRY THE SANDBOX
+              </button>
+            </div>
+          </div>
+
+          <div class="lg:col-span-5 flex justify-center relative">
+            <!-- Animated spinning logo cluster mimicking app's horror athens mood -->
+            <div class="relative w-72 h-72 md:w-96 md:h-96 flex items-center justify-center">
+              <div class="absolute inset-0 bg-[#ff3b5c]/5 rounded-full blur-3xl"></div>
+              
+              <div class="absolute w-4/5 h-4/5 border border-dashed border-slate-800 rounded-full animate-spin [animation-duration:30s]"></div>
+              <div class="absolute w-3/5 h-3/5 border border-dashed border-brandTeal/30 rounded-full animate-spin [animation-duration:15s] [animation-direction:reverse]"></div>
+
+              <div id="heart-wrapper" class="relative z-10 p-8 border border-slate-800 bg-[#06060a] dark-glow transition-all duration-500">
+                <svg class="w-32 h-32 text-[#ff3b5c]" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M100 148 L56 96 C40 76 62 45 84 66 L100 82 L116 66 C138 45 160 76 144 96 Z" fill="currentColor" stroke="#e2f9b8" stroke-width="4" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- FEATURE HIGHLIGHTS GRID -->
+      <section id="about" class="py-12 border-t border-slate-900">
+        <div class="text-center max-w-2xl mx-auto mb-16">
+          <span class="font-mono text-xs tracking-widest uppercase text-brandGreen">01 / FEATURE SUITE</span>
+          <h2 class="font-display font-black text-3xl sm:text-4xl md:text-5xl uppercase tracking-tighter text-slate-100 mt-2">
+            CORE CAPABILITIES
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          
+          <!-- Card 1 -->
+          <div class="p-6 border border-slate-800 bg-[#06060a] hover:border-[#ff3b5c] transition-all duration-300 flex flex-col justify-between h-64 group relative">
+            <div class="absolute top-0 right-0 w-8 h-8 border-b border-l border-slate-800 text-slate-600 font-mono text-xs flex items-center justify-center group-hover:text-[#ff3b5c] group-hover:border-[#ff3b5c] transition-colors">
+              01
+            </div>
+            <div class="p-3 border border-slate-800 bg-slate-900/80 w-fit text-brandGreen">
+              <i data-lucide="zap" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="font-display font-extrabold text-lg uppercase tracking-tight text-slate-200">
+                1-CLICK SETUP
+              </h3>
+              <p class="font-mono text-[10px] text-slate-500 uppercase mt-2 tracking-widest leading-relaxed">
+                Deploy clean channel structures, categories, permissions, and roles automatically.
+              </p>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="p-6 border border-slate-800 bg-[#06060a] hover:border-[#ff3b5c] transition-all duration-300 flex flex-col justify-between h-64 group relative">
+            <div class="absolute top-0 right-0 w-8 h-8 border-b border-l border-slate-800 text-slate-600 font-mono text-xs flex items-center justify-center group-hover:text-[#ff3b5c] group-hover:border-[#ff3b5c] transition-colors">
+              02
+            </div>
+            <div class="p-3 border border-slate-800 bg-slate-900/80 w-fit text-[#ff3b5c]">
+              <i data-lucide="shield" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="font-display font-extrabold text-lg uppercase tracking-tight text-slate-200">
+                MODERATION
+              </h3>
+              <p class="font-mono text-[10px] text-slate-500 uppercase mt-2 tracking-widest leading-relaxed">
+                Advanced text filters, automatic timeout strikes, warnings, and secure database logs.
+              </p>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="p-6 border border-slate-800 bg-[#06060a] hover:border-brandTeal transition-all duration-300 flex flex-col justify-between h-64 group relative">
+            <div class="absolute top-0 right-0 w-8 h-8 border-b border-l border-slate-800 text-slate-600 font-mono text-xs flex items-center justify-center group-hover:text-brandTeal group-hover:border-brandTeal transition-colors">
+              03
+            </div>
+            <div class="p-3 border border-slate-800 bg-slate-900/80 w-fit text-brandTeal">
+              <i data-lucide="lock" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="font-display font-extrabold text-lg uppercase tracking-tight text-slate-200">
+                SUPPORT TICKETS
+              </h3>
+              <p class="font-mono text-[10px] text-slate-500 uppercase mt-2 tracking-widest leading-relaxed">
+                Smooth private room generation, secure admin panel interfaces, and complete HTML logs.
+              </p>
+            </div>
+          </div>
+
+          <!-- Card 4 -->
+          <div class="p-6 border border-slate-800 bg-[#06060a] hover:border-brandGreen transition-all duration-300 flex flex-col justify-between h-64 group relative">
+            <div class="absolute top-0 right-0 w-8 h-8 border-b border-l border-slate-800 text-slate-600 font-mono text-xs flex items-center justify-center group-hover:text-brandGreen group-hover:border-brandGreen transition-colors">
+              04
+            </div>
+            <div class="p-3 border border-slate-800 bg-slate-900/80 w-fit text-[#e2f9b8]">
+              <i data-lucide="award" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="font-display font-extrabold text-lg uppercase tracking-tight text-slate-200">
+                CHAT LEVELING
+              </h3>
+              <p class="font-mono text-[10px] text-slate-500 uppercase mt-2 tracking-widest leading-relaxed">
+                Interactive gamified chatter milestones, rank progress card renders, and multiplier roles.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- SETUP GUIDE (3-STEP PIPELINE) -->
+      <section class="py-12 border-t border-slate-900">
+        <div class="text-center max-w-2xl mx-auto mb-20">
+          <span class="font-mono text-xs tracking-widest uppercase text-brandGreen">02 / INTERACTIVE INITIALIZATION</span>
+          <h2 class="font-display font-black text-3xl sm:text-4xl md:text-5xl uppercase tracking-tighter text-slate-100 mt-2">
+            HOW TO INITIALIZE
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+          <!-- Connector Lines -->
+          <div class="hidden md:block absolute top-[44px] left-[10%] right-[10%] h-0.5 border-b border-dashed border-slate-800 z-0"></div>
+
+          <!-- Step 1 -->
+          <div class="p-6 border border-slate-800 bg-[#060609] relative z-10 flex flex-col justify-between h-72">
+            <div>
+              <div class="w-10 h-10 bg-brandGreen text-black font-mono font-bold text-xs flex items-center justify-center border border-black mb-6">
+                01
+              </div>
+              <h3 class="font-display font-extrabold text-sm text-slate-200 uppercase tracking-widest mb-2">
+                AUTHORIZE SECURELY
+              </h3>
+              <p class="font-mono text-[10px] text-slate-500 uppercase leading-relaxed tracking-wider">
+                Click invitation, authorize ServerMiser with secure OAuth token scopes, and add the bot as administrator.
+              </p>
+            </div>
+            <button onclick="openInviteModal()" class="font-mono text-[9px] font-bold tracking-widest text-brandGreen flex items-center gap-1 hover:underline mt-4 cursor-pointer">
+              <span>INVITE BOT NOW</span>
+              <i data-lucide="external-link" class="w-3 h-3"></i>
+            </button>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="p-6 border border-slate-800 bg-[#060609] relative z-10 flex flex-col justify-between h-72">
+            <div>
+              <div class="w-10 h-10 bg-brandRed text-white font-mono font-bold text-xs flex items-center justify-center border border-black mb-6">
+                02
+              </div>
+              <h3 class="font-display font-extrabold text-sm text-slate-200 uppercase tracking-widest mb-2">
+                RUN SETUP WIZARD
+              </h3>
+              <p class="font-mono text-[10px] text-slate-500 uppercase leading-relaxed tracking-wider">
+                Trigger our automatic layout command in any text chat to establish baseline configurations instantly.
+              </p>
+            </div>
+            <div class="font-mono text-[9px] text-brandRed uppercase bg-black px-2 py-1.5 border border-slate-900 mt-4 select-all">
+              $ |setup standard
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="p-6 border border-brandTeal bg-[#060609] relative z-10 flex flex-col justify-between h-72">
+            <div>
+              <div class="w-10 h-10 bg-brandTeal text-white font-mono font-bold text-xs flex items-center justify-center border border-black mb-6">
+                03
+              </div>
+              <h3 class="font-display font-extrabold text-sm text-slate-200 uppercase tracking-widest mb-2">
+                MONITOR METRICS
+              </h3>
+              <p class="font-mono text-[10px] text-slate-500 uppercase leading-relaxed tracking-wider">
+                Access your real-time telemetry panel inside the bot or live right here in our web dashboard.
+              </p>
+            </div>
+            <button onclick="setView('analytics')" class="font-mono text-[9px] font-bold tracking-widest text-brandTeal flex items-center gap-1 hover:underline mt-4 cursor-pointer">
+              <span>VIEW TELEMETRY</span>
+              <i data-lucide="arrow-right" class="w-3 h-3"></i>
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- FAQ ACCORDIONS -->
+      <section class="py-12 border-t border-slate-900">
+        <div class="text-center max-w-2xl mx-auto mb-20">
+          <span class="font-mono text-xs tracking-widest uppercase text-brandGreen">03 / FREQUENTLY ASKED</span>
+          <h2 class="font-display font-black text-3xl sm:text-4xl md:text-5xl uppercase tracking-tighter text-slate-100 mt-2">
+            COMMON QUESTIONS
+          </h2>
+        </div>
+
+        <div class="max-w-4xl mx-auto space-y-4">
+          
+          <!-- Accordion 1 -->
+          <div class="border border-slate-800 bg-[#07070a]">
+            <button onclick="toggleFaq(1)" class="w-full p-6 text-left flex items-center justify-between gap-4 font-mono font-bold text-xs sm:text-sm tracking-wider uppercase text-slate-200 hover:text-white">
+              <span>What are the core modules of ServerMiser?</span>
+              <div class="p-1 border border-slate-800 bg-black text-slate-400">
+                <i data-lucide="chevron-down" id="faq-chevron-1" class="w-4 h-4 transition-transform duration-300"></i>
+              </div>
+            </button>
+            <div id="faq-ans-1" class="hidden px-6 pb-6 pt-0 font-sans text-xs sm:text-sm text-slate-400 leading-relaxed border-t border-slate-900/60 mt-2">
+              ServerMiser is an all-in-one Discord application focusing on four core pillars: automated server setup (creating organized layout structures, categories, channels, and basic roles), active moderation protection (warnings, temporary timeouts, kicks, and bans), custom ticketing support desks, and gamified leveling systems complete with rank card renders and prestige roles.
+            </div>
+          </div>
+
+          <!-- Accordion 2 -->
+          <div class="border border-slate-800 bg-[#07070a]">
+            <button onclick="toggleFaq(2)" class="w-full p-6 text-left flex items-center justify-between gap-4 font-mono font-bold text-xs sm:text-sm tracking-wider uppercase text-slate-200 hover:text-white">
+              <span>Why is the bot called ServerMiser?</span>
+              <div class="p-1 border border-slate-800 bg-black text-slate-400">
+                <i data-lucide="chevron-down" id="faq-chevron-2" class="w-4 h-4 transition-transform duration-300"></i>
+              </div>
+            </button>
+            <div id="faq-ans-2" class="hidden px-6 pb-6 pt-0 font-sans text-xs sm:text-sm text-slate-400 leading-relaxed border-t border-slate-900/60 mt-2">
+              ServerMiser is a title chosen for its sleek, high-contrast, brutalist aesthetic and memorable branding. While the literal definition of 'miser' relates to hoarding, our bot's true purpose is to act as your complete server administration and engagement partner — saving you time, de-cluttering manual management, and boosting user chatter.
+            </div>
+          </div>
+
+          <!-- Accordion 3 -->
+          <div class="border border-slate-800 bg-[#07070a]">
+            <button onclick="toggleFaq(3)" class="w-full p-6 text-left flex items-center justify-between gap-4 font-mono font-bold text-xs sm:text-sm tracking-wider uppercase text-slate-200 hover:text-white">
+              <span>How does the server setup module work?</span>
+              <div class="p-1 border border-slate-800 bg-black text-slate-400">
+                <i data-lucide="chevron-down" id="faq-chevron-3" class="w-4 h-4 transition-transform duration-300"></i>
+              </div>
+            </button>
+            <div id="faq-ans-3" class="hidden px-6 pb-6 pt-0 font-sans text-xs sm:text-sm text-slate-400 leading-relaxed border-t border-slate-900/60 mt-2">
+              Our automated setup engine is ServerMiser's main module. In 1-click, you can trigger <code class="text-brandRed px-1 font-mono">|setup</code> or <code class="text-brandRed px-1 font-mono">|setup-custom</code> to instantly establish organized categories, voice lobbies, ticketing support desks, staff channels, and basic roles. This eliminates manual configuration entirely.
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ==============================================
+         VIEW: SANDBOX SIMULATOR (DECISION MATRIX)
+         ============================================== -->
+    <div id="view-sandbox" class="hidden space-y-12">
+      
+      <!-- Section Header -->
+      <div class="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 border-b border-slate-900 pb-8">
+        <div>
+          <span class="font-mono text-xs tracking-widest uppercase text-brandGreen" id="sandbox-tag">02 / SANDBOX SIMULATOR</span>
+          <h2 class="font-display font-black text-3xl sm:text-4xl md:text-5xl uppercase tracking-tighter text-slate-100 mt-2" id="sandbox-title">
+            DECISION MATRIX
+          </h2>
+        </div>
+        <p class="font-mono text-xs text-slate-500 uppercase tracking-wider max-w-xl leading-relaxed" id="sandbox-intro">
+          Welcome to the ServerMiser Sandbox! This is a fun, simulated playground where you can try out decision-making protocols. **It is not linked to any real Discord bot**, so feel free to click around, experiment with different infractions, and see how our mock algorithms optimize server health!
+        </p>
+      </div>
+
+      <!-- Simulator Interactive Applet Frame -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 border-2 border-slate-800 bg-[#050508] relative" id="sandbox-block">
+        
+        <!-- Dilemma Selectors Sidebar -->
+        <div class="lg:col-span-5 border-b lg:border-b-0 lg:border-r border-slate-800 p-6 flex flex-col gap-4">
+          <span class="font-mono text-[9px] tracking-widest uppercase font-bold text-brandTeal block mb-2">
+            CHOOSE AN ACTIVE INFRACTION //
+          </span>
+
+          <!-- Selectors -->
+          <div class="flex flex-col gap-3">
+            <button onclick="selectDilemma(0)" id="dil-btn-0" class="p-4 text-left border rounded-none transition-all duration-300 relative uppercase cursor-pointer border-brandGreen bg-[#0c0d15] text-white">
+              <div id="dil-ping-0" class="absolute top-3 right-3 w-1.5 h-1.5 rounded-full bg-brandGreen animate-ping"></div>
+              <div class="font-mono text-[10px] text-slate-500 mb-1">PROBLEM 01</div>
+              <div class="font-display font-extrabold text-xs sm:text-sm tracking-tight">Prune 500 inactive members?</div>
+            </button>
+
+            <button onclick="selectDilemma(1)" id="dil-btn-1" class="p-4 text-left border rounded-none transition-all duration-300 relative uppercase cursor-pointer border-slate-800 bg-[#060609] text-slate-400 hover:text-slate-200">
+              <div id="dil-ping-1" class="absolute top-3 right-3 w-1.5 h-1.5 rounded-full bg-brandGreen animate-ping hidden"></div>
+              <div class="font-mono text-[10px] text-slate-500 mb-1">PROBLEM 02</div>
+              <div class="font-display font-extrabold text-xs sm:text-sm tracking-tight">Delete 20+ unused roles?</div>
+            </button>
+
+            <button onclick="selectDilemma(2)" id="dil-btn-2" class="p-4 text-left border rounded-none transition-all duration-300 relative uppercase cursor-pointer border-slate-800 bg-[#060609] text-slate-400 hover:text-slate-200">
+              <div id="dil-ping-2" class="absolute top-3 right-3 w-1.5 h-1.5 rounded-full bg-brandGreen animate-ping hidden"></div>
+              <div class="font-mono text-[10px] text-slate-500 mb-1">PROBLEM 03</div>
+              <div class="font-display font-extrabold text-xs sm:text-sm tracking-tight">Delete bot spam commands?</div>
+            </button>
+          </div>
+
+          <!-- Dynamic Context Block -->
+          <div class="mt-8 p-4 border border-slate-800 bg-slate-900/40 font-mono text-[10px] leading-relaxed uppercase text-slate-400">
+            <span class="text-slate-500 block mb-1">CONTEXT EVALUATION:</span>
+            <span id="dilemma-context">"Our member count is high, but chat activity feels quiet and server loading times are slowing down."</span>
+          </div>
+        </div>
+
+        <!-- Simulated live-screen -->
+        <div class="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between bg-[#040407]" id="sandbox-live-screen">
+          
+          <div class="flex justify-between items-center border-b border-slate-800 pb-4 mb-6 font-mono text-[10px] tracking-widest uppercase text-slate-500">
+            <span>GUILD_STATE: THE GAMER DEN</span>
+            <span class="text-brandGreen font-bold" id="deploy-active-text">● DEPLOYED ACTIVE</span>
+          </div>
+
+          <!-- Optimization meter -->
+          <div class="border border-slate-800 p-5 mb-6 bg-[#08080c]">
+            <div class="flex justify-between items-center mb-3">
+              <span class="font-mono text-xs uppercase tracking-widest text-slate-400">SERVER OPTIMIZATION HEALTH</span>
+              <span id="health-pct" class="font-mono font-bold text-sm text-slate-400">62%</span>
+            </div>
+            
+            <!-- visual brutalist meter blocks -->
+            <div id="health-bar-container" class="flex gap-1 h-3">
+              <!-- JS will inject 20 nodes -->
+            </div>
+          </div>
+
+          <!-- Terminal output simulated logs -->
+          <div id="terminal-screen" class="border border-slate-900 bg-black rounded p-4 font-mono text-[10px] sm:text-xs h-44 overflow-y-auto mb-6 flex flex-col gap-1.5 text-brandTeal select-all">
+            <div class="text-slate-600 italic uppercase" id="terminal-idle-msg">[TERMINAL_IDLE] select a resolution trigger below to execute...</div>
+          </div>
+
+          <!-- Completed impact block -->
+          <div id="impact-block" class="hidden p-4 border border-brandGreen/30 bg-slate-900/60 font-mono text-[10px] sm:text-xs uppercase tracking-wider mb-6 text-slate-300">
+            <div class="font-bold mb-1.5 text-brandGreen" id="impact-header">✓ MISER SWEEP COMPLETE</div>
+            <div id="impact-desc">Pruned 512 empty member accounts securely from active memory registers.</div>
+          </div>
+
+          <!-- Trigger Buttons -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            
+            <!-- Miser Sweep button -->
+            <button onclick="runSimulation('miser')" id="miser-btn" class="px-5 py-3.5 bg-brandRed text-white font-mono text-xs tracking-widest font-bold uppercase border-2 border-black shadow-[3px_3px_0px_#e2f9b8] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+              <i data-lucide="refresh-ccw" class="w-3.5 h-3.5" id="miser-icon"></i>
+              <span>MISER SWEEP</span>
+            </button>
+
+            <!-- Active Nudge / Re engage button (styled black in both modes) -->
+            <button onclick="runSimulation('nudge')" id="nudge-btn" class="px-5 py-3.5 bg-slate-950 text-white font-mono text-xs tracking-widest font-bold uppercase border border-black hover:border-brandRed hover:text-brandRed transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm">
+              <i data-lucide="sliders" class="w-3.5 h-3.5" id="nudge-icon"></i>
+              <span>ACTIVE NUDGE</span>
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ==============================================
+         VIEW: COMMAND CENTER MANUAL
+         ============================================== -->
+    <div id="view-commands" class="hidden space-y-12">
+      
+      <!-- Section Header -->
+      <div class="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 border-b border-slate-900 pb-8">
+        <div>
+          <span class="font-mono text-xs tracking-widest uppercase text-brandRed">03 / INTERACTIVE REFERENCE</span>
+          <h2 class="font-display font-black text-3xl sm:text-4xl md:text-5xl uppercase tracking-tighter text-slate-100 mt-2" id="manual-title">
+            MISER MANUAL
+          </h2>
+        </div>
+        <p class="font-mono text-xs text-slate-500 uppercase tracking-wider max-w-xl leading-relaxed" id="manual-intro">
+          Browse through ServerMiser's high-efficiency Discord commands. Select a filter to isolate categories or use search keywords to locate specific scripts.
+        </p>
+      </div>
+
+      <!-- Controls Row -->
+      <div class="flex flex-col md:flex-row gap-6 items-center justify-between border border-slate-900 bg-[#060609] p-4">
+        
+        <!-- Category Filter Pills -->
+        <div class="flex flex-wrap gap-2 w-full md:w-auto">
+          <button onclick="setCategory('all')" id="cat-all" class="px-3.5 py-1.5 border font-mono text-[9px] font-bold tracking-widest uppercase border-brandGreen bg-[#10121a] text-brandGreen cursor-pointer">All</button>
+          <button onclick="setCategory('moderation')" id="cat-moderation" class="px-3.5 py-1.5 border border-slate-800 bg-slate-950/40 text-slate-400 font-mono text-[9px] font-bold tracking-widest uppercase hover:text-slate-200 cursor-pointer">Moderation</button>
+          <button onclick="setCategory('setup')" id="cat-setup" class="px-3.5 py-1.5 border border-slate-800 bg-slate-950/40 text-slate-400 font-mono text-[9px] font-bold tracking-widest uppercase hover:text-slate-200 cursor-pointer">Setup</button>
+          <button onclick="setCategory('ticketing')" id="cat-ticketing" class="px-3.5 py-1.5 border border-slate-800 bg-slate-950/40 text-slate-400 font-mono text-[9px] font-bold tracking-widest uppercase hover:text-slate-200 cursor-pointer">Ticketing</button>
+          <button onclick="setCategory('leveling')" id="cat-leveling" class="px-3.5 py-1.5 border border-slate-800 bg-slate-950/40 text-slate-400 font-mono text-[9px] font-bold tracking-widest uppercase hover:text-slate-200 cursor-pointer">Leveling</button>
+        </div>
+
+        <!-- Search Input -->
+        <div class="relative w-full md:w-80">
+          <input type="text" id="search-input" oninput="filterCommands()" placeholder="SEARCH SCRIPTS..." class="w-full bg-black border border-slate-800 p-3 pl-10 text-xs font-mono tracking-wider focus:outline-none focus:border-brandRed text-slate-100 placeholder-slate-700">
+          <i data-lucide="search" class="w-4 h-4 text-slate-700 absolute left-3 top-3.5"></i>
+        </div>
+
+      </div>
+
+      <!-- Commands Output Grid -->
+      <div id="commands-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- JS will inject filtered command cards here -->
+      </div>
+
+    </div>
+
+    <!-- ==============================================
+         VIEW: TELEMETRY & ANALYTICS
+         ============================================== -->
+    <div id="view-analytics" class="hidden space-y-12">
+      
+      <!-- Section Header -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-900 pb-8">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 bg-brandRed/10 border border-brandRed/30 text-brandRed">
+            <i data-lucide="activity" class="w-6 h-6 animate-pulse"></i>
+          </div>
+          <div>
+            <h1 class="font-display font-black text-3xl sm:text-4xl uppercase tracking-tighter text-slate-100" id="telemetry-title">
+              TELEMETRY & ANALYTICS
+            </h1>
+            <p class="font-mono text-[10px] uppercase tracking-widest mt-1 text-slate-500">
+              Visualizing Live Node Data, Gateway Speed, and Active Ingestions.
+            </p>
+          </div>
+        </div>
+
+        <!-- Real-time pulse indicator -->
+        <div class="flex items-center gap-3 px-5 py-3 font-mono text-xs tracking-wider border border-slate-800 bg-[#07070a] text-slate-100 mt-4 md:mt-0" id="telemetry-box">
+          <span class="relative flex h-2.5 w-2.5">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+          </span>
+          <span class="text-slate-400">STATUS:</span>
+          <span class="text-[#e2f9b8] font-bold" id="status-index-text">ONLINE (GATEWAY V4)</span>
+        </div>
+      </div>
+
+      <!-- Metrics Row Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Chart 1: Distribution segment -->
+        <div class="lg:col-span-6 p-6 sm:p-8 border border-slate-800 bg-[#06060a] relative flex flex-col justify-between" id="tel-c1">
+          <div class="absolute top-0 right-0 p-3 font-mono text-xs text-slate-700 select-none">01 // SCALE</div>
+          <div>
+            <span class="font-mono text-xs text-brandRed tracking-widest uppercase">GUILD CONSTELLATIONS</span>
+            <h3 class="font-display font-black text-xl uppercase mt-1 tracking-tight text-slate-200">Active Ingestions Distribution</h3>
+            <p class="font-sans text-xs text-slate-400 leading-relaxed mt-2">
+              ServerMiser's reach across Discord servers. Interactive distribution segments mapped by operational scope.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center my-8">
+            <div class="md:col-span-6 flex justify-center relative">
+              <!-- Radial Ring -->
+              <div class="w-40 h-40 rounded-full border-4 border-slate-900 flex flex-col items-center justify-center leading-none">
+                <span class="text-[10px] font-mono text-slate-500 tracking-wider">TOTAL REACH</span>
+                <span class="font-display font-black text-2xl tracking-tighter text-slate-100 mt-1">14,820</span>
+                <span class="font-mono text-[8px] tracking-widest text-[#e2f9b8] mt-1 font-bold">ACTIVE GUILDS</span>
+              </div>
+            </div>
+
+            <div class="md:col-span-6 flex flex-col gap-3">
+              <div class="p-2 border border-slate-800 bg-black/40 flex justify-between text-xs font-mono">
+                <span class="text-brandRed">● GAMING GUILDS</span>
+                <span class="text-slate-400 font-bold">45%</span>
+              </div>
+              <div class="p-2 border border-slate-800 bg-black/40 flex justify-between text-xs font-mono">
+                <span class="text-brandGreen">● COMMUNITY HUBS</span>
+                <span class="text-slate-400 font-bold">30%</span>
+              </div>
+              <div class="p-2 border border-slate-800 bg-black/40 flex justify-between text-xs font-mono">
+                <span class="text-brandTeal">● CREATORS & ARTISTS</span>
+                <span class="text-slate-400 font-bold">15%</span>
+              </div>
+              <div class="p-2 border border-slate-800 bg-black/40 flex justify-between text-xs font-mono">
+                <span class="text-pink-300">● DEVELOPER TIER</span>
+                <span class="text-slate-400 font-bold">10%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chart 2: Daily setup triggers -->
+        <div class="lg:col-span-6 p-6 sm:p-8 border border-slate-800 bg-[#06060a] relative flex flex-col justify-between" id="tel-c2">
+          <div class="absolute top-0 right-0 p-3 font-mono text-xs text-slate-700 select-none">02 // FREQUENCY</div>
+          <div>
+            <span class="font-mono text-xs text-brandGreen tracking-widest uppercase bg-teal-950/40 px-1.5 py-0.5">AUTOMATION VOLUMETRICS</span>
+            <h3 class="font-display font-black text-xl uppercase mt-1 tracking-tight text-slate-200">Setup Command Daily Metrics</h3>
+            <p class="font-sans text-xs text-slate-400 leading-relaxed mt-2">
+              Monitoring how often our cornerstone 1-click server layout deployment engine is triggered daily.
+            </p>
+          </div>
+
+          <!-- Vertical Columns representation -->
+          <div class="flex items-end justify-between gap-2 h-36 border-b border-slate-800 pb-2 my-8 relative">
+            <div class="flex flex-col items-center flex-1">
+              <div class="w-full bg-[#2e7b8f] opacity-80 h-16 border border-slate-800"></div>
+              <span class="font-mono text-[9px] mt-1.5 text-slate-500">MON</span>
+            </div>
+            <div class="flex flex-col items-center flex-1">
+              <div class="w-full bg-[#2e7b8f] opacity-80 h-24 border border-slate-800"></div>
+              <span class="font-mono text-[9px] mt-1.5 text-slate-500">TUE</span>
+            </div>
+            <div class="flex flex-col items-center flex-1">
+              <div class="w-full bg-[#ff3b5c] opacity-90 h-28 border border-slate-800"></div>
+              <span class="font-mono text-[9px] mt-1.5 text-slate-500">WED</span>
+            </div>
+            <div class="flex flex-col items-center flex-1">
+              <div class="w-full bg-[#2e7b8f] opacity-80 h-32 border border-slate-800"></div>
+              <span class="font-mono text-[9px] mt-1.5 text-slate-500">THU</span>
+            </div>
+            <div class="flex flex-col items-center flex-1">
+              <div class="w-full bg-[#e2f9b8] h-36 border border-slate-800"></div>
+              <span class="font-mono text-[9px] mt-1.5 text-slate-500">FRI</span>
+            </div>
+            <div class="flex flex-col items-center flex-1">
+              <div class="w-full bg-[#2e7b8f] opacity-80 h-20 border border-slate-800"></div>
+              <span class="font-mono text-[9px] mt-1.5 text-slate-500">SAT</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Live latency sonar map -->
+      <section class="border border-slate-850 p-6 sm:p-8 bg-[#050508]" id="telemetry-sonar">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          
+          <div class="lg:col-span-5 space-y-6">
+            <div>
+              <span class="font-mono text-xs text-[#2e7b8f] tracking-widest uppercase">REAL-TIME LATENCY</span>
+              <h2 class="font-display font-black text-2xl uppercase mt-1 tracking-tight text-slate-100" id="radar-heading">
+                Gateway Sonar Radar
+              </h2>
+              <p class="font-sans text-xs text-slate-400 leading-relaxed mt-2">
+                This is a simulated visual representation of our current cluster latency. Rather than plain text, our gateway sweeps continuously to verify ping speeds across Discord shards, authentication databases, and heartbeat nodes.
+              </p>
+            </div>
+
+            <div class="space-y-3">
+              <div class="p-3.5 border border-slate-900 bg-black flex items-center justify-between">
+                <span class="font-mono text-xs text-slate-300">AVERAGE WEBSOCKET PING</span>
+                <span class="font-display font-extrabold text-base text-[#ff3b5c]">12.7ms</span>
+              </div>
+              <div class="p-3.5 border border-slate-900 bg-black flex items-center justify-between">
+                <span class="font-mono text-xs text-slate-300">SYSTEM PACKET DELAY</span>
+                <span class="font-display font-extrabold text-base text-brandGreen">0.01ms</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Radar Sweeper visual -->
+          <div class="lg:col-span-7 flex flex-col sm:flex-row items-center justify-center gap-8 py-4 border border-slate-900 bg-[#040406] p-6" id="tel-sonar-block">
+            <div class="relative w-64 h-64 border-2 border-slate-900 bg-[#020204] rounded-full flex items-center justify-center overflow-hidden">
+              <!-- Grid Circles -->
+              <div class="absolute w-4/5 h-4/5 border border-slate-900/80 rounded-full"></div>
+              <div class="absolute w-3/5 h-3/5 border border-slate-900/60 rounded-full"></div>
+              <div class="absolute w-2/5 h-2/5 border border-slate-900/40 rounded-full"></div>
+              
+              <!-- Crosshairs -->
+              <div class="absolute w-full h-px bg-slate-900/50"></div>
+              <div class="absolute h-full w-px bg-slate-900/50"></div>
+
+              <!-- Radar sweep sweep line -->
+              <div class="absolute w-1/2 h-1/2 origin-bottom-right bottom-1/2 right-1/2 bg-gradient-to-tr from-brandTeal/10 to-transparent border-r border-brandGreen/40 animate-[spin_4.5s_linear_infinite]"></div>
+
+              <!-- Dummy Node dots -->
+              <div class="absolute top-[30%] left-[25%]"><span class="flex h-3.5 w-3.5 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#e2f9b8] opacity-30"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#2e7b8f] border border-black"></span></span></div>
+              <div class="absolute top-[60%] left-[70%]"><span class="flex h-3.5 w-3.5 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#e2f9b8] opacity-30"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#2e7b8f] border border-black"></span></span></div>
+            </div>
+
+            <!-- Static logs readout -->
+            <div class="flex-1 space-y-3 font-mono text-[11px] w-full">
+              <div class="p-2.5 bg-slate-950 border border-slate-900 flex justify-between">
+                <span>Discord API Gateway</span>
+                <span class="text-[#e2f9b8]">12ms</span>
+              </div>
+              <div class="p-2.5 bg-slate-950 border border-slate-900 flex justify-between">
+                <span>Shard #01 Host</span>
+                <span class="text-[#e2f9b8]">14ms</span>
+              </div>
+              <div class="p-2.5 bg-slate-950 border border-slate-900 flex justify-between">
+                <span>Firestore Cluster</span>
+                <span class="text-[#e2f9b8]">7ms</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+
+  </main>
+
+  <!-- --- INVITE BOT MODAL DIALOG --- -->
+  <div id="invite-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div class="w-full max-w-md border-2 border-slate-800 bg-[#050508] p-6 text-slate-100 relative">
+      <button onclick="closeInviteModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white cursor-pointer">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="text-center mb-6">
+        <h3 class="font-display font-black text-2xl uppercase tracking-tighter text-slate-100">
+          ADD TO YOUR SERVER
+        </h3>
+        <p class="font-mono text-[10px] text-brandTeal uppercase mt-1 tracking-widest">
+          Simulated Secure Integration Flow
+        </p>
+      </div>
+
+      <div id="modal-form" class="space-y-4">
+        <div class="space-y-2">
+          <label class="font-mono text-[9px] uppercase tracking-widest text-slate-500 block">SELECT GUILD TARGET</label>
+          <select id="server-select" class="w-full bg-black border border-slate-800 p-3 text-xs font-mono text-slate-200 focus:outline-none focus:border-[#ff3b5c]">
+            <option value="">-- Choose a Server --</option>
+            <option value="gamers">The Gamer Den (Booster Tier 3)</option>
+            <option value="coders">The Code Cluster (1.2k Members)</option>
+            <option value="chill">Chill Sanctuary (Active Community)</option>
+          </select>
+        </div>
+
+        <div class="space-y-2 font-mono text-[10px] text-slate-400 border border-slate-900 bg-slate-950/60 p-4 leading-relaxed uppercase">
+          <span class="text-slate-500 block mb-1">SCOPES REQUESTED:</span>
+          ● bot & application.commands<br>
+          ● manage_channels & manage_roles<br>
+          ● kick_members & ban_members<br>
+          ● manage_messages
+        </div>
+
+        <button onclick="submitInvite()" class="w-full py-3 bg-[#ff3b5c] text-white font-mono text-xs tracking-widest font-black uppercase border border-black hover:brightness-110 active:scale-95 transition-all cursor-pointer">
+          AUTHORIZE & ADD BOT
+        </button>
+      </div>
+
+      <!-- Loading State -->
+      <div id="modal-loading" class="hidden flex-col items-center justify-center py-12 gap-4">
+        <i data-lucide="refresh-ccw" class="w-8 h-8 text-brandRed animate-spin"></i>
+        <span class="font-mono text-[10px] tracking-widest uppercase text-slate-400">DISPATCHING HEARTBEATS...</span>
+      </div>
+
+      <!-- Success State -->
+      <div id="modal-success" class="hidden flex-col items-center justify-center py-8 gap-4 text-center">
+        <div class="w-12 h-12 rounded-full border border-brandGreen flex items-center justify-center text-brandGreen">
+          <i data-lucide="check" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h4 class="font-display font-bold text-lg uppercase tracking-tight text-slate-100">AUTHORIZED nominally!</h4>
+          <p class="font-mono text-[10px] text-slate-500 uppercase mt-1 leading-relaxed">
+            Miser modules active on selected guild! Run <code class="text-brandRed font-bold">|setup</code> inside your server to construct standard category hubs.
+          </p>
+        </div>
+        <button onclick="closeInviteModal()" class="px-6 py-2 bg-slate-900 border border-slate-800 font-mono text-[10px] tracking-widest uppercase text-slate-300 hover:text-white cursor-pointer">
+          CLOSE WINDOW
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- --- FOOTER GIANT INVITE CTA --- -->
+  <footer class="border-t border-slate-900 bg-black mt-28 py-20 text-center relative z-10">
+    <div class="container mx-auto px-6 max-w-4xl space-y-8">
+      <span class="font-mono text-xs text-[#ff3b5c] tracking-widest uppercase">READY TO REDUCE CLUTTER?</span>
+      
+      <h2 class="font-display font-black text-4xl sm:text-5xl md:text-6xl lg:text-7xl uppercase tracking-tighter text-slate-100 leading-none">
+        DEPLOY THE <span class="text-brandGreen">MISER</span> NOW
+      </h2>
+      
+      <p class="font-sans text-sm text-slate-400 max-w-lg mx-auto leading-relaxed">
+        Stop managing 10 different developer keys. Optimize channels, establish levels, protect chatters, and run ticket support desks nominal in 1-click.
+      </p>
+
+      <div class="pt-6">
+        <button onclick="openInviteModal()" class="px-10 py-5 bg-[#ff3b5c] text-white font-mono text-xs tracking-widest font-black uppercase border-2 border-black shadow-[4px_4px_0px_#e2f9b8] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer">
+          INVITE BOT & PURGE SLOW NODES
+        </button>
+      </div>
+
+      <div class="pt-12 text-slate-600 font-mono text-[10px] uppercase tracking-widest">
+        © 2026 SERVERMISER. NO MORE CHOSEN DISCORD BLOAT. DEPLOY NOMINAL.
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==============================================
+       JAVASCRIPT LOGIC
+       ============================================== -->
+  <script>
+    // Global State variables
+    let currentView = 'home';
+    let isDarkMode = true;
+    let selectedDilemmaIdx = 0;
+    let isSimulating = false;
+
+    // Dilemma database matching original App.tsx
+    const DILEMMAS = [
+      {
+        id: "prune",
+        question: "Prune 500 inactive members?",
+        context: "Our member count is high, but chat activity feels quiet and server loading times are slowing down.",
+        miserPath: {
+          title: "Miser Sweep: Automated Purging",
+          description: "Prune them instantly! Free up the roster, improve member quality ratio, and restore active server speed.",
+          terminalLogs: [
+            "[miser-audit]: Initializing dry-run member scan...",
+            "[miser-audit]: Scanned 842 total guild members.",
+            "[miser-audit]: Detected 512 accounts with 0 activity metrics for 60+ days.",
+            "[miser-action]: Initiating /prune dry-run evictions...",
+            "[miser-action]: Safely removed 512 inactive nodes.",
+            "[miser-status]: Server database compressed by 38%."
+          ],
+          endingHealth: 98,
+          impactText: "✓ EVISCERATED 512 SILENT SLOTS // HEALTH INCREASED TO 98% // DATABASE RE-INDEXED"
+        },
+        nudgePath: {
+          title: "Active Nudge: Automated Surveys",
+          description: "Keep them, but trigger a wake-up campaign. Push a custom automated survey or server game invite to see who stays.",
+          terminalLogs: [
+            "[miser-audit]: Scanning cold-interest accounts...",
+            "[miser-audit]: Detected 512 high-probability churn nodes.",
+            "[miser-action]: Triggering /engage start with interactive gamified polls...",
+            "[miser-action]: Dispatched low-stress, playful nudges in DM channels.",
+            "[miser-engagement]: 142 members responded and revived their roles.",
+            "[miser-status]: Recovered active ratio by +17%."
+          ],
+          endingHealth: 85,
+          impactText: "⚠ DM CAMPAIGN DEPLOYED // 142 CHATTER ACCOUNTS REVIVED // HEALTH AT 85%"
+        }
+      },
+      {
+        id: "roles",
+        question: "Delete 20+ unused roles?",
+        context: "Our roles directory stretches forever. Staff are confused, and permissions are overlapping dangerously.",
+        miserPath: {
+          title: "Miser Sweep: Role Liquidation",
+          description: "Wipe them out. Consolidate into 3 simple role groups. Prevent 'permission creep' where retired mods still have admin access.",
+          terminalLogs: [
+            "[miser-audit]: Auditing guild role matrices...",
+            "[miser-audit]: Found 28 custom roles assigned to 0 active members.",
+            "[miser-audit]: WARNING: 4 legacy roles contain redundant administrator scopes.",
+            "[miser-action]: Purging 25 redundant role IDs...",
+            "[miser-action]: Pruned empty booster tags and event descriptors.",
+            "[miser-status]: Permissions lock verified. Role directory clean."
+          ],
+          endingHealth: 96,
+          impactText: "✓ DELETED 25 EMPTY STACK ROLES // PERMISSIONS FULLY SECURED // HEALTH AT 96%"
+        },
+        nudgePath: {
+          title: "Active Nudge: Structured Role Archive",
+          description: "Keep the roles but completely strip their active permissions, moving them to a locked folder for historical record.",
+          terminalLogs: [
+            "[miser-audit]: Analyzing legacy security profile...",
+            "[miser-audit]: 28 legacy roles flagged for permission stripping.",
+            "[miser-action]: Locking permission modifiers...",
+            "[miser-action]: Moved legacy roles into read-only archive categories.",
+            "[miser-status]: Roles preserved, active permissions nullified."
+          ],
+          endingHealth: 82,
+          impactText: "✓ ROLE PERMISSIONS SHIELDED // 28 STAGED IN BACKUP LABELS // HEALTH AT 82%"
+        }
+      },
+      {
+        id: "bot_spam",
+        question: "Delete bot spam commands?",
+        context: "Bots are filling our channels with music, rank, and coin command spam, making conversations unreadable.",
+        miserPath: {
+          title: "Miser Sweep: Absolute Auto-Clean",
+          description: "Delete them! Keep channels pristine. Let people play, but wipe all prefix and slash commands after 5 minutes.",
+          terminalLogs: [
+            "[miser-audit]: Monitoring channel chat logs...",
+            "[miser-audit]: Spam density in general-chat is 42% prefix commands.",
+            "[miser-action]: Activating auto-miser sweep channel:#bot-commands delay:5m.",
+            "[miser-action]: Sweep script running. Periodically sweeping bot output.",
+            "[miser-status]: Chat readability index increased by 90%."
+          ],
+          endingHealth: 95,
+          impactText: "✓ AUTO-CLEAN ENABLED // 5-MIN SWEEP TRIGGER RUNNING // HEALTH AT 95%"
+        },
+        nudgePath: {
+          title: "Active Nudge: Isolated Thread Redirect",
+          description: "Redirect all bot commands into automated private threads that auto-archive themselves after 1 hour of silence.",
+          terminalLogs: [
+            "[miser-audit]: Tracking bot command triggers...",
+            "[miser-action]: Creating dynamic isolated thread for active bot sessions...",
+            "[miser-action]: Configured auto-redirect rules for 8 known gaming bots.",
+            "[miser-thread]: Active sessions moved safely to temporary thread.",
+            "[miser-status]: General channels clean. Temporary threads active."
+          ],
+          endingHealth: 88,
+          impactText: "✓ COMMAND REDIRECT TO THREADS LIVE // CHANNELS CLEAN // HEALTH AT 88%"
+        }
+      }
+    ];
+
+    // Command Center Database
+    const COMMANDS = [
+      { name: "ban", desc: "Permanently ban a malicious user from the server.", usage: "|ban @user [reason]", cat: "moderation", output: "✓ Banned member @spammer69 (Reason: Phishing link)" },
+      { name: "kick", desc: "Kick a user from the server immediately.", usage: "|kick @user [reason]", cat: "moderation", output: "✓ Kicked member @impatient_user (Reason: Rule 4 violation)" },
+      { name: "mute", desc: "Temporarily timeout a user in all text channels.", usage: "|mute @user [duration]", cat: "moderation", output: "✓ Timed out @noisy_speaker for 10m" },
+      { name: "setup", desc: "Begin the ServerMiser automatic deployment wizard.", usage: "|setup [layout_type]", cat: "setup", output: "✓ Setup complete: Deployed welcome desk, active chats." },
+      { name: "setup-roles", desc: "Generate a beautifully organized hierarchy of roles.", usage: "|setup-roles [palette]", cat: "setup", output: "✓ Created roles: [Guild Admin], [Staff Mod]" },
+      { name: "ticket-panel", desc: "Establish the premium interactive ticketing button panel.", usage: "|ticket-panel [#channel]", cat: "ticketing", output: "✓ Ticket panel set up successfully in #support!" },
+      { name: "ticket-close", desc: "Close support room and safely compile logs.", usage: "|ticket-close", cat: "ticketing", output: "✓ Ticket closed. Compiled transcript saved to logs." },
+      { name: "leveling-toggle", desc: "Enable/disable passive chat XP gains.", usage: "|leveling-toggle [on|off]", cat: "leveling", output: "✓ Leveling Engine: Enabled passive XP accrual." },
+      { name: "rank", desc: "Render progress cards reflecting active chat level.", usage: "|rank [@user]", cat: "leveling", output: "Level 14 • 8,420 XP total (Ranked #8)" }
+    ];
+
+    let selectedCategory = 'all';
+
+    // Initialization hook
+    window.onload = function() {
+      lucide.createIcons();
+      buildHealthBar(62);
+      setCategory('all');
+
+      // Mouse position tracker for aesthetic circular cursor
+      const cursor = document.getElementById('cursor-follower');
+      document.addEventListener('mousemove', function(e) {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+      });
+    };
+
+    // View Routing
+    function setView(viewName) {
+      currentView = viewName;
+
+      // Hide all views
+      document.getElementById('view-home').classList.add('hidden');
+      document.getElementById('view-sandbox').classList.add('hidden');
+      document.getElementById('view-commands').classList.add('hidden');
+      document.getElementById('view-analytics').classList.add('hidden');
+
+      // Show selected
+      document.getElementById('view-' + viewName).classList.remove('hidden');
+
+      // Update Nav highlighting
+      const navs = ['home', 'sandbox', 'commands', 'analytics'];
+      navs.forEach(nav => {
+        const btn = document.getElementById('nav-' + nav);
+        if (nav === viewName) {
+          btn.className = 'transition-colors relative py-1 text-brandGreen font-bold';
+          // Move the absolute highlight span to the current button if on desktop
+          if (document.getElementById('nav-indicator')) {
+            document.getElementById('nav-indicator').remove();
+          }
+          btn.innerHTML += '<span class="absolute bottom-0 left-0 w-full h-0.5 bg-brandGreen" id="nav-indicator"></span>';
+        } else {
+          btn.className = 'transition-colors relative py-1 text-slate-400 hover:text-white';
+          const ind = btn.querySelector('#nav-indicator');
+          if (ind) ind.remove();
+        }
+      });
+    }
+
+    // Toggle Dark Mode
+    function toggleDarkMode() {
+      isDarkMode = !isDarkMode;
+      const body = document.body;
+      const header = document.getElementById('main-header');
+      const themeIcon = document.getElementById('theme-icon');
+      
+      if (isDarkMode) {
+        body.classList.add('dark');
+        body.classList.remove('bg-[#f4f5f8]', 'text-slate-900');
+        body.classList.add('bg-[#040406]', 'text-slate-100');
+        header.classList.add('bg-[#040406]/95', 'border-slate-900');
+        header.classList.remove('bg-[#fcfdfd]/95', 'border-slate-200');
+        themeIcon.setAttribute('data-lucide', 'sun');
+        document.getElementById('brand-text').classList.add('text-slate-100');
+        document.getElementById('brand-text').classList.remove('text-slate-950');
+
+        // Restore dark styling for dashboard modules
+        document.getElementById('sandbox-block').className = "grid grid-cols-1 lg:grid-cols-12 border-2 relative border-slate-800 bg-[#050508]";
+        document.getElementById('sandbox-live-screen').className = "lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between bg-[#040407]";
+        document.getElementById('sandbox-tag').className = "font-mono text-xs tracking-widest uppercase text-brandGreen";
+        document.getElementById('sandbox-title').className = "font-display font-black text-3xl sm:text-4xl md:text-5xl uppercase tracking-tighter text-slate-100 mt-2";
+        document.getElementById('sandbox-intro').className = "font-mono text-xs text-slate-500 uppercase tracking-wider max-w-xl leading-relaxed";
+
+        document.getElementById('manual-title').className = "font-display font-black text-3xl sm:text-4xl md:text-5xl uppercase tracking-tighter text-slate-100 mt-2";
+        document.getElementById('manual-intro').className = "font-mono text-xs text-slate-500 uppercase tracking-wider max-w-xl leading-relaxed";
+
+        document.getElementById('telemetry-title').className = "font-display font-black text-3xl sm:text-4xl uppercase tracking-tighter text-slate-100";
+        document.getElementById('telemetry-box').className = "flex items-center gap-3 px-5 py-3 font-mono text-xs tracking-wider border border-slate-800 bg-[#07070a] text-slate-100 mt-4 md:mt-0";
+        document.getElementById('status-index-text').className = "text-[#e2f9b8] font-bold";
+
+        document.getElementById('tel-c1').className = "lg:col-span-6 p-6 sm:p-8 border border-slate-800 bg-[#06060a] relative flex flex-col justify-between";
+        document.getElementById('tel-c2').className = "lg:col-span-6 p-6 sm:p-8 border border-slate-800 bg-[#06060a] relative flex flex-col justify-between";
+        document.getElementById('telemetry-sonar').className = "border border-slate-850 p-6 sm:p-8 bg-[#050508]";
+        document.getElementById('tel-sonar-block').className = "lg:col-span-7 flex flex-col sm:flex-row items-center justify-center gap-8 py-4 border border-slate-900 bg-[#040406] p-6";
+        document.getElementById('radar-heading').className = "font-display font-black text-2xl uppercase mt-1 tracking-tight text-slate-100";
+
+        document.getElementById('heart-wrapper').className = "relative z-10 p-8 border border-slate-800 bg-[#06060a] dark-glow transition-all duration-500";
+      } else {
+        body.classList.remove('dark');
+        body.classList.remove('bg-[#040406]', 'text-slate-100');
+        body.classList.add('bg-[#f4f5f8]', 'text-slate-900');
+        header.classList.remove('bg-[#040406]/95', 'border-slate-900');
+        header.classList.add('bg-[#fcfdfd]/95', 'border-slate-200');
+        themeIcon.setAttribute('data-lucide', 'moon');
+        document.getElementById('brand-text').classList.remove('text-slate-100');
+        document.getElementById('brand-text').classList.add('text-slate-950');
+
+        // Apply light mode styles to widgets specifically matching user's visual identity request
+        document.getElementById('sandbox-block').className = "grid grid-cols-1 lg:grid-cols-12 border-2 relative border-slate-200 bg-white shadow-lg";
+        document.getElementById('sandbox-live-screen').className = "lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between bg-white";
+        document.getElementById('sandbox-tag').className = "font-mono text-xs tracking-widest uppercase text-brandRed";
+        document.getElementById('sandbox-title').className = "font-display font-black text-3xl sm:text-4xl md:text-5xl uppercase tracking-tighter text-slate-950 mt-2";
+        document.getElementById('sandbox-intro').className = "font-mono text-xs text-slate-600 font-medium tracking-wider max-w-xl leading-relaxed";
+
+        document.getElementById('manual-title').className = "font-display font-black text-3xl sm:text-4xl md:text-5xl uppercase tracking-tighter text-slate-950 mt-2";
+        document.getElementById('manual-intro').className = "font-mono text-xs text-slate-600 font-medium tracking-wider max-w-xl leading-relaxed";
+
+        document.getElementById('telemetry-title').className = "font-display font-black text-3xl sm:text-4xl uppercase tracking-tighter text-slate-900";
+        document.getElementById('telemetry-box').className = "flex items-center gap-3 px-5 py-3 font-mono text-xs tracking-wider border border-slate-200 bg-white shadow-sm text-slate-800 mt-4 md:mt-0";
+        document.getElementById('status-index-text').className = "text-emerald-600 font-extrabold";
+
+        document.getElementById('tel-c1').className = "lg:col-span-6 p-6 sm:p-8 border border-slate-200 bg-white shadow-sm relative flex flex-col justify-between";
+        document.getElementById('tel-c2').className = "lg:col-span-6 p-6 sm:p-8 border border-slate-200 bg-white shadow-sm relative flex flex-col justify-between";
+        document.getElementById('telemetry-sonar').className = "border border-slate-200 p-6 sm:p-8 bg-white shadow-sm";
+        document.getElementById('tel-sonar-block').className = "lg:col-span-7 flex flex-col sm:flex-row items-center justify-center gap-8 py-4 border border-slate-250 bg-slate-50 shadow-inner p-6";
+        document.getElementById('radar-heading').className = "font-display font-black text-2xl uppercase mt-1 tracking-tight text-slate-900";
+
+        document.getElementById('heart-wrapper').className = "relative z-10 p-8 border border-slate-200 bg-white light-glow transition-all duration-500";
+      }
+
+      lucide.createIcons();
+    }
+
+    // Toggle FAQ accordions
+    function toggleFaq(id) {
+      const ans = document.getElementById('faq-ans-' + id);
+      const chevron = document.getElementById('faq-chevron-' + id);
+      
+      if (ans.classList.contains('hidden')) {
+        ans.classList.remove('hidden');
+        chevron.style.transform = 'rotate(180deg)';
+      } else {
+        ans.classList.add('hidden');
+        chevron.style.transform = 'rotate(0deg)';
+      }
+    }
+
+    // Sandbox dilemmas logic
+    function selectDilemma(idx) {
+      if (isSimulating) return;
+      selectedDilemmaIdx = idx;
+
+      // Update selectors state
+      for (let i = 0; i < 3; i++) {
+        const btn = document.getElementById('dil-btn-' + i);
+        const ping = document.getElementById('dil-ping-' + i);
+        if (i === idx) {
+          btn.className = "p-4 text-left border rounded-none transition-all duration-300 relative uppercase cursor-pointer border-brandGreen bg-[#0c0d15] text-white";
+          ping.classList.remove('hidden');
+        } else {
+          btn.className = "p-4 text-left border rounded-none transition-all duration-300 relative uppercase cursor-pointer border-slate-800 bg-[#060609] text-slate-400 hover:text-slate-200";
+          ping.classList.add('hidden');
+        }
+      }
+
+      // Update context block and reset outputs
+      document.getElementById('dilemma-context').innerText = `"${DILEMMAS[idx].context}"`;
+      document.getElementById('terminal-screen').innerHTML = `<div class="text-slate-600 italic uppercase" id="terminal-idle-msg">[TERMINAL_IDLE] select a resolution trigger below to execute...</div>`;
+      document.getElementById('impact-block').classList.add('hidden');
+      buildHealthBar(62);
+    }
+
+    function buildHealthBar(health) {
+      const container = document.getElementById('health-bar-container');
+      container.innerHTML = '';
+      document.getElementById('health-pct').innerText = health + '%';
+
+      for (let i = 0; i < 20; i++) {
+        const threshold = (i / 20) * 100;
+        const isFilled = health >= threshold;
+        let colorClass = 'bg-slate-900';
+        if (!isDarkMode && !isFilled) colorClass = 'bg-slate-200';
+        
+        if (isFilled) {
+          colorClass = health > 90 ? 'bg-[#e2f9b8]' : 'bg-[#ff3b5c]';
+        }
+        
+        container.innerHTML += `<div class="flex-1 h-3 transition-colors duration-200 ${colorClass}"></div>`;
+      }
+    }
+
+    // Typewriter decision simulator
+    function runSimulation(choice) {
+      if (isSimulating) return;
+      isSimulating = true;
+
+      // Disable buttons visually
+      document.getElementById('miser-btn').classList.add('opacity-40', 'cursor-not-allowed');
+      document.getElementById('nudge-btn').classList.add('opacity-40', 'cursor-not-allowed');
+
+      const d = DILEMMAS[selectedDilemmaIdx];
+      const path = choice === 'miser' ? d.miserPath : d.nudgePath;
+      const logs = path.terminalLogs;
+      const targetHealth = path.endingHealth;
+
+      const term = document.getElementById('terminal-screen');
+      term.innerHTML = ''; // wipe idle text
+      document.getElementById('impact-block').classList.add('hidden');
+
+      let currentStep = 0;
+      const timer = setInterval(() => {
+        if (currentStep < logs.length) {
+          term.innerHTML += `<div class="leading-relaxed animate-pulse">${logs[currentStep]}</div>`;
+          term.scrollTop = term.scrollHeight; // autoscroll
+          
+          // incrementally scale health up
+          const ratio = (currentStep + 1) / logs.length;
+          const currentHealth = Math.round(62 + (targetHealth - 62) * ratio);
+          buildHealthBar(currentHealth);
+          
+          currentStep++;
+        } else {
+          clearInterval(timer);
+          isSimulating = false;
+
+          // Re-enable trigger button visuals
+          document.getElementById('miser-btn').classList.remove('opacity-40', 'cursor-not-allowed');
+          document.getElementById('nudge-btn').classList.remove('opacity-40', 'cursor-not-allowed');
+
+          // Render completed impact banner
+          document.getElementById('impact-header').innerText = choice === 'miser' ? '✓ MISER SWEEP COMPLETE' : '⚠ RETENTION EFFORT LOGGED';
+          document.getElementById('impact-desc').innerText = path.impactText;
+          document.getElementById('impact-block').classList.remove('hidden');
+        }
+      }, 500);
+    }
+
+    // Command Filter / Search
+    function setCategory(cat) {
+      selectedCategory = cat;
+      const categories = ['all', 'moderation', 'setup', 'ticketing', 'leveling'];
+      categories.forEach(c => {
+        const btn = document.getElementById('cat-' + c);
+        if (c === cat) {
+          btn.className = "px-3.5 py-1.5 border font-mono text-[9px] font-bold tracking-widest uppercase border-brandGreen bg-[#10121a] text-brandGreen cursor-pointer";
+        } else {
+          btn.className = "px-3.5 py-1.5 border border-slate-800 bg-slate-950/40 text-slate-400 font-mono text-[9px] font-bold tracking-widest uppercase hover:text-slate-200 cursor-pointer";
+        }
+      });
+
+      filterCommands();
+    }
+
+    function filterCommands() {
+      const query = document.getElementById('search-input').value.toLowerCase();
+      const container = document.getElementById('commands-container');
+      container.innerHTML = '';
+
+      const filtered = COMMANDS.filter(cmd => {
+        const matchesCategory = selectedCategory === 'all' || cmd.cat === selectedCategory;
+        const matchesSearch = cmd.name.toLowerCase().includes(query) || cmd.desc.toLowerCase().includes(query);
+        return matchesCategory && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="col-span-full py-12 text-center text-slate-600 font-mono text-xs uppercase">[No active matching scripts detected]</div>`;
+        return;
+      }
+
+      filtered.forEach(cmd => {
+        container.innerHTML += `
+          <div class="p-6 border border-slate-850 bg-[#060609] flex flex-col justify-between min-h-64">
+            <div>
+              <div class="flex items-center justify-between border-b border-slate-900 pb-3 mb-4">
+                <span class="font-mono text-xs text-brandGreen font-bold">$ |${cmd.name}</span>
+                <span class="font-mono text-[8px] uppercase tracking-widest border border-slate-800 px-1.5 py-0.5 text-slate-500">${cmd.cat}</span>
+              </div>
+              <p class="font-sans text-xs text-slate-400 leading-relaxed mb-4">${cmd.desc}</p>
+            </div>
+            <div class="space-y-2">
+              <span class="font-mono text-[8px] text-slate-600 uppercase tracking-widest block">Usage command syntax:</span>
+              <div class="font-mono text-[10px] text-[#ff3b5c] bg-black p-2 border border-slate-950 select-all">${cmd.usage}</div>
+              
+              <span class="font-mono text-[8px] text-slate-600 uppercase tracking-widest block pt-2">System terminal output:</span>
+              <div class="font-mono text-slate-200 whitespace-pre-wrap leading-normal bg-slate-950/50 p-2 border border-slate-900 text-[10px]">${cmd.output}</div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // Modal Operations
+    function openInviteModal() {
+      document.getElementById('invite-modal').classList.remove('hidden');
+      document.getElementById('modal-form').classList.remove('hidden');
+      document.getElementById('modal-loading').classList.add('hidden');
+      document.getElementById('modal-success').classList.add('hidden');
+      document.getElementById('server-select').value = '';
+    }
+
+    function closeInviteModal() {
+      document.getElementById('invite-modal').classList.add('hidden');
+    }
+
+    function submitInvite() {
+      const s = document.getElementById('server-select').value;
+      if (!s) return;
+
+      document.getElementById('modal-form').classList.add('hidden');
+      document.getElementById('modal-loading').classList.remove('hidden');
+
+      setTimeout(() => {
+        document.getElementById('modal-loading').classList.add('hidden');
+        document.getElementById('modal-success').classList.remove('hidden');
+      }, 1500);
+    }
+  </script>
+</body>
+</html>
