@@ -29,7 +29,9 @@ import {
   Moon,
   Copy,
   Play,
-  Download
+  Download,
+  Volume2,
+  Key
 } from "lucide-react";
 import Logo from "./components/Logo";
 import AnalyticsDashboard from "./components/AnalyticsDashboard";
@@ -184,6 +186,22 @@ const COMMANDS: Command[] = [
     usage: "|reactionroles edit <message_id> <options>",
     category: "roles",
     exampleOutput: "✏️ Panel settings updated. Self-assignable button layouts rebuilt successfully.",
+    permission: "Manage Roles"
+  },
+  {
+    name: "reactionroles add-role",
+    description: "Add a new self-assignable role choice node to an existing active selection panel.",
+    usage: "|reactionroles add-role <message_id> <@role> [label] [emoji]",
+    category: "roles",
+    exampleOutput: "➕ Added role @Special Member with label 'Special' and emoji ✨ to panel 1224597022.",
+    permission: "Manage Roles"
+  },
+  {
+    name: "reactionroles remove-role",
+    description: "Remove an existing self-assignable role choice node from an active selection panel.",
+    usage: "|reactionroles remove-role <message_id> <@role>",
+    category: "roles",
+    exampleOutput: "➖ Removed role @Special Member assignment node from panel 1224597022.",
     permission: "Manage Roles"
   },
   {
@@ -389,6 +407,14 @@ const COMMANDS: Command[] = [
     permission: "Manage Server"
   },
   {
+    name: "autoresponder edit",
+    description: "Edit an existing auto-response trigger message or parameters inside the wizard.",
+    usage: "|autoresponder edit <id>",
+    category: "automod",
+    exampleOutput: "✓ Edited autoresponder AR-0428 settings. Custom parameters recorded.",
+    permission: "Manage Server"
+  },
+  {
     name: "autoresponder remove",
     description: "Remove an auto-response trigger by its serial ID.",
     usage: "|autoresponder remove <id>",
@@ -426,6 +452,22 @@ const COMMANDS: Command[] = [
     usage: "|autoresponder test <id>",
     category: "automod",
     exampleOutput: "🧪 Test output for [AR-0428]: 'Welcome to the server! we have 124 members.'",
+    permission: "Manage Server"
+  },
+  {
+    name: "autoresponder variables",
+    description: "See and display every placeholder variable you can use in custom auto-replies.",
+    usage: "|autoresponder variables",
+    category: "automod",
+    exampleOutput: "Placeholder Variables:\n- {user}: Mentions the user\n- {server}: Server name\n- {memberCount}: Total server members",
+    permission: "Manage Server"
+  },
+  {
+    name: "autoresponder config",
+    description: "View the overall module configuration, active limits, and analytics dashboard.",
+    usage: "|autoresponder config",
+    category: "automod",
+    exampleOutput: "Autoresponder System Status:\n- Enabled: True\n- Active Responders: 8\n- Rate Limit: 3s cooldown",
     permission: "Manage Server"
   },
   {
@@ -584,6 +626,30 @@ const COMMANDS: Command[] = [
     usage: "|ticket close",
     category: "ticketing",
     exampleOutput: "✓ support-0428 closed. Safe text transcript generated and logged."
+  },
+  {
+    name: "ticket panel",
+    description: "Deploy a persistent, interactive support ticket panel inside a designated text channel.",
+    usage: "|ticket panel <#channel>",
+    category: "ticketing",
+    exampleOutput: "✅ Success: Interactive Support Panel deployed cleanly into #support-desk.",
+    permission: "Manage Server"
+  },
+  {
+    name: "ticket ongoing",
+    description: "Inspect and view all live, active ongoing support ticket sessions in the server.",
+    usage: "|ticket ongoing",
+    category: "ticketing",
+    exampleOutput: "📋 Live Ongoing Support Ticket Sessions:\n• Channel: #ticket-1224 | Owner: @chatter_pro",
+    permission: "Manage Server"
+  },
+  {
+    name: "ticket purge",
+    description: "Safely wipe all active ticket logs from the database configuration. (Keeps existing channels intact)",
+    usage: "|ticket purge",
+    category: "ticketing",
+    exampleOutput: "⚠️ Cloud Datastore Cleared. All active ticket records purged from database.",
+    permission: "Manage Server"
   },
 
   // Leveling Engine
@@ -788,14 +854,6 @@ const COMMANDS: Command[] = [
     usage: "|capabilities",
     category: "utility",
     exampleOutput: "🔍 Active Capabilities:\n- Setup Engine: Online\n- Automod Filters: Active\n- Leveling: 100% Operational"
-  },
-  {
-    name: "mydata",
-    description: "Direct server telemetry extraction suite and compliance downloads. (Developer Key Required)",
-    usage: "|mydata [collection]",
-    category: "utility",
-    exampleOutput: "📦 Raw Data Extract compiled. Exported 3 collections (Infractions, Users, SystemLogs).",
-    permission: "Bot Owner"
   }
 ];
 
@@ -1641,11 +1699,33 @@ export default function App() {
         `[miser-status]: Role command action executed successfully.`
       );
     } else if (commandLabel.startsWith("ticket")) {
-      steps.push(
-        `[miser-ticket]: Resolving ticketing desk channel settings...`,
-        `[miser-action]: Creating isolated channel thread...`,
-        `[miser-status]: support action completed.`
-      );
+      if (commandLabel === "ticket panel") {
+        steps.push(
+          `[miser-auth]: Validating Admin permissions...`,
+          `[miser-ticket]: Creating support panel layout embed and action row buttons...`,
+          `[miser-action]: Dispatching interactive button component into target channel...`,
+          `[miser-status]: Support ticket panel deployed successfully.`
+        );
+      } else if (commandLabel === "ticket ongoing") {
+        steps.push(
+          `[miser-db]: Querying active support channels from MongoDB database...`,
+          `[miser-action]: Compiling active ticket threads and user configurations...`,
+          `[miser-status]: Ongoing tickets profile dispatched successfully.`
+        );
+      } else if (commandLabel === "ticket purge") {
+        steps.push(
+          `[miser-auth]: CRITICAL ACTION AUTHORIZED (Manage Server Required)`,
+          `[miser-db]: Deleting active ticket mapping entries...`,
+          `[miser-action]: Database cleared. Wiped active ticket document nodes.`,
+          `[miser-status]: Support ticket datastore cleanly purged.`
+        );
+      } else {
+        steps.push(
+          `[miser-ticket]: Resolving ticketing desk channel settings...`,
+          `[miser-action]: Creating isolated channel thread...`,
+          `[miser-status]: support action completed.`
+        );
+      }
     } else if (commandLabel.startsWith("leveling")) {
       steps.push(
         `[miser-db]: Toggling leveling state inside database config...`,
@@ -3594,6 +3674,114 @@ export default function App() {
               </div>
             </div>
 
+            {/* Benefit Card 7 (Auto-Mod) */}
+            <div className={`p-6 border transition-all duration-300 flex flex-col justify-between h-64 group relative ${isDarkMode ? "border-amber-900/50 bg-amber-950/20 hover:bg-amber-950/30 hover:border-[#ff9f1c]" : "border-amber-200 bg-amber-50/50 hover:border-amber-500 hover:bg-amber-50/85 shadow-sm"}`}>
+              <div className={`absolute top-0 right-0 w-8 h-8 border-b border-l font-mono text-xs flex items-center justify-center transition-colors ${isDarkMode ? "border-amber-900/50 text-amber-700/80 group-hover:text-[#ff9f1c] group-hover:border-[#ff9f1c]" : "border-amber-200 text-amber-600 group-hover:text-amber-700 group-hover:border-amber-450"}`}>
+                07
+              </div>
+              <div className={`p-3 border w-fit transition-colors ${isDarkMode ? "bg-amber-900/20 border-amber-800/40 text-[#ff9f1c]" : "bg-amber-100 border-amber-200 text-amber-700"}`}>
+                <Zap className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className={`font-display font-extrabold text-lg uppercase tracking-tight transition-colors ${isDarkMode ? "text-slate-200 group-hover:text-slate-100" : "text-slate-800 group-hover:text-slate-950"}`}>
+                  AUTO-MOD
+                </h3>
+                <p className={`font-mono text-[10px] uppercase mt-2 tracking-widest leading-relaxed transition-colors ${isDarkMode ? "text-slate-500" : "text-slate-600 font-medium"}`}>
+                  Ironclad automated filters, link protection schemes, anti-spam thresholds, and programmable autoresponders.
+                </p>
+              </div>
+            </div>
+
+            {/* Benefit Card 8 (Verification) */}
+            <div className={`p-6 border transition-all duration-300 flex flex-col justify-between h-64 group relative ${isDarkMode ? "border-indigo-900/50 bg-indigo-950/20 hover:bg-indigo-950/30 hover:border-[#8338ec]" : "border-indigo-200 bg-indigo-50/50 hover:border-indigo-500 hover:bg-indigo-50/85 shadow-sm"}`}>
+              <div className={`absolute top-0 right-0 w-8 h-8 border-b border-l font-mono text-xs flex items-center justify-center transition-colors ${isDarkMode ? "border-indigo-900/50 text-indigo-700/80 group-hover:text-[#8338ec] group-hover:border-[#8338ec]" : "border-indigo-200 text-indigo-600 group-hover:text-indigo-700 group-hover:border-indigo-450"}`}>
+                08
+              </div>
+              <div className={`p-3 border w-fit transition-colors ${isDarkMode ? "bg-indigo-900/20 border-indigo-800/40 text-[#8338ec]" : "bg-indigo-100 border-indigo-200 text-indigo-700"}`}>
+                <Key className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className={`font-display font-extrabold text-lg uppercase tracking-tight transition-colors ${isDarkMode ? "text-slate-200 group-hover:text-slate-100" : "text-slate-800 group-hover:text-slate-950"}`}>
+                  VERIFICATION
+                </h3>
+                <p className={`font-mono text-[10px] uppercase mt-2 tracking-widest leading-relaxed transition-colors ${isDarkMode ? "text-slate-500" : "text-slate-600 font-medium"}`}>
+                  Sophisticated interactive onboarding and verification gatekeepers to filter bots and validate new users.
+                </p>
+              </div>
+            </div>
+
+            {/* Benefit Card 9 (Temp Voice) */}
+            <div className={`p-6 border transition-all duration-300 flex flex-col justify-between h-64 group relative ${isDarkMode ? "border-blue-900/50 bg-blue-950/20 hover:bg-blue-950/30 hover:border-[#3a86c8]" : "border-blue-200 bg-blue-50/50 hover:border-blue-500 hover:bg-blue-50/85 shadow-sm"}`}>
+              <div className={`absolute top-0 right-0 w-8 h-8 border-b border-l font-mono text-xs flex items-center justify-center transition-colors ${isDarkMode ? "border-blue-900/50 text-blue-700/80 group-hover:text-[#3a86c8] group-hover:border-[#3a86c8]" : "border-blue-200 text-blue-600 group-hover:text-blue-700 group-hover:border-blue-450"}`}>
+                09
+              </div>
+              <div className={`p-3 border w-fit transition-colors ${isDarkMode ? "bg-blue-900/20 border-blue-800/40 text-[#3a86c8]" : "bg-blue-100 border-blue-200 text-blue-700"}`}>
+                <Volume2 className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className={`font-display font-extrabold text-lg uppercase tracking-tight transition-colors ${isDarkMode ? "text-slate-200 group-hover:text-slate-100" : "text-slate-800 group-hover:text-slate-950"}`}>
+                  TEMP VOICE
+                </h3>
+                <p className={`font-mono text-[10px] uppercase mt-2 tracking-widest leading-relaxed transition-colors ${isDarkMode ? "text-slate-500" : "text-slate-600 font-medium"}`}>
+                  On-demand temporary voice lobbies that dynamically scale, configure themselves, and auto-cleanup.
+                </p>
+              </div>
+            </div>
+
+            {/* Benefit Card 10 (Analytics) */}
+            <div className={`p-6 border transition-all duration-300 flex flex-col justify-between h-64 group relative ${isDarkMode ? "border-lime-900/50 bg-lime-950/20 hover:bg-lime-950/30 hover:border-[#e2f9b8]" : "border-lime-200 bg-lime-50/50 hover:border-lime-500 hover:bg-lime-50/85 shadow-sm"}`}>
+              <div className={`absolute top-0 right-0 w-8 h-8 border-b border-l font-mono text-xs flex items-center justify-center transition-colors ${isDarkMode ? "border-lime-900/50 text-lime-700/80 group-hover:text-[#e2f9b8] group-hover:border-[#e2f9b8]" : "border-lime-200 text-lime-600 group-hover:text-lime-700 group-hover:border-lime-450"}`}>
+                10
+              </div>
+              <div className={`p-3 border w-fit transition-colors ${isDarkMode ? "bg-lime-900/20 border-lime-800/40 text-[#e2f9b8]" : "bg-lime-100 border-lime-200 text-lime-700"}`}>
+                <Activity className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className={`font-display font-extrabold text-lg uppercase tracking-tight transition-colors ${isDarkMode ? "text-slate-200 group-hover:text-slate-100" : "text-slate-800 group-hover:text-slate-950"}`}>
+                  ANALYTICS
+                </h3>
+                <p className={`font-mono text-[10px] uppercase mt-2 tracking-widest leading-relaxed transition-colors ${isDarkMode ? "text-slate-500" : "text-slate-600 font-medium"}`}>
+                  Real-time guild stat-trackers and statistical voice counters tracking human, bot, and member growth indices.
+                </p>
+              </div>
+            </div>
+
+            {/* Benefit Card 11 (Interactive Fun & Games) */}
+            <div className={`p-6 border transition-all duration-300 flex flex-col justify-between h-64 group relative ${isDarkMode ? "border-pink-900/50 bg-pink-950/20 hover:bg-pink-950/30 hover:border-[#ff3b5c]" : "border-pink-200 bg-pink-50/50 hover:border-pink-500 hover:bg-pink-50/85 shadow-sm"}`}>
+              <div className={`absolute top-0 right-0 w-8 h-8 border-b border-l font-mono text-xs flex items-center justify-center transition-colors ${isDarkMode ? "border-pink-900/50 text-pink-700/80 group-hover:text-[#ff3b5c] group-hover:border-[#ff3b5c]" : "border-pink-200 text-pink-600 group-hover:text-pink-700 group-hover:border-pink-450"}`}>
+                11
+              </div>
+              <div className={`p-3 border w-fit transition-colors ${isDarkMode ? "bg-pink-900/20 border-pink-800/40 text-[#ff3b5c]" : "bg-pink-100 border-pink-200 text-pink-700"}`}>
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className={`font-display font-extrabold text-lg uppercase tracking-tight transition-colors ${isDarkMode ? "text-slate-200 group-hover:text-slate-100" : "text-slate-800 group-hover:text-slate-950"}`}>
+                  FUN & GAMES
+                </h3>
+                <p className={`font-mono text-[10px] uppercase mt-2 tracking-widest leading-relaxed transition-colors ${isDarkMode ? "text-slate-500" : "text-slate-600 font-medium"}`}>
+                  Interactive geographic quizzes, trivia brain-teasers, Would You Rather cards, dice duels, and randomized memes.
+                </p>
+              </div>
+            </div>
+
+            {/* Benefit Card 12 (Utility & Telemetry) */}
+            <div className={`p-6 border transition-all duration-300 flex flex-col justify-between h-64 group relative ${isDarkMode ? "border-cyan-900/50 bg-cyan-950/20 hover:bg-cyan-950/30 hover:border-[#00f5ff]" : "border-cyan-200 bg-cyan-50/50 hover:border-cyan-500 hover:bg-cyan-50/85 shadow-sm"}`}>
+              <div className={`absolute top-0 right-0 w-8 h-8 border-b border-l font-mono text-xs flex items-center justify-center transition-colors ${isDarkMode ? "border-cyan-900/50 text-cyan-700/80 group-hover:text-[#00f5ff] group-hover:border-[#00f5ff]" : "border-cyan-200 text-cyan-600 group-hover:text-cyan-700 group-hover:border-cyan-450"}`}>
+                12
+              </div>
+              <div className={`p-3 border w-fit transition-colors ${isDarkMode ? "bg-cyan-900/20 border-cyan-800/40 text-[#00f5ff]" : "bg-cyan-100 border-cyan-200 text-cyan-750"}`}>
+                <Terminal className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className={`font-display font-extrabold text-lg uppercase tracking-tight transition-colors ${isDarkMode ? "text-slate-200 group-hover:text-slate-100" : "text-slate-800 group-hover:text-slate-950"}`}>
+                  TELEMETRY UTILS
+                </h3>
+                <p className={`font-mono text-[10px] uppercase mt-2 tracking-widest leading-relaxed transition-colors ${isDarkMode ? "text-slate-500" : "text-slate-600 font-medium"}`}>
+                  Raw server datastore extraction suites, diagnostics capabilities matrix registers, and developer diagnostic utilities.
+                </p>
+              </div>
+            </div>
+
           </div>
 
         </div>
@@ -3959,7 +4147,7 @@ export default function App() {
 
                             {cmd.permission && (
                               <span className="px-1.5 py-0.5 bg-[#ff3b5c]/10 text-[#ff3b5c] border border-[#ff3b5c]/30 text-[7px] font-mono tracking-wider uppercase font-black shrink-0" title={`Requires ${cmd.permission} permission`}>
-                                ������ {cmd.permission}
+                                {cmd.permission}
                               </span>
                             )}
                           </div>
