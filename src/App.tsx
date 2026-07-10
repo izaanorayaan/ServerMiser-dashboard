@@ -39,8 +39,9 @@ interface Command {
   name: string;
   description: string;
   usage: string;
-  category: "moderation" | "setup" | "ticketing" | "leveling" | "general" | "fun";
+  category: string;
   exampleOutput: string;
+  permission?: string;
 }
 
 const COMMANDS: Command[] = [
@@ -50,56 +51,64 @@ const COMMANDS: Command[] = [
     description: "Permanently ban a user from the server/guild and log the action securely.",
     usage: "|ban <@user> [reason]",
     category: "moderation",
-    exampleOutput: "✓ Banned member @spammer69 (Reason: Malicious phishing)"
+    exampleOutput: "✓ Banned member @spammer69 (Reason: Malicious phishing)",
+    permission: "Ban Members"
   },
   {
     name: "kick",
     description: "Kick a user from the server immediately.",
     usage: "|kick <@user> [reason]",
     category: "moderation",
-    exampleOutput: "✓ Kicked member @impatient_user"
+    exampleOutput: "✓ Kicked member @impatient_user",
+    permission: "Kick Members"
   },
   {
     name: "mute",
     description: "Mute/timeout a member in text and voice channels for a set duration.",
     usage: "|mute <@user> <duration> [reason]",
     category: "moderation",
-    exampleOutput: "✓ Timed out @noisy_speaker for 10m (Reason: Chat spam)"
+    exampleOutput: "✓ Timed out @noisy_speaker for 10m (Reason: Chat spam)",
+    permission: "Moderate Members"
   },
   {
     name: "unmute",
     description: "Remove the active timeout or mute status from a member immediately.",
     usage: "|unmute <@user>",
     category: "moderation",
-    exampleOutput: "✓ Removed active timeout from @noisy_speaker"
+    exampleOutput: "✓ Removed active timeout from @noisy_speaker",
+    permission: "Moderate Members"
   },
   {
     name: "warn",
     description: "Register an official warning infraction against a user's server profile.",
     usage: "|warn <@user> <reason>",
     category: "moderation",
-    exampleOutput: "⚠ Official warning registered for @rebel-user (1st warning point)"
+    exampleOutput: "⚠ Official warning registered for @rebel-user (1st warning point)",
+    permission: "Moderate Members"
   },
   {
     name: "warnings",
     description: "View the warning history and active warning score of a server member.",
     usage: "|warnings <@user>",
     category: "moderation",
-    exampleOutput: "Warnings profile for @rebel-user:\n- 1st Warn: CAPS Spam (Logged by @staff)\n- Total Warnings: 1"
-  },
-  {
-    name: "mod-logs-toggle",
-    description: "Toggle on or off and set the designated logs channel to record all administrator actions securely.",
-    usage: "|mod-logs-toggle <#channel | off>",
-    category: "moderation",
-    exampleOutput: "🛡️ Mod Logs toggled on! All administrative events will now stream to #mod-logs."
+    exampleOutput: "Warnings profile for @rebel-user:\n- 1st Warn: CAPS Spam (Logged by @staff)\n- Total Warnings: 1",
+    permission: "Moderate Members"
   },
   {
     name: "unban",
     description: "Unban a user from the server using their exact username.",
     usage: "|unban <username> [reason]",
     category: "moderation",
-    exampleOutput: "✅ User Unbanned\n**john_doe** has been successfully unbanned.\nReason: Recanted post / completed duration."
+    exampleOutput: "✅ User Unbanned\n**john_doe** has been successfully unbanned.\nReason: Recanted post / completed duration.",
+    permission: "Ban Members"
+  },
+  {
+    name: "mod-logs-toggle",
+    description: "Toggle on or off and set the designated logs channel to record all administrator actions securely.",
+    usage: "|mod-logs-toggle <#channel | off>",
+    category: "moderation",
+    exampleOutput: "🛡️ Mod Logs toggled on! All administrative events will now stream to #mod-logs.",
+    permission: "Manage Server"
   },
 
   // Server Setup
@@ -108,164 +117,460 @@ const COMMANDS: Command[] = [
     description: "Deploy categorized channel structures, categories, and core roles automatically using a predefined template.",
     usage: "|setup <template>",
     category: "setup",
-    exampleOutput: "✓ Setup complete! Deployed: 📁 Welcome, 📁 Chats, 📁 Staff categories, 7 channels, and Admin/Mod/Member roles."
+    exampleOutput: "✓ Setup complete! Deployed: 📁 Welcome, 📁 Chats, 📁 Staff categories, 7 channels, and Admin/Mod/Member roles.",
+    permission: "Manage Server"
   },
   {
     name: "clear-channels",
     description: "🗑️ total wipeout: Purges all existing channels and categories from the server. (Manage Server permissions required)",
     usage: "|clear-channels",
     category: "setup",
-    exampleOutput: "🗑️ Total channels and categories wiped successfully."
+    exampleOutput: "🗑️ Total channels and categories wiped successfully.",
+    permission: "Manage Server"
   },
   {
     name: "cute",
     description: "Configure beautiful fancy font layouts (wide, small-caps, bubbles) for your setup templates.",
     usage: "|cute <wide | small-caps | bubbles | off>",
     category: "setup",
-    exampleOutput: "✨ Cute Mode Configured! Setup layouts will now build using the Small Caps Layout (sᴍᴀʟʟ ᴄᴀᴘs)! (´｀)♡"
+    exampleOutput: "✨ Cute Mode Configured! Setup layouts will now build using the Small Caps Layout (sᴍᴀʟʟ ᴄᴀᴘs)! (´｀)♡",
+    permission: "Manage Server"
   },
   {
     name: "welcome",
     description: "Configure the welcome and leave announcements channel and toggles with custom variables: {user}, {server}, {memberCount}.",
     usage: "|welcome <#channel> <true/false>",
     category: "setup",
-    exampleOutput: "✓ Welcome system enabled in #welcome with custom joins & leaves."
-  },
-  {
-    name: "role user",
-    description: "Add or remove a role from a specific member instantly.",
-    usage: "|role user <@user> <@role>",
-    category: "setup",
-    exampleOutput: "✓ Toggled role [Prestige Chatter] for member @active-user"
-  },
-  {
-    name: "role remove",
-    description: "Remove a specific role from a designated member.",
-    usage: "|role remove <@user> <@role>",
-    category: "setup",
-    exampleOutput: "✓ Removed role [Staff Mod] from member @retired-mod"
-  },
-  {
-    name: "role create",
-    description: "Create a new role on the server with optional hex color configuration.",
-    usage: "|role create <name> [hex_color]",
-    category: "setup",
-    exampleOutput: "✓ Created new role [Vip Member] with color #ff3b5c"
-  },
-  {
-    name: "role delete",
-    description: "Delete an existing role from the server configuration.",
-    usage: "|role delete <@role>",
-    category: "setup",
-    exampleOutput: "✓ Deleted role [Temp Role] from the server guild"
-  },
-  {
-    name: "role everyone",
-    description: "Toggle a role for all non-bot members in the server.",
-    usage: "|role everyone <@role>",
-    category: "setup",
-    exampleOutput: "✓ Toggling role [General Member] for all 450 server users..."
-  },
-  {
-    name: "role bots",
-    description: "Toggle a specific role for all bots present in the server.",
-    usage: "|role bots <@role>",
-    category: "setup",
-    exampleOutput: "✓ Role toggled successfully for all server bots."
-  },
-  {
-    name: "role humans",
-    description: "Toggle a specific role for all human members in the server.",
-    usage: "|role humans <@role>",
-    category: "setup",
-    exampleOutput: "✓ Role toggled successfully for all human members."
-  },
-  {
-    name: "role info",
-    description: "Retrieve comprehensive configuration and permission info of a role.",
-    usage: "|role info <@role>",
-    category: "setup",
-    exampleOutput: "Role details for [Moderator]:\n- Color: #ff3b5c\n- Hoisted: Yes\n- Members: 5"
-  },
-  {
-    name: "role list",
-    description: "List all existing server roles and their respective member counts.",
-    usage: "|role list",
-    category: "setup",
-    exampleOutput: "Roles List:\n- Admin (2 members)\n- Moderator (5 members)"
-  },
-  {
-    name: "role color",
-    description: "Modify the hex color configuration of an existing role.",
-    usage: "|role color <@role> <hex>",
-    category: "setup",
-    exampleOutput: "✓ Set color of role [Vip Member] to #e2f9b8"
-  },
-  {
-    name: "role rename",
-    description: "Rename an existing role in the server hierarchy.",
-    usage: "|role rename <@role> <new_name>",
-    category: "setup",
-    exampleOutput: "✓ Renamed role [Old Helper] to [Staff helper]"
-  },
-  {
-    name: "role hoist",
-    description: "Toggle whether a role is shown separately in the member list.",
-    usage: "|role hoist <@role>",
-    category: "setup",
-    exampleOutput: "✓ Toggled hoist settings for role [Staff Mod]"
-  },
-  {
-    name: "role mentionable",
-    description: "Toggle whether a role can be mentioned by anyone in channels.",
-    usage: "|role mentionable <@role>",
-    category: "setup",
-    exampleOutput: "✓ Toggled mentionable settings for role [Staff Mod]"
+    exampleOutput: "✓ Welcome system enabled in #welcome with custom joins & leaves.",
+    permission: "Manage Server"
   },
   {
     name: "setup-audit",
     description: "Configure or disable the server audit log channel for tracking server updates and invites.",
     usage: "|setup-audit <#channel | disable>",
     category: "setup",
-    exampleOutput: "✅ Audit logs have been successfully enabled in #audit-log!"
+    exampleOutput: "✅ Audit logs have been successfully enabled in #audit-log!",
+    permission: "Manage Server"
   },
   {
     name: "fun-module",
     description: "Toggle status configurations for the interactive fun systems (games, quizzes, trivia) on or off.",
     usage: "|fun-module",
     category: "setup",
-    exampleOutput: "🎮 Fun Module Configurations: Server Status is now set to ENABLED."
+    exampleOutput: "🎮 Fun Module Configurations: Server Status is now set to ENABLED.",
+    permission: "Manage Server"
+  },
+
+  // Roles System
+  {
+    name: "clearroles",
+    description: "Clean up and delete all unused roles to prune server list safely.",
+    usage: "|clearroles",
+    category: "roles",
+    exampleOutput: "🧹 Pruned 4 empty roles from server hierarchy.",
+    permission: "Manage Server"
   },
   {
     name: "reactionroles create",
     description: "Deploy a brand-new self-assignable interactive role button or selection dropdown panel inside a designated channel.",
     usage: "|reactionroles create <#channel> <@roles...>",
-    category: "setup",
-    exampleOutput: "✅ Successfully deployed role layout configuration inside #roles! (Message ID: `1224597022`)"
+    category: "roles",
+    exampleOutput: "✅ Successfully deployed role layout configuration inside #roles! (Message ID: `1224597022`)",
+    permission: "Manage Roles"
   },
   {
     name: "reactionroles edit",
     description: "Modify options, custom emojis, button colors, or role mappings in an existing role panel.",
     usage: "|reactionroles edit <message_id> <options>",
-    category: "setup",
-    exampleOutput: "✏️ Panel settings updated. Self-assignable button layouts rebuilt successfully."
+    category: "roles",
+    exampleOutput: "✏️ Panel settings updated. Self-assignable button layouts rebuilt successfully.",
+    permission: "Manage Roles"
   },
   {
     name: "reactionroles delete-panel",
     description: "Delete an existing active self-assignable role panel from a channel and clean up mappings.",
     usage: "|reactionroles delete-panel <message_id>",
-    category: "setup",
-    exampleOutput: "🗑️ Deleted reaction role panel associated with Message ID `1224597022`."
+    category: "roles",
+    exampleOutput: "🗑️ Deleted reaction role panel associated with Message ID `1224597022`.",
+    permission: "Manage Roles"
   },
   {
     name: "reactionroles test",
     description: "Dispatch a temporary sandbox configuration of your role selection panel to verify layouts before live deployment.",
     usage: "|reactionroles test <#channel>",
-    category: "setup",
-    exampleOutput: "🧪 Dispatching temporary test panel inside #test-roles."
+    category: "roles",
+    exampleOutput: "🧪 Dispatching temporary test panel inside #test-roles.",
+    permission: "Manage Roles"
+  },
+  {
+    name: "autorole all",
+    description: "Automatically grant a specific role to all users upon joining.",
+    usage: "|autorole all <@role>",
+    category: "roles",
+    exampleOutput: "✓ Set automatic join role for everyone to @Verified Member",
+    permission: "Manage Roles"
+  },
+  {
+    name: "autorole humans",
+    description: "Automatically grant a specific role to human members upon joining.",
+    usage: "|autorole humans <@role>",
+    category: "roles",
+    exampleOutput: "✓ Set automatic join role for humans to @Unlocks",
+    permission: "Manage Roles"
+  },
+  {
+    name: "autorole bots",
+    description: "Automatically grant a specific role to newly authorized bot clients.",
+    usage: "|autorole bots <@role>",
+    category: "roles",
+    exampleOutput: "✓ Set automatic join role for bots to @Assigned Bot",
+    permission: "Manage Roles"
+  },
+  {
+    name: "autorole ongoing",
+    description: "Inspect active automatic join-role configurations.",
+    usage: "|autorole ongoing",
+    category: "roles",
+    exampleOutput: "Active Join-Roles:\n- Humans: @Unlocks\n- Bots: @Assigned Bot",
+    permission: "Manage Roles"
+  },
+  {
+    name: "autorole delete",
+    description: "Wipe all automatic join-role mappings from server registers.",
+    usage: "|autorole delete",
+    category: "roles",
+    exampleOutput: "✓ Deleted all automatic join-role configurations.",
+    permission: "Manage Roles"
+  },
+  {
+    name: "role user",
+    description: "Add or remove a role from a specific member instantly.",
+    usage: "|role user <@user> <@role>",
+    category: "roles",
+    exampleOutput: "✓ Toggled role [Prestige Chatter] for member @active-user",
+    permission: "Manage Roles"
+  },
+  {
+    name: "role remove",
+    description: "Remove a specific role from a designated member.",
+    usage: "|role remove <@user> <@role>",
+    category: "roles",
+    exampleOutput: "✓ Removed role [Staff Mod] from member @retired-mod",
+    permission: "Manage Roles"
+  },
+  {
+    name: "role create",
+    description: "Create a new role on the server with optional hex color configuration.",
+    usage: "|role create <name> [hex_color]",
+    category: "roles",
+    exampleOutput: "✓ Created new role [Vip Member] with color #ff3b5c",
+    permission: "Manage Roles"
+  },
+  {
+    name: "role delete",
+    description: "Delete an existing role from the server configuration.",
+    usage: "|role delete <@role>",
+    category: "roles",
+    exampleOutput: "✓ Deleted role [Temp Role] from the server guild",
+    permission: "Manage Roles"
+  },
+  {
+    name: "role everyone",
+    description: "Toggle a role for all non-bot members in the server.",
+    usage: "|role everyone <@role>",
+    category: "roles",
+    exampleOutput: "✓ Toggling role [General Member] for all 450 server users...",
+    permission: "Manage Roles"
+  },
+  {
+    name: "role bots",
+    description: "Toggle a specific role for all bots present in the server.",
+    usage: "|role bots <@role>",
+    category: "roles",
+    exampleOutput: "✓ Role toggled successfully for all server bots.",
+    permission: "Manage Roles"
+  },
+  {
+    name: "role humans",
+    description: "Toggle a specific role for all human members in the server.",
+    usage: "|role humans <@role>",
+    category: "roles",
+    exampleOutput: "✓ Role toggled successfully for all human members.",
+    permission: "Manage Roles"
+  },
+  {
+    name: "role info",
+    description: "Retrieve comprehensive configuration and permission info of a role.",
+    usage: "|role info <@role>",
+    category: "roles",
+    exampleOutput: "Role details for [Moderator]:\n- Color: #ff3b5c\n- Hoisted: Yes\n- Members: 5",
+    permission: "Manage Roles"
+  },
+  {
+    name: "role list",
+    description: "List all existing server roles and their respective member counts.",
+    usage: "|role list",
+    category: "roles",
+    exampleOutput: "Roles List:\n- Admin (2 members)\n- Moderator (5 members)",
+    permission: "Manage Roles"
+  },
+  {
+    name: "role color",
+    description: "Modify the hex color configuration of an existing role.",
+    usage: "|role color <@role> <hex>",
+    category: "roles",
+    exampleOutput: "✓ Set color of role [Vip Member] to #e2f9b8",
+    permission: "Manage Roles"
+  },
+  {
+    name: "role rename",
+    description: "Rename an existing role in the server hierarchy.",
+    usage: "|role rename <@role> <new_name>",
+    category: "roles",
+    exampleOutput: "✓ Renamed role [Old Helper] to [Staff helper]",
+    permission: "Manage Roles"
+  },
+  {
+    name: "role hoist",
+    description: "Toggle whether a role is shown separately in the member list.",
+    usage: "|role hoist <@role>",
+    category: "roles",
+    exampleOutput: "✓ Toggled hoist settings for role [Staff Mod]",
+    permission: "Manage Roles"
+  },
+  {
+    name: "role mentionable",
+    description: "Toggle whether a role can be mentioned by anyone in channels.",
+    usage: "|role mentionable <@role>",
+    category: "roles",
+    exampleOutput: "✓ Toggled mentionable settings for role [Staff Mod]",
+    permission: "Manage Roles"
   },
 
-  // Ticketing Desk
+  // Auto-Moderation (Automod & Autoresponder)
+  {
+    name: "automodrule setup",
+    description: "Configure automatic safety checks, anti-spam thresholds, and word filters inside the server.",
+    usage: "|automodrule setup",
+    category: "automod",
+    exampleOutput: "✓ Setup active. Safety checks and anti-spam protocols deployed.",
+    permission: "Manage Server"
+  },
+  {
+    name: "automodrule edit",
+    description: "Modify active anti-spam thresholds, white-lists, or word triggers.",
+    usage: "|automodrule edit <setting> <value>",
+    category: "automod",
+    exampleOutput: "✓ Updated link-spam limits to: BLOCK_ALL.",
+    permission: "Manage Server"
+  },
+  {
+    name: "automodrule delete",
+    description: "Prune and delete all active automod parameters completely.",
+    usage: "|automodrule delete",
+    category: "automod",
+    exampleOutput: "✓ All custom automod profiles have been deleted.",
+    permission: "Manage Server"
+  },
+  {
+    name: "autoresponder setup",
+    description: "Launch interactive wizard to build custom command responses and autoresponders.",
+    usage: "|autoresponder setup",
+    category: "automod",
+    exampleOutput: "✓ Responder console initialized. Ready to record triggers.",
+    permission: "Manage Server"
+  },
+  {
+    name: "autoresponder add",
+    description: "Add a rapid static trigger text auto-response card.",
+    usage: "|autoresponder add <trigger> <response>",
+    category: "automod",
+    exampleOutput: "✓ Trigger: '!ip' -> Response: 'mc.gamerhub.net'. Responder registered.",
+    permission: "Manage Server"
+  },
+  {
+    name: "autoresponder remove",
+    description: "Remove an auto-response trigger by its serial ID.",
+    usage: "|autoresponder remove <id>",
+    category: "automod",
+    exampleOutput: "✓ Removed auto-response profile (ID: `AR-0428`).",
+    permission: "Manage Server"
+  },
+  {
+    name: "autoresponder list",
+    description: "List all active custom autoresponder triggers.",
+    usage: "|autoresponder list",
+    category: "automod",
+    exampleOutput: "Active Responders:\n- [AR-0428] !ip: mc.gamerhub.net\n- [AR-0429] !rules: Check rules channel",
+    permission: "Manage Server"
+  },
+  {
+    name: "autoresponder info",
+    description: "Inspect details, analytics, and stats for a specific autoresponder card.",
+    usage: "|autoresponder info <id>",
+    category: "automod",
+    exampleOutput: "Responder Card Details [AR-0428]:\n- Trigger: !ip\n- Response: mc.gamerhub.net\n- Hits: 124 times",
+    permission: "Manage Server"
+  },
+  {
+    name: "autoresponder toggle",
+    description: "Toggle a specific auto-response trigger offline/online.",
+    usage: "|autoresponder toggle <id>",
+    category: "automod",
+    exampleOutput: "✓ Toggled status for [AR-0428] !ip. Current status: DISABLED.",
+    permission: "Manage Server"
+  },
+  {
+    name: "autoresponder test",
+    description: "Simulate a responder trigger response to verify tags and formats.",
+    usage: "|autoresponder test <id>",
+    category: "automod",
+    exampleOutput: "🧪 Test output for [AR-0428]: 'Welcome to the server! we have 124 members.'",
+    permission: "Manage Server"
+  },
+  {
+    name: "autoresponder enable",
+    description: "Globally activate the server's autoresponder module.",
+    usage: "|autoresponder enable",
+    category: "automod",
+    exampleOutput: "✓ Autoresponder engine is now ONLINE.",
+    permission: "Manage Server"
+  },
+  {
+    name: "autoresponder disable",
+    description: "Globally suspend all custom autoresponders.",
+    usage: "|autoresponder disable",
+    category: "automod",
+    exampleOutput: "✓ Autoresponder engine is now SUSPENDED.",
+    permission: "Manage Server"
+  },
+
+  // Verification System
+  {
+    name: "verification setup",
+    description: "Launch interactive gatekeeper onboarding / verification system wizard.",
+    usage: "|verification setup",
+    category: "verification",
+    exampleOutput: "✓ Setup active. Onboarding verification card generated.",
+    permission: "Administrator"
+  },
+  {
+    name: "verification edit",
+    description: "Modify current verification requirements, logs, or verification roles.",
+    usage: "|verification edit <setting> <value>",
+    category: "verification",
+    exampleOutput: "✓ Verification target role adjusted to: @Verified Member.",
+    permission: "Administrator"
+  },
+  {
+    name: "verification delete",
+    description: "Delete verification gatekeepers and interactive panels cleanly.",
+    usage: "|verification delete",
+    category: "verification",
+    exampleOutput: "✓ Verification system purged. Mappings deleted.",
+    permission: "Administrator"
+  },
+  {
+    name: "verification disable",
+    description: "Turn off verification check protocols globally.",
+    usage: "|verification disable",
+    category: "verification",
+    exampleOutput: "✓ Onboarding verification layer is now OFFLINE.",
+    permission: "Administrator"
+  },
+
+  // On-Demand Voice (Selfvoice)
+  {
+    name: "selfvoice create",
+    description: "Establish a customized temporary on-demand voice room instantly.",
+    usage: "|selfvoice create [name] [limit]",
+    category: "voice",
+    exampleOutput: "🔊 Temp room generated! Enjoy your private lounge."
+  },
+  {
+    name: "selfvoice setup",
+    description: "Establish the Join-to-Create voice generator interface.",
+    usage: "|selfvoice setup",
+    category: "voice",
+    exampleOutput: "✓ Join-to-Create voice node spawned successfully in #lobby.",
+    permission: "Manage Server"
+  },
+  {
+    name: "selfvoice set",
+    description: "Modify temporary channel name templates, limits, bitrates, or settings.",
+    usage: "|selfvoice set <setting> <value>",
+    category: "voice",
+    exampleOutput: "✓ Adjusted default name template: '🎮 {user}'s lobby'.",
+    permission: "Manage Server"
+  },
+  {
+    name: "selfvoice config",
+    description: "View current configurations for on-demand temporary voice rooms.",
+    usage: "|selfvoice config",
+    category: "voice",
+    exampleOutput: "Selfvoice Settings:\n- Node: #Join-To-Create\n- Default Limit: 5 users\n- Bitrate: 64kbps",
+    permission: "Manage Server"
+  },
+  {
+    name: "selfvoice panel",
+    description: "Deploy the interactive owner controls panel for temporary room managers.",
+    usage: "|selfvoice panel",
+    category: "voice",
+    exampleOutput: "✓ Temporary Voice Controls panel dispatched to current channel.",
+    permission: "Manage Server"
+  },
+  {
+    name: "selfvoice enable",
+    description: "Globally activate the temporary voice room system.",
+    usage: "|selfvoice enable",
+    category: "voice",
+    exampleOutput: "✓ On-demand voice system is now ONLINE.",
+    permission: "Manage Server"
+  },
+  {
+    name: "selfvoice disable",
+    description: "Globally disable temporary voice creations.",
+    usage: "|selfvoice disable",
+    category: "voice",
+    exampleOutput: "✓ On-demand voice system is now OFFLINE.",
+    permission: "Manage Server"
+  },
+
+  // Analytics System
+  {
+    name: "analytics setup",
+    description: "Deploy real-time updating voice channels tracking guild member metrics.",
+    usage: "|analytics setup",
+    category: "analytics",
+    exampleOutput: "✓ Active tracking nodes deployed: Total Members, Bots, and Active Role counts.",
+    permission: "Manage Server"
+  },
+  {
+    name: "analytics edit",
+    description: "Configure metric targets, names, or refresh rates.",
+    usage: "|analytics edit <setting> <value>",
+    category: "analytics",
+    exampleOutput: "✓ Set counter update interval to: 10 minutes.",
+    permission: "Manage Server"
+  },
+  {
+    name: "analytics update",
+    description: "Force immediate on-demand synchronization of statistics counter channels.",
+    usage: "|analytics update",
+    category: "analytics",
+    exampleOutput: "✓ Forced re-indexing. Live counter channels updated immediately.",
+    permission: "Manage Server"
+  },
+  {
+    name: "analytics delete",
+    description: "Cleanly delete analytics counter channels and delete tracking schedules.",
+    usage: "|analytics delete",
+    category: "analytics",
+    exampleOutput: "✓ Wiped statistics counter channels successfully.",
+    permission: "Manage Server"
+  },
+
+  // Support Ticketing
   {
     name: "ticket create",
     description: "Establish a new private support ticket channel for staff inquiries.",
@@ -287,14 +592,16 @@ const COMMANDS: Command[] = [
     description: "Enable the passive chat leveling XP accrual system in the server.",
     usage: "|leveling enable [#channel]",
     category: "leveling",
-    exampleOutput: "⚙️ Leveling Enabled. Announcements will post in #levels-chat."
+    exampleOutput: "⚙️ Leveling Enabled. Announcements will post in #levels-chat.",
+    permission: "Manage Server"
   },
   {
     name: "leveling disable",
     description: "Disable the passive chat leveling XP accrual system.",
     usage: "|leveling disable",
     category: "leveling",
-    exampleOutput: "⚙️ Leveling Disabled. Passive XP gains are now paused."
+    exampleOutput: "⚙️ Leveling Disabled. Passive XP gains are now paused.",
+    permission: "Manage Server"
   },
   {
     name: "rank",
@@ -311,29 +618,13 @@ const COMMANDS: Command[] = [
     exampleOutput: "🏆 TOP CHAT ENGAGEMENT LEADERBOARD:\n1. @alpha (Level 34)\n2. @beta (Level 31)\n3. @gamma (Level 29)"
   },
 
-  // General
+  // Interactive Fun
   {
-    name: "purpose",
-    description: "Learn about the bot's features, creator details, and view its profile avatar.",
-    usage: "|purpose",
-    category: "general",
-    exampleOutput: "🤖 About Me: I'm a Discord bot designed to organize and manage your server! Features: templates, roles, moderation, levels, and cute modes."
-  },
-  {
-    name: "help",
-    description: "Display the interactive helper manual of all commands and features.",
-    usage: "|help",
-    category: "general",
-    exampleOutput: "ServerMiser Manual v2.4\n- Type |help to show this command list!"
-  },
-
-  // Fun Module
-  {
-    name: "fun-menu",
-    description: "Explore what the Fun Module is and view its available commands and interactive sections.",
-    usage: "|fun-menu",
+    name: "8ball",
+    description: "Presents a random mystical prophetic answer to your yes/no question.",
+    usage: "|8ball <question>",
     category: "fun",
-    exampleOutput: "🎯 Interactive Fun Module\nWelcome to the server's entertainment hub! Mini-games, trivia, photo feeds, and community interactions."
+    exampleOutput: "🎱 Question: Will I win this match?\nAnswer: Signs point to yes!"
   },
   {
     name: "capital-quiz",
@@ -427,9 +718,9 @@ const COMMANDS: Command[] = [
     exampleOutput: "😂 [Meme Image From Reddit]\n👍 4200 Upvotes | Subreddit: r/dankmemes"
   },
   {
-    name: "flavor",
+    name: "flavour",
     description: "Reveals your custom personality ice cream flavor right now.",
-    usage: "|flavor",
+    usage: "|flavour",
     category: "fun",
     exampleOutput: "🍦 Your personality flavor right now is: Dark Chocolate Spark!"
   },
@@ -468,6 +759,44 @@ const COMMANDS: Command[] = [
     category: "fun",
     exampleOutput: "💕 Compatibility calculation between Alice and Bob: 84% Love match!"
   },
+  {
+    name: "fun-menu",
+    description: "Explore what the Fun Module is and view its available commands and interactive sections.",
+    usage: "|fun-menu",
+    category: "fun",
+    exampleOutput: "🎯 Interactive Fun Module\nWelcome to the server's entertainment hub! Mini-games, trivia, photo feeds, and community interactions."
+  },
+
+  // Utility & Core
+  {
+    name: "purpose",
+    description: "Learn about the bot's features, creator details, and view its profile avatar.",
+    usage: "|purpose",
+    category: "utility",
+    exampleOutput: "🤖 About Me: I'm a Discord bot designed to organize and manage your server! Features: templates, roles, moderation, levels, and cute modes."
+  },
+  {
+    name: "help",
+    description: "Display the interactive helper manual of all commands and features.",
+    usage: "|help",
+    category: "utility",
+    exampleOutput: "ServerMiser Manual v2.4\n- Type |help to show this command list!"
+  },
+  {
+    name: "capabilities",
+    description: "Run diagnostic overview of all deployed system integrations and modules.",
+    usage: "|capabilities",
+    category: "utility",
+    exampleOutput: "🔍 Active Capabilities:\n- Setup Engine: Online\n- Automod Filters: Active\n- Leveling: 100% Operational"
+  },
+  {
+    name: "mydata",
+    description: "Direct server telemetry extraction suite and compliance downloads. (Developer Key Required)",
+    usage: "|mydata [collection]",
+    category: "utility",
+    exampleOutput: "📦 Raw Data Extract compiled. Exported 3 collections (Infractions, Users, SystemLogs).",
+    permission: "Bot Owner"
+  }
 ];
 
 // FAQ type definition
@@ -645,139 +974,532 @@ const SETUP_TEMPLATES: TemplateHierarchy[] = [
     name: "COMMUNITY HUB",
     emoji: "🌐",
     description: "Ideal for general hangouts, gaming groups, and multi-interest servers.",
-    roles: ["@Admin", "@Moderator", "@Active Chatter", "@General Member", "@Verified Guest"],
+    roles: ["@System Administrator", "@Server Moderator", "@Trial Staff", "@Premium Server Booster", "@Verified Member"],
     categories: [
       {
-        name: "📌 INFORMATION (READ-ONLY)",
+        name: "📢 IMPORTANT (READ-ONLY)",
         channels: [
-          { name: "rules-and-faq", type: "text" },
-          { name: "announcements", type: "text" },
-          { name: "roles-selection", type: "text" }
+          { name: "welcome-gate", type: "text" },
+          { name: "server-rules", type: "text" },
+          { name: "announcements", type: "text" }
         ]
       },
       {
-        name: "💬 PUBLIC CHATS",
+        name: "🎀 GENERAL",
         channels: [
-          { name: "general-chat", type: "text" },
-          { name: "memes-and-media", type: "text" },
-          { name: "bot-playground", type: "text" },
-          { name: "introductions", type: "text" }
+          { name: "global-chat", type: "text" },
+          { name: "media-vault", type: "text" },
+          { name: "introductions-lobby", type: "text" },
+          { name: "server-events", type: "text" },
+          { name: "meme-dump", type: "text" }
+        ]
+      },
+      {
+        name: "🤖 SYSTEMS",
+        channels: [
+          { name: "level-tracking", type: "text" },
+          { name: "bot-commands", type: "text" }
         ]
       },
       {
         name: "🔊 VOICE LOUNGES",
         channels: [
-          { name: "General Lounge (Voice)", type: "voice" },
-          { name: "Gaming Duo 1 (Voice)", type: "voice" },
-          { name: "Gaming Duo 2 (Voice)", type: "voice" },
-          { name: "Music Room (Voice)", type: "voice" }
+          { name: "Main Public Lounge", type: "voice" },
+          { name: "Quiet Study Node", type: "voice" },
+          { name: "Casual Chat 1", type: "voice" }
         ]
       },
       {
         name: "🔒 STAFF ZONE",
         channels: [
-          { name: "staff-announcements", type: "text", roles: ["@Admin", "@Moderator"] },
-          { name: "moderator-chat", type: "text", roles: ["@Admin", "@Moderator"] },
-          { name: "action-logs", type: "text", roles: ["@Admin"] }
+          { name: "audit-logs", type: "text", roles: ["@System Administrator", "@Server Moderator"] },
+          { name: "mod-logs", type: "text", roles: ["@System Administrator", "@Server Moderator"] },
+          { name: "staff-headquarters", type: "text", roles: ["@System Administrator", "@Server Moderator"] }
         ]
       }
     ]
   },
   {
     id: "gaming",
-    name: "GAMING CLAN",
+    name: "GAMING SQUAD",
     emoji: "🎮",
-    description: "Configured for guild leagues, competitive squads, and twitch streams.",
-    roles: ["@Staff", "@Team Captain", "@Esports Athlete", "@Clan Member", "@Recruits"],
+    description: "Tailored for guild leagues, tournament brackets, and streaming networks.",
+    roles: ["@System Administrator", "@Server Moderator", "@Trial Staff", "@Premium Server Booster", "@Verified Member"],
     categories: [
       {
-        name: "📢 COMMAND DECK",
+        name: "📢 IMPORTANT (READ-ONLY)",
         channels: [
-          { name: "welcome-and-rules", type: "text" },
-          { name: "squad-news", type: "text" },
-          { name: "match-schedules", type: "text" }
+          { name: "welcome-gate", type: "text" },
+          { name: "server-rules", type: "text" },
+          { name: "announcements", type: "text" }
         ]
       },
       {
-        name: "⚔️ TACTICAL BASE",
+        name: "🎀 GENERAL",
         channels: [
-          { name: "tactical-discussion", type: "text" },
-          { name: "lfg-looking-for-group", type: "text" },
-          { name: "clips-highlights", type: "text" }
+          { name: "global-chat", type: "text" },
+          { name: "media-vault", type: "text" },
+          { name: "tournament-hub", type: "text" },
+          { name: "brackets-standings", type: "text" },
+          { name: "meta-theorycrafting", type: "text" }
         ]
       },
       {
-        name: "🔊 COMMS CHANNELS",
+        name: "🤖 SYSTEMS",
         channels: [
-          { name: "Squad Alpha (Voice)", type: "voice" },
-          { name: "Squad Bravo (Voice)", type: "voice" },
-          { name: "Match Casters (Voice)", type: "voice" },
-          { name: "Quiet Zone (Voice)", type: "voice" }
+          { name: "level-tracking", type: "text" },
+          { name: "bot-commands", type: "text" }
         ]
       },
       {
-        name: "📝 RECRUITMENT DESK",
+        name: "🔊 VOICE LOUNGES",
         channels: [
-          { name: "apply-to-clan", type: "text" },
-          { name: "applicant-reviews", type: "text", roles: ["@Staff", "@Team Captain"] }
+          { name: "Squad Room Alpha", type: "voice" },
+          { name: "Squad Room Beta", type: "voice" }
+        ]
+      },
+      {
+        name: "🔒 STAFF ZONE",
+        channels: [
+          { name: "audit-logs", type: "text", roles: ["@System Administrator", "@Server Moderator"] },
+          { name: "mod-logs", type: "text", roles: ["@System Administrator", "@Server Moderator"] },
+          { name: "staff-headquarters", type: "text", roles: ["@System Administrator", "@Server Moderator"] }
         ]
       }
     ]
   },
   {
     id: "study",
-    name: "STUDY / ACADEMIA",
+    name: "STUDY HUB",
     emoji: "📚",
-    description: "Structured for high school, college classes, bootcamps, or research cohorts.",
-    roles: ["@Professor/Host", "@Teaching Assistant", "@Student", "@Study Buddy", "@Study Bot"],
+    description: "Configured for student groups, classes, bootcamps, or research guilds.",
+    roles: ["@System Administrator", "@Server Moderator", "@Trial Staff", "@Premium Server Booster", "@Verified Member"],
     categories: [
       {
-        name: "🏫 COURSE BULLETIN",
+        name: "📢 IMPORTANT (READ-ONLY)",
         channels: [
-          { name: "syllabus-and-info", type: "text" },
-          { name: "lecture-recordings", type: "text" },
-          { name: "homework-assignments", type: "text" }
+          { name: "welcome-gate", type: "text" },
+          { name: "server-rules", type: "text" },
+          { name: "announcements", type: "text" }
         ]
       },
       {
-        name: "🧠 COLLABORATION SPACE",
+        name: "🎀 GENERAL",
         channels: [
-          { name: "general-questions", type: "text" },
-          { name: "resources-and-links", type: "text" },
-          { name: "peer-review-vault", type: "text" }
+          { name: "global-chat", type: "text" },
+          { name: "media-vault", type: "text" },
+          { name: "study-materials", type: "text" },
+          { name: "research-archives", type: "text" },
+          { name: "peer-tutoring", type: "text" }
         ]
       },
       {
-        name: "🔊 AUDIO HALLS",
+        name: "🤖 SYSTEMS",
         channels: [
-          { name: "Lecture Hall (Muted Voice)", type: "voice" },
-          { name: "Study Room A (Voice)", type: "voice" },
-          { name: "Study Room B (Voice)", type: "voice" },
-          { name: "TA Office Hours (Voice)", type: "voice" }
+          { name: "level-tracking", type: "text" },
+          { name: "bot-commands", type: "text" }
+        ]
+      },
+      {
+        name: "🔊 VOICE LOUNGES",
+        channels: [
+          { name: "Silent Library Room", type: "voice" },
+          { name: "Group Work Desk", type: "voice" }
+        ]
+      },
+      {
+        name: "🔒 STAFF ZONE",
+        channels: [
+          { name: "audit-logs", type: "text", roles: ["@System Administrator", "@Server Moderator"] },
+          { name: "mod-logs", type: "text", roles: ["@System Administrator", "@Server Moderator"] },
+          { name: "staff-headquarters", type: "text", roles: ["@System Administrator", "@Server Moderator"] }
         ]
       }
     ]
   },
   {
-    id: "minimal",
-    name: "MINIMALIST",
-    emoji: "⚡",
-    description: "Super light-weight, highly-compressed, clutter-free community starter layout.",
-    roles: ["@Server Admin", "@Verified Member"],
+    id: "business",
+    name: "BUSINESS CO",
+    emoji: "💼",
+    description: "Sleek organizational layout for commercial products and corporations.",
+    roles: ["@System Administrator", "@Server Moderator", "@Trial Staff", "@Premium Server Booster", "@Verified Member"],
     categories: [
       {
-        name: "💬 CONVERSATION",
+        name: "📢 IMPORTANT (READ-ONLY)",
         channels: [
-          { name: "announcements", type: "text" },
-          { name: "chat-lobby", type: "text" },
-          { name: "media-vault", type: "text" }
+          { name: "welcome-gate", type: "text" },
+          { name: "server-rules", type: "text" },
+          { name: "announcements", type: "text" }
         ]
       },
       {
-        name: "🔊 VOICE",
+        name: "🎀 GENERAL",
         channels: [
-          { name: "Voice Main (Voice)", type: "voice" },
-          { name: "Voice Secondary (Voice)", type: "voice" }
+          { name: "global-chat", type: "text" },
+          { name: "media-vault", type: "text" },
+          { name: "corporate-meetings", type: "text" },
+          { name: "product-roadmap", type: "text" },
+          { name: "sprint-schedules", type: "text" }
+        ]
+      },
+      {
+        name: "🤖 SYSTEMS",
+        channels: [
+          { name: "level-tracking", type: "text" },
+          { name: "bot-commands", type: "text" }
+        ]
+      },
+      {
+        name: "🔊 VOICE LOUNGES",
+        channels: [
+          { name: "Boardroom Alpha Node", type: "voice" },
+          { name: "Project Team Sync", type: "voice" }
+        ]
+      },
+      {
+        name: "🔒 STAFF ZONE",
+        channels: [
+          { name: "audit-logs", type: "text", roles: ["@System Administrator", "@Server Moderator"] },
+          { name: "mod-logs", type: "text", roles: ["@System Administrator", "@Server Moderator"] },
+          { name: "staff-headquarters", type: "text", roles: ["@System Administrator", "@Server Moderator"] }
+        ]
+      }
+    ]
+  },
+  {
+    id: "creative",
+    name: "CREATIVE STUDIO",
+    emoji: "🎨",
+    description: "Optimized for art portfolios, critique ateliers, and gallery events.",
+    roles: ["@System Administrator", "@Server Moderator", "@Trial Staff", "@Premium Server Booster", "@Verified Member"],
+    categories: [
+      {
+        name: "📢 IMPORTANT (READ-ONLY)",
+        channels: [
+          { name: "welcome-gate", type: "text" },
+          { name: "server-rules", type: "text" },
+          { name: "announcements", type: "text" }
+        ]
+      },
+      {
+        name: "🎀 GENERAL",
+        channels: [
+          { name: "global-chat", type: "text" },
+          { name: "media-vault", type: "text" },
+          { name: "portfolio-showcase", type: "text" },
+          { name: "art-wip-critique", type: "text" },
+          { name: "open-commissions", type: "text" }
+        ]
+      },
+      {
+        name: "🤖 SYSTEMS",
+        channels: [
+          { name: "level-tracking", type: "text" },
+          { name: "bot-commands", type: "text" }
+        ]
+      },
+      {
+        name: "🔊 VOICE LOUNGES",
+        channels: [
+          { name: "Live Atelier Audio", type: "voice" },
+          { name: "Co-Working Studio", type: "voice" }
+        ]
+      },
+      {
+        name: "🔒 STAFF ZONE",
+        channels: [
+          { name: "audit-logs", type: "text", roles: ["@System Administrator", "@Server Moderator"] },
+          { name: "mod-logs", type: "text", roles: ["@System Administrator", "@Server Moderator"] },
+          { name: "staff-headquarters", type: "text", roles: ["@System Administrator", "@Server Moderator"] }
+        ]
+      }
+    ]
+  },
+  {
+    id: "development",
+    name: "DEV ENG FORGE",
+    emoji: "💻",
+    description: "Brutalist software development layout for git webhooks and code pairings.",
+    roles: ["@System Administrator", "@Server Moderator", "@Trial Staff", "@Premium Server Booster", "@Verified Member"],
+    categories: [
+      {
+        name: "📢 IMPORTANT (READ-ONLY)",
+        channels: [
+          { name: "welcome-gate", type: "text" },
+          { name: "server-rules", type: "text" },
+          { name: "announcements", type: "text" }
+        ]
+      },
+      {
+        name: "🎀 GENERAL",
+        channels: [
+          { name: "global-chat", type: "text" },
+          { name: "media-vault", type: "text" },
+          { name: "production-changelogs", type: "text" },
+          { name: "git-webhook-feed", type: "text" },
+          { name: "api-specifications", type: "text" }
+        ]
+      },
+      {
+        name: "🤖 SYSTEMS",
+        channels: [
+          { name: "level-tracking", type: "text" },
+          { name: "bot-commands", type: "text" }
+        ]
+      },
+      {
+        name: "🔊 VOICE LOUNGES",
+        channels: [
+          { name: "Pair Coding Terminals", type: "voice" },
+          { name: "Standup Sync voice", type: "voice" }
+        ]
+      },
+      {
+        name: "🔒 STAFF ZONE",
+        channels: [
+          { name: "audit-logs", type: "text", roles: ["@System Administrator", "@Server Moderator"] },
+          { name: "mod-logs", type: "text", roles: ["@System Administrator", "@Server Moderator"] },
+          { name: "staff-headquarters", type: "text", roles: ["@System Administrator", "@Server Moderator"] }
+        ]
+      }
+    ]
+  },
+  {
+    id: "finance",
+    name: "FINTECH DESK",
+    emoji: "💵",
+    description: "Configured for on-chain telemetry, technical news feeds, and macro charts.",
+    roles: ["@System Administrator", "@Server Moderator", "@Trial Staff", "@Premium Server Booster", "@Verified Member"],
+    categories: [
+      {
+        name: "📢 IMPORTANT (READ-ONLY)",
+        channels: [
+          { name: "welcome-gate", type: "text" },
+          { name: "server-rules", type: "text" },
+          { name: "announcements", type: "text" }
+        ]
+      },
+      {
+        name: "🎀 GENERAL",
+        channels: [
+          { name: "global-chat", type: "text" },
+          { name: "media-vault", type: "text" },
+          { name: "macro-market-news", type: "text" },
+          { name: "on-chain-analytics", type: "text" },
+          { name: "technical-charts", type: "text" }
+        ]
+      },
+      {
+        name: "🤖 SYSTEMS",
+        channels: [
+          { name: "level-tracking", type: "text" },
+          { name: "bot-commands", type: "text" }
+        ]
+      },
+      {
+        name: "🔊 VOICE LOUNGES",
+        channels: [
+          { name: "Live Squawk Pit", type: "voice" },
+          { name: "Trading Desk Comms", type: "voice" }
+        ]
+      },
+      {
+        name: "🔒 STAFF ZONE",
+        channels: [
+          { name: "audit-logs", type: "text", roles: ["@System Administrator", "@Server Moderator"] },
+          { name: "mod-logs", type: "text", roles: ["@System Administrator", "@Server Moderator"] },
+          { name: "staff-headquarters", type: "text", roles: ["@System Administrator", "@Server Moderator"] }
+        ]
+      }
+    ]
+  },
+  {
+    id: "roleplay",
+    name: "ROLEPLAY WORLD",
+    emoji: "🎭",
+    description: "Immersive narrative structures with lorebooks and character profiles.",
+    roles: ["@System Administrator", "@Server Moderator", "@Trial Staff", "@Premium Server Booster", "@Verified Member"],
+    categories: [
+      {
+        name: "📢 IMPORTANT (READ-ONLY)",
+        channels: [
+          { name: "welcome-gate", type: "text" },
+          { name: "server-rules", type: "text" },
+          { name: "announcements", type: "text" }
+        ]
+      },
+      {
+        name: "🎀 GENERAL",
+        channels: [
+          { name: "global-chat", type: "text" },
+          { name: "media-vault", type: "text" },
+          { name: "world-lorebook", type: "text" },
+          { name: "character-compendium", type: "text" },
+          { name: "out-of-character", type: "text" }
+        ]
+      },
+      {
+        name: "🤖 SYSTEMS",
+        channels: [
+          { name: "level-tracking", type: "text" },
+          { name: "bot-commands", type: "text" }
+        ]
+      },
+      {
+        name: "🔊 VOICE LOUNGES",
+        channels: [
+          { name: "The Drifting Tavern", type: "voice" },
+          { name: "Campfire Chat voice", type: "voice" }
+        ]
+      },
+      {
+        name: "🔒 STAFF ZONE",
+        channels: [
+          { name: "audit-logs", type: "text", roles: ["@System Administrator", "@Server Moderator"] },
+          { name: "mod-logs", type: "text", roles: ["@System Administrator", "@Server Moderator"] },
+          { name: "staff-headquarters", type: "text", roles: ["@System Administrator", "@Server Moderator"] }
+        ]
+      }
+    ]
+  },
+  {
+    id: "minimalist",
+    name: "MINIMALIST STARTER",
+    emoji: "⚡",
+    description: "Clean slate layout focusing on conversation basics without category clutter.",
+    roles: ["@System Administrator", "@Server Moderator", "@Trial Staff", "@Premium Server Booster", "@Verified Member"],
+    categories: [
+      {
+        name: "📢 IMPORTANT (READ-ONLY)",
+        channels: [
+          { name: "welcome-gate", type: "text" },
+          { name: "server-rules", type: "text" },
+          { name: "announcements", type: "text" }
+        ]
+      },
+      {
+        name: "🎀 GENERAL",
+        channels: [
+          { name: "global-chat", type: "text" },
+          { name: "media-vault", type: "text" },
+          { name: "clean-slate", type: "text" }
+        ]
+      },
+      {
+        name: "🤖 SYSTEMS",
+        channels: [
+          { name: "level-tracking", type: "text" },
+          { name: "bot-commands", type: "text" }
+        ]
+      },
+      {
+        name: "🔊 VOICE LOUNGES",
+        channels: [
+          { name: "zen-focus-node", type: "voice" }
+        ]
+      },
+      {
+        name: "🔒 STAFF ZONE",
+        channels: [
+          { name: "audit-logs", type: "text", roles: ["@System Administrator", "@Server Moderator"] },
+          { name: "mod-logs", type: "text", roles: ["@System Administrator", "@Server Moderator"] },
+          { name: "staff-headquarters", type: "text", roles: ["@System Administrator", "@Server Moderator"] }
+        ]
+      }
+    ]
+  },
+  {
+    id: "history",
+    name: "HISTORY ARCHIVE",
+    emoji: "🏛️",
+    description: "Ideal for chronicling historical topics, museum exhibits, and archives.",
+    roles: ["@System Administrator", "@Server Moderator", "@Trial Staff", "@Premium Server Booster", "@Verified Member"],
+    categories: [
+      {
+        name: "📢 IMPORTANT (READ-ONLY)",
+        channels: [
+          { name: "welcome-gate", type: "text" },
+          { name: "server-rules", type: "text" },
+          { name: "announcements", type: "text" }
+        ]
+      },
+      {
+        name: "🎀 GENERAL",
+        channels: [
+          { name: "global-chat", type: "text" },
+          { name: "media-vault", type: "text" },
+          { name: "ancient-archives", type: "text" },
+          { name: "museum-exhibits", type: "text" },
+          { name: "chronicle-debates", type: "text" }
+        ]
+      },
+      {
+        name: "🤖 SYSTEMS",
+        channels: [
+          { name: "level-tracking", type: "text" },
+          { name: "bot-commands", type: "text" }
+        ]
+      },
+      {
+        name: "🔊 VOICE LOUNGES",
+        channels: [
+          { name: "Grand Lyceum Hall", type: "voice" }
+        ]
+      },
+      {
+        name: "🔒 STAFF ZONE",
+        channels: [
+          { name: "audit-logs", type: "text", roles: ["@System Administrator", "@Server Moderator"] },
+          { name: "mod-logs", type: "text", roles: ["@System Administrator", "@Server Moderator"] },
+          { name: "staff-headquarters", type: "text", roles: ["@System Administrator", "@Server Moderator"] }
+        ]
+      }
+    ]
+  },
+  {
+    id: "geography",
+    name: "GEOGRAPHY CORPS",
+    emoji: "🗺️",
+    description: "Optimized for cartography charts, geology, and expedition journals.",
+    roles: ["@System Administrator", "@Server Moderator", "@Trial Staff", "@Premium Server Booster", "@Verified Member"],
+    categories: [
+      {
+        name: "📢 IMPORTANT (READ-ONLY)",
+        channels: [
+          { name: "welcome-gate", type: "text" },
+          { name: "server-rules", type: "text" },
+          { name: "announcements", type: "text" }
+        ]
+      },
+      {
+        name: "🎀 GENERAL",
+        channels: [
+          { name: "global-chat", type: "text" },
+          { name: "media-vault", type: "text" },
+          { name: "atlas-cartography", type: "text" },
+          { name: "expedition-journals", type: "text" },
+          { name: "geology-seismic-info", type: "text" }
+        ]
+      },
+      {
+        name: "🤖 SYSTEMS",
+        channels: [
+          { name: "level-tracking", type: "text" },
+          { name: "bot-commands", type: "text" }
+        ]
+      },
+      {
+        name: "🔊 VOICE LOUNGES",
+        channels: [
+          { name: "Basecamp Comms Link", type: "voice" }
+        ]
+      },
+      {
+        name: "🔒 STAFF ZONE",
+        channels: [
+          { name: "audit-logs", type: "text", roles: ["@System Administrator", "@Server Moderator"] },
+          { name: "mod-logs", type: "text", roles: ["@System Administrator", "@Server Moderator"] },
+          { name: "staff-headquarters", type: "text", roles: ["@System Administrator", "@Server Moderator"] }
         ]
       }
     ]
@@ -1645,7 +2367,7 @@ export default function App() {
   const [authStep, setAuthStep] = useState<"form" | "loading" | "success">("form");
 
   // Command Center States
-  const [selectedCategory, setSelectedCategory] = useState<"all" | "moderation" | "setup" | "ticketing" | "leveling" | "general" | "fun">("all");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
 
   // Sandbox simulation states
@@ -3133,10 +3855,15 @@ export default function App() {
                   { id: "all", label: "📁 ALL MODULES", count: COMMANDS.length },
                   { id: "moderation", label: "🛡️ MODERATION", count: COMMANDS.filter(cmd => cmd.category === "moderation").length },
                   { id: "setup", label: "⚙️ SERVER SETUP", count: COMMANDS.filter(cmd => cmd.category === "setup").length },
+                  { id: "roles", label: "🎭 ROLES SYSTEM", count: COMMANDS.filter(cmd => cmd.category === "roles").length },
+                  { id: "automod", label: "🤖 AUTO-MOD", count: COMMANDS.filter(cmd => cmd.category === "automod").length },
+                  { id: "verification", label: "🔒 VERIFICATION", count: COMMANDS.filter(cmd => cmd.category === "verification").length },
+                  { id: "voice", label: "🔊 TEMP VOICE", count: COMMANDS.filter(cmd => cmd.category === "voice").length },
+                  { id: "analytics", label: "📈 ANALYTICS", count: COMMANDS.filter(cmd => cmd.category === "analytics").length },
                   { id: "ticketing", label: "🎫 TICKETING", count: COMMANDS.filter(cmd => cmd.category === "ticketing").length },
                   { id: "leveling", label: "🏆 LEVELING", count: COMMANDS.filter(cmd => cmd.category === "leveling").length },
-                  { id: "general", label: "💡 GENERAL", count: COMMANDS.filter(cmd => cmd.category === "general").length },
-                  { id: "fun", label: "🎮 FUN MODULE", count: COMMANDS.filter(cmd => cmd.category === "fun").length }
+                  { id: "fun", label: "🎮 FUN MODULE", count: COMMANDS.filter(cmd => cmd.category === "fun").length },
+                  { id: "utility", label: "💡 UTILITY & CORE", count: COMMANDS.filter(cmd => cmd.category === "utility").length }
                 ].map((tab) => (
                   <button
                     key={tab.id}
@@ -3164,7 +3891,7 @@ export default function App() {
                   placeholder="SEARCH SPECIFICATIONS..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className={`w-full border rounded-none pl-9 pr-8 py-2.5 text-xs font-mono tracking-widest outline-none transition-colors ${
+                  className={`w-full border rounded-none pl-9 pr-8 py-2.5 text-xs font-mono tracking-widest outline-none transition-colors cursor-text ${
                     isDarkMode 
                       ? "bg-[#040406] border-slate-850 text-slate-100 placeholder:text-slate-600 focus:border-[#ff3b5c]" 
                       : "bg-white border-slate-200 text-slate-950 placeholder:text-slate-400 focus:border-[#ff3b5c] shadow-sm"
@@ -3229,6 +3956,12 @@ export default function App() {
                               <Terminal className="w-2.5 h-2.5" />
                               <span>TRY</span>
                             </button>
+
+                            {cmd.permission && (
+                              <span className="px-1.5 py-0.5 bg-[#ff3b5c]/10 text-[#ff3b5c] border border-[#ff3b5c]/30 text-[7px] font-mono tracking-wider uppercase font-black shrink-0" title={`Requires ${cmd.permission} permission`}>
+                                ������ {cmd.permission}
+                              </span>
+                            )}
                           </div>
                           
                           <span className={`px-2 py-0.5 border text-slate-500 font-mono text-[9px] tracking-widest uppercase transition-colors ${
@@ -4026,7 +4759,7 @@ export default function App() {
                         setSimInputArguments(e.target.value);
                       }}
                       disabled={simState === "running"}
-                      className={`flex-1 border rounded-none px-3.5 py-2.5 text-xs font-mono tracking-widest outline-none transition-colors ${
+                      className={`flex-1 border rounded-none px-3.5 py-2.5 text-xs font-mono tracking-widest outline-none transition-colors cursor-text ${
                         isDarkMode 
                           ? "bg-black border-slate-800 text-[#e2f9b8] focus:border-[#ff3b5c]" 
                           : "bg-slate-50 border-slate-300 text-slate-900 focus:border-[#ff3b5c] shadow-inner"
