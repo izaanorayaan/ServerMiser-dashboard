@@ -854,6 +854,508 @@ const COMMANDS: Command[] = [
     usage: "|capabilities",
     category: "utility",
     exampleOutput: "🔍 Active Capabilities:\n- Setup Engine: Online\n- Automod Filters: Active\n- Leveling: 100% Operational"
+  },
+
+  // Moderation (Extended)
+  {
+    name: "unwarn",
+    description: "Remove a specific logged warning infraction from a server member's profile.",
+    usage: "|unwarn <@user> [index]",
+    category: "moderation",
+    exampleOutput: "✓ Removed warning #1 from @rebel-user's profile. Total warnings: 0",
+    permission: "Moderate Members"
+  },
+
+  // Birthdays
+  {
+    name: "birthdays set",
+    description: "Register your birthday so the server can celebrate it automatically.",
+    usage: "|birthdays set <month> <day> [year] [timezone]",
+    category: "utility",
+    exampleOutput: "🎂 Birthday saved! We'll celebrate you on March 14th."
+  },
+  {
+    name: "birthdays remove",
+    description: "Remove your saved birthday from the server's records.",
+    usage: "|birthdays remove",
+    category: "utility",
+    exampleOutput: "✓ Your birthday has been removed from our records."
+  },
+  {
+    name: "birthdays check",
+    description: "Check the saved birthday of yourself or another member.",
+    usage: "|birthdays check [@user]",
+    category: "utility",
+    exampleOutput: "🎂 @user1's birthday is on March 14th (Age: 24)"
+  },
+  {
+    name: "birthdays today",
+    description: "Show every member in the server celebrating a birthday today.",
+    usage: "|birthdays today",
+    category: "utility",
+    exampleOutput: "🎉 Birthdays Today:\n- @user1\n- @user2"
+  },
+  {
+    name: "birthdays upcoming",
+    description: "List the next upcoming birthdays within a chosen number of days.",
+    usage: "|birthdays upcoming [days]",
+    category: "utility",
+    exampleOutput: "📅 Upcoming Birthdays (Next 30 Days):\n- @user1: March 14\n- @user2: March 22"
+  },
+  {
+    name: "birthdays list",
+    description: "List every member who currently has a birthday saved on file.",
+    usage: "|birthdays list",
+    category: "utility",
+    exampleOutput: "📋 Saved Birthdays: 12 members on file."
+  },
+  {
+    name: "birthdays config",
+    description: "View the current birthday module configuration for this server.",
+    usage: "|birthdays config",
+    category: "utility",
+    exampleOutput: "⚙️ Birthday Config:\n- Announce Channel: #general\n- Birthday Role: @Birthday\n- Announce Time: 09:00 UTC",
+    permission: "Manage Server"
+  },
+  {
+    name: "birthdays set-channel",
+    description: "Set the channel where birthday announcements will be posted.",
+    usage: "|birthdays set-channel <#channel>",
+    category: "utility",
+    exampleOutput: "✓ Birthday announcements will now post in #general.",
+    permission: "Manage Server"
+  },
+  {
+    name: "birthdays set-role",
+    description: "Set a role to be automatically granted to a member on their birthday.",
+    usage: "|birthdays set-role <@role>",
+    category: "utility",
+    exampleOutput: "✓ @Birthday will now be granted to members on their special day.",
+    permission: "Manage Server"
+  },
+  {
+    name: "birthdays set-time",
+    description: "Set the time of day birthday announcements are posted.",
+    usage: "|birthdays set-time <HH:MM UTC>",
+    category: "utility",
+    exampleOutput: "✓ Birthday announcements will now post at 09:00 UTC daily.",
+    permission: "Manage Server"
+  },
+  {
+    name: "birthdays toggle",
+    description: "Enable or disable the birthday module for this server.",
+    usage: "|birthdays toggle",
+    category: "utility",
+    exampleOutput: "✓ Birthday module is now ENABLED.",
+    permission: "Manage Server"
+  },
+  {
+    name: "birthdays test",
+    description: "Preview your own birthday announcement instantly without waiting for the real date.",
+    usage: "|birthdays test",
+    category: "utility",
+    exampleOutput: "🧪 Test announcement dispatched: 🎉 Happy Birthday @user1!",
+    permission: "Manage Server"
+  },
+
+  // Giveaways
+  {
+    name: "giveaway start",
+    description: "Launch an interactive giveaway with a prize, duration, and winner count.",
+    usage: "|giveaway start",
+    category: "utility",
+    exampleOutput: "🎉 Giveaway started! Prize: Discord Nitro | Winners: 1 | Ends in 24h",
+    permission: "Manage Server"
+  },
+  {
+    name: "giveaway end",
+    description: "Manually end an active giveaway early and select the winners.",
+    usage: "|giveaway end <id>",
+    category: "utility",
+    exampleOutput: "🏆 Giveaway ended early! Winner: @user1",
+    permission: "Manage Server"
+  },
+  {
+    name: "giveaway reroll",
+    description: "Reroll new winners for a giveaway that has already ended.",
+    usage: "|giveaway reroll <id> [count]",
+    category: "utility",
+    exampleOutput: "🔄 Rerolled! New winner: @user2",
+    permission: "Manage Server"
+  },
+  {
+    name: "giveaway list",
+    description: "List every currently active giveaway running in the server.",
+    usage: "|giveaway list",
+    category: "utility",
+    exampleOutput: "📋 Active Giveaways:\n- [GW-01] Discord Nitro (Ends in 12h)"
+  },
+  {
+    name: "giveaway entries",
+    description: "View the number of entries currently logged for a specific giveaway.",
+    usage: "|giveaway entries <id>",
+    category: "utility",
+    exampleOutput: "🎟️ Giveaway [GW-01] currently has 84 entries."
+  },
+  {
+    name: "giveaway cancel",
+    description: "Cancel an active giveaway completely with no winners selected.",
+    usage: "|giveaway cancel <id>",
+    category: "utility",
+    exampleOutput: "✓ Giveaway [GW-01] has been cancelled.",
+    permission: "Manage Server"
+  },
+  {
+    name: "giveaway edit",
+    description: "Edit the details of an active giveaway, such as its prize or duration.",
+    usage: "|giveaway edit <id>",
+    category: "utility",
+    exampleOutput: "✏️ Giveaway [GW-01] details updated successfully.",
+    permission: "Manage Server"
+  },
+
+  // Invite Tracking
+  {
+    name: "invites check",
+    description: "Check the invite statistics for yourself or another member.",
+    usage: "|invites check [@user]",
+    category: "utility",
+    exampleOutput: "📊 @user1's Invites: 14 joins, 2 leaves, 12 net."
+  },
+  {
+    name: "invites leaderboard",
+    description: "View the top 10 inviters in the server ranked by net invites.",
+    usage: "|invites leaderboard",
+    category: "utility",
+    exampleOutput: "🏆 Invite Leaderboard:\n1. @user1 - 45 net\n2. @user2 - 30 net"
+  },
+  {
+    name: "invites reset",
+    description: "Reset invite counts for a single member or every member in the server.",
+    usage: "|invites reset [@user]",
+    category: "utility",
+    exampleOutput: "✓ Invite counts have been reset.",
+    permission: "Manage Server"
+  },
+  {
+    name: "invites config",
+    description: "Set the channel where new-member join logs are posted with inviter credit.",
+    usage: "|invites config <#channel>",
+    category: "utility",
+    exampleOutput: "✓ Invite join logs will now post in #welcome-logs.",
+    permission: "Manage Server"
+  },
+  {
+    name: "invites add",
+    description: "Manually grant bonus invites to a member's tracked total.",
+    usage: "|invites add <@user> <count>",
+    category: "utility",
+    exampleOutput: "✓ Added 5 bonus invites to @user1's total.",
+    permission: "Manage Server"
+  },
+  {
+    name: "invites remove",
+    description: "Manually deduct invites from a member's tracked total.",
+    usage: "|invites remove <@user> <count>",
+    category: "utility",
+    exampleOutput: "✓ Removed 5 invites from @user1's total.",
+    permission: "Manage Server"
+  },
+  {
+    name: "invites toggle",
+    description: "Enable or disable invite tracking for this server.",
+    usage: "|invites toggle",
+    category: "utility",
+    exampleOutput: "✓ Invite tracking is now ENABLED.",
+    permission: "Manage Server"
+  },
+  {
+    name: "invites stats",
+    description: "View server-wide invite statistics, including total joins and top sources.",
+    usage: "|invites stats",
+    category: "utility",
+    exampleOutput: "📈 Server Invite Stats:\n- Total Joins: 1,204\n- Top Inviter: @user1",
+    permission: "Manage Server"
+  },
+  {
+    name: "invites code",
+    description: "Look up which member owns a specific invite code and its usage count.",
+    usage: "|invites code <code>",
+    category: "utility",
+    exampleOutput: "🔗 Invite `abc123` belongs to @user1 (32 uses)."
+  },
+  {
+    name: "invites fake-threshold",
+    description: "Set the account-age threshold used to flag suspiciously new accounts as fake invites.",
+    usage: "|invites fake-threshold <days>",
+    category: "utility",
+    exampleOutput: "✓ Fake invite threshold set to accounts younger than 7 days.",
+    permission: "Manage Server"
+  },
+
+  // Starboard
+  {
+    name: "starboard setup",
+    description: "Launch the setup wizard to configure the starboard, or pass a channel to skip it.",
+    usage: "|starboard setup [#channel]",
+    category: "utility",
+    exampleOutput: "⭐ Starboard configured! Highlighted messages will post in #starboard.",
+    permission: "Manage Server"
+  },
+  {
+    name: "starboard config",
+    description: "Modify an individual starboard setting, such as the star threshold.",
+    usage: "|starboard config <setting> <value>",
+    category: "utility",
+    exampleOutput: "✓ Starboard threshold updated to 5 stars.",
+    permission: "Manage Server"
+  },
+  {
+    name: "starboard ignore",
+    description: "Add a channel to the starboard's ignore list so its messages can't be starred.",
+    usage: "|starboard ignore <#channel>",
+    category: "utility",
+    exampleOutput: "✓ #spam is now ignored by the starboard module.",
+    permission: "Manage Server"
+  },
+  {
+    name: "starboard unignore",
+    description: "Remove a channel from the starboard's ignore list.",
+    usage: "|starboard unignore <#channel>",
+    category: "utility",
+    exampleOutput: "✓ #spam has been removed from the starboard ignore list.",
+    permission: "Manage Server"
+  },
+  {
+    name: "starboard toggle",
+    description: "Enable or disable the starboard module for this server.",
+    usage: "|starboard toggle",
+    category: "utility",
+    exampleOutput: "✓ Starboard module is now ENABLED.",
+    permission: "Manage Server"
+  },
+  {
+    name: "starboard force",
+    description: "Force a specific message onto the starboard regardless of its star count.",
+    usage: "|starboard force <message_id>",
+    category: "utility",
+    exampleOutput: "⭐ Message `1224597022` has been forced onto the starboard.",
+    permission: "Manage Server"
+  },
+  {
+    name: "starboard stats",
+    description: "View statistics for the starboard, including top-starred messages and users.",
+    usage: "|starboard stats",
+    category: "utility",
+    exampleOutput: "📊 Starboard Stats:\n- Total Starred: 214\n- Top Message: 42 ⭐"
+  },
+
+  // Suggestions
+  {
+    name: "suggestions setup",
+    description: "Launch the guided setup wizard for the suggestions module, or provide a channel directly.",
+    usage: "|suggestions setup [#channel] [#staff-channel]",
+    category: "utility",
+    exampleOutput: "✓ Suggestions module configured! Submissions will post in #suggestions.",
+    permission: "Manage Server"
+  },
+  {
+    name: "suggestions config",
+    description: "Configure individual suggestion module settings.",
+    usage: "|suggestions config <setting> <value>",
+    category: "utility",
+    exampleOutput: "✓ Suggestion setting updated successfully.",
+    permission: "Manage Server"
+  },
+  {
+    name: "suggestions toggle",
+    description: "Enable or disable the suggestions module for this server.",
+    usage: "|suggestions toggle",
+    category: "utility",
+    exampleOutput: "✓ Suggestions module is now ENABLED.",
+    permission: "Manage Server"
+  },
+  {
+    name: "suggestions submit",
+    description: "Submit a new suggestion for staff to review.",
+    usage: "|suggestions submit <content>",
+    category: "utility",
+    exampleOutput: "💡 Suggestion #24 submitted for review!"
+  },
+  {
+    name: "suggestions approve",
+    description: "Approve a pending suggestion with an optional staff note.",
+    usage: "|suggestions approve <id> [note]",
+    category: "utility",
+    exampleOutput: "✅ Suggestion #24 has been approved.",
+    permission: "Manage Server"
+  },
+  {
+    name: "suggestions deny",
+    description: "Deny a pending suggestion with an optional staff note.",
+    usage: "|suggestions deny <id> [note]",
+    category: "utility",
+    exampleOutput: "❌ Suggestion #24 has been denied.",
+    permission: "Manage Server"
+  },
+  {
+    name: "suggestions implement",
+    description: "Mark a suggestion as implemented with an optional staff note.",
+    usage: "|suggestions implement <id> [note]",
+    category: "utility",
+    exampleOutput: "🚀 Suggestion #24 has been marked as implemented.",
+    permission: "Manage Server"
+  },
+  {
+    name: "suggestions delete",
+    description: "Permanently delete a suggestion from the records.",
+    usage: "|suggestions delete <id>",
+    category: "utility",
+    exampleOutput: "🗑️ Suggestion #24 has been deleted.",
+    permission: "Manage Server"
+  },
+  {
+    name: "suggestions list",
+    description: "List suggestions filtered by their current status.",
+    usage: "|suggestions list [status]",
+    category: "utility",
+    exampleOutput: "📋 Suggestions (Pending): #24, #25, #26"
+  },
+  {
+    name: "suggestions my",
+    description: "View all of your own submitted suggestions and their current status.",
+    usage: "|suggestions my",
+    category: "utility",
+    exampleOutput: "📋 Your Suggestions:\n- #24: Pending\n- #19: Approved"
+  },
+
+  // Embed Builder
+  {
+    name: "embed create",
+    description: "Open a guided modal to start building a brand-new rich embed.",
+    usage: "|embed create",
+    category: "utility",
+    exampleOutput: "✓ New embed session started. Use the modal to fill in your content.",
+    permission: "Manage Server"
+  },
+  {
+    name: "embed edit",
+    description: "Load an existing bot-sent embed message into your session for editing.",
+    usage: "|embed edit <message_id>",
+    category: "utility",
+    exampleOutput: "✓ Loaded embed from message `1224597022` into your editing session.",
+    permission: "Manage Server"
+  },
+  {
+    name: "embed send",
+    description: "Send your in-progress embed session to a target channel.",
+    usage: "|embed send <#channel>",
+    category: "utility",
+    exampleOutput: "✓ Embed sent successfully to #announcements.",
+    permission: "Manage Server"
+  },
+  {
+    name: "embed field add",
+    description: "Open a modal to add a new field to your in-progress embed.",
+    usage: "|embed field add",
+    category: "utility",
+    exampleOutput: "✓ Field added to your embed session.",
+    permission: "Manage Server"
+  },
+  {
+    name: "embed field remove",
+    description: "Remove a field from your in-progress embed by its index number.",
+    usage: "|embed field remove <index>",
+    category: "utility",
+    exampleOutput: "✓ Field #2 removed from your embed session.",
+    permission: "Manage Server"
+  },
+  {
+    name: "embed image",
+    description: "Set the large image URL displayed on your in-progress embed.",
+    usage: "|embed image <url>",
+    category: "utility",
+    exampleOutput: "✓ Image set on your embed session.",
+    permission: "Manage Server"
+  },
+  {
+    name: "embed thumbnail",
+    description: "Set the thumbnail URL displayed on your in-progress embed.",
+    usage: "|embed thumbnail <url>",
+    category: "utility",
+    exampleOutput: "✓ Thumbnail set on your embed session.",
+    permission: "Manage Server"
+  },
+  {
+    name: "embed color",
+    description: "Set the accent color of your in-progress embed using a hex code.",
+    usage: "|embed color <hex>",
+    category: "utility",
+    exampleOutput: "✓ Embed color set to #ff3b5c.",
+    permission: "Manage Server"
+  },
+  {
+    name: "embed footer",
+    description: "Set the footer text and optional icon of your in-progress embed.",
+    usage: "|embed footer <text> [icon_url]",
+    category: "utility",
+    exampleOutput: "✓ Footer set on your embed session.",
+    permission: "Manage Server"
+  },
+  {
+    name: "embed author",
+    description: "Set the author name, icon, and link of your in-progress embed.",
+    usage: "|embed author <name> [icon_url] [url]",
+    category: "utility",
+    exampleOutput: "✓ Author set on your embed session.",
+    permission: "Manage Server"
+  },
+  {
+    name: "embed preview",
+    description: "Preview your current in-progress embed before sending it.",
+    usage: "|embed preview",
+    category: "utility",
+    exampleOutput: "👁️ Preview generated for your current embed session.",
+    permission: "Manage Server"
+  },
+  {
+    name: "embed clear",
+    description: "Clear your in-progress embed session and start over.",
+    usage: "|embed clear",
+    category: "utility",
+    exampleOutput: "✓ Embed session cleared.",
+    permission: "Manage Server"
+  },
+  {
+    name: "embed template save",
+    description: "Save your current in-progress embed as a reusable named template.",
+    usage: "|embed template save <name>",
+    category: "utility",
+    exampleOutput: "💾 Embed saved as template 'announcement'.",
+    permission: "Manage Server"
+  },
+  {
+    name: "embed template load",
+    description: "Load a previously saved embed template into your active session.",
+    usage: "|embed template load <name>",
+    category: "utility",
+    exampleOutput: "✓ Loaded template 'announcement' into your session.",
+    permission: "Manage Server"
+  },
+  {
+    name: "embed template list",
+    description: "List every saved embed template available for this server.",
+    usage: "|embed template list",
+    category: "utility",
+    exampleOutput: "📋 Saved Templates: announcement, rules, giveaway-card"
+  },
+  {
+    name: "embed template delete",
+    description: "Delete a saved embed template permanently.",
+    usage: "|embed template delete <name>",
+    category: "utility",
+    exampleOutput: "🗑️ Template 'announcement' has been deleted.",
+    permission: "Manage Server"
   }
 ];
 

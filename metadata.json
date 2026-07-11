@@ -1,6 +1,6 @@
 {
   "name": "ServerMiser",
-  "description": "The ultimate brutalist Discord bot landing page for ServerMiser, featuring a Big Horror Athens inspired design, an interactive Decision Terminal, command references, and brand alignment.",
+  "description": "The ultimate brutalist Discord bot landing page for ServerMiser, the best all in one bot you can ever imagine.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
