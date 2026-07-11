@@ -11,6 +11,9 @@ export default defineConfig(() => {
         '@': path.resolve(__dirname, '.'),
       },
     },
+    build: {
+      chunkSizeWarningLimit: 1000, // Suppress chunk size warning (gzipped is only 154kb)
+    },
     server: {
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
       // Do not modify—file watching is disabled to prevent flickering during agent edits.
@@ -19,7 +22,7 @@ export default defineConfig(() => {
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
       proxy: {
         '/api': {
-          target: 'https://discord-server-setup-bot.onrender.com',
+          target: process.env.VITE_STATS_API_BASE_URL || 'https://discord-server-setup-bot.onrender.com',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ''),
         },

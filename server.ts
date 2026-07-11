@@ -32,7 +32,8 @@ app.get("/api/bot-stats", async (req, res) => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 45000);
 
-    const externalResponse = await fetch("https://discord-server-setup-bot.onrender.com", {
+    const statsApiBase = process.env.STATS_API_BASE_URL || "https://discord-server-setup-bot.onrender.com";
+    const externalResponse = await fetch(statsApiBase, {
       signal: controller.signal
     });
     clearTimeout(timeoutId);
@@ -66,7 +67,12 @@ app.get("/api/bot-stats", async (req, res) => {
 // to securely push its live statistics up to this dashboard!
 app.post("/api/bot-stats", (req, res) => {
   const authHeader = req.headers.authorization;
-  const secretKey = process.env.STATS_API_KEY || "servermiser_secret_1337";
+  const secretKey = process.env.STATS_API_KEY;
+
+  if (!secretKey) {
+    console.error("[server.ts] STATS_API_KEY is not set in the environment. Refusing all writes to /api/bot-stats.");
+    return res.status(503).json({ error: "Server misconfigured: STATS_API_KEY is not set." });
+  }
 
   if (!authHeader || authHeader !== `Bearer ${secretKey}`) {
     return res.status(401).json({ error: "Unauthorized. Missing or invalid STATS_API_KEY." });

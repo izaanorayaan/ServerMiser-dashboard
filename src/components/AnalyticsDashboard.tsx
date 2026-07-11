@@ -120,7 +120,8 @@ export default function AnalyticsDashboard({ onBack, setIsHovering, isDarkMode =
     async function fetchLiveTelemetry() {
       try {
         // BOOM! Added /api/stats to the end so it grabs your live numbers!
-        const response = await fetch('https://discord-server-setup-bot.onrender.com/api/stats');
+        const baseUrl = import.meta.env.VITE_STATS_API_BASE_URL || 'https://discord-server-setup-bot.onrender.com';
+        const response = await fetch(`${baseUrl}/api/stats`);
         
         if (response.ok) {
           const data = await response.json();
@@ -197,7 +198,7 @@ export default function AnalyticsDashboard({ onBack, setIsHovering, isDarkMode =
           </button>
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-none flex items-center justify-center ${isDarkMode ? "bg-[#ff3b5c]/15 border border-[#ff3b5c]/45 text-[#ff3b5c]" : "bg-[#ff3b5c]/5 border border-[#ff3b5c]/25 text-[#ff3b5c]"}`}>
-              <a href="https://discord.com/oauth2/authorize?client_id=1518952247927640276" target="_blank" rel="noopener noreferrer" className="block leading-none">
+              <a href={`https://discord.com/oauth2/authorize?client_id=${import.meta.env.VITE_DISCORD_CLIENT_ID || '1518952247927640276'}`} target="_blank" rel="noopener noreferrer" className="block leading-none">
                 <Logo size={42} glow={true} className="transition-transform duration-500 hover:rotate-180 shrink-0 cursor-pointer" />
               </a>
             </div>
