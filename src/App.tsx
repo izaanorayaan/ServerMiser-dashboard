@@ -2066,9 +2066,6 @@ const SETUP_TEMPLATES: TemplateHierarchy[] = [
   }
 ];
 
-// Discord Bot Configuration - loaded from environment variables
-const DISCORD_CLIENT_ID = import.meta.env.VITE_DISCORD_CLIENT_ID || "1518952247927640276";
-
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   
@@ -2357,7 +2354,7 @@ export default function App() {
         <button id="themeToggleBtn" class="p-2 border border-slate-800 bg-[#0d0f18] hover:bg-slate-900 text-yellow-400 hover:text-white transition-all w-9 h-9 flex items-center justify-center font-mono text-sm">
           💡
         </button>
-        <button onclick="window.open('https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}', '_blank')" class="px-4 py-2 border border-[#e2f9b8] bg-transparent text-[#e2f9b8] hover:bg-[#e2f9b8] hover:text-black transition-all font-mono text-[10px] tracking-widest uppercase font-bold">
+        <button onclick="window.open('https://discord.com/oauth2/authorize?client_id=1518952247927640276', '_blank')" class="px-4 py-2 border border-[#e2f9b8] bg-transparent text-[#e2f9b8] hover:bg-[#e2f9b8] hover:text-black transition-all font-mono text-[10px] tracking-widest uppercase font-bold">
           AUTHORIZE
         </button>
       </div>
@@ -3001,7 +2998,7 @@ export default function App() {
   };
 
   const triggerAuthFlow = () => {
-    window.open(`https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}`, "_blank");
+    window.open("https://discord.com/oauth2/authorize?client_id=1518952247927640276", "_blank");
   };
 
   const handleAuthorize = (e: React.FormEvent) => {
@@ -3009,7 +3006,7 @@ export default function App() {
     if (!selectedServer) return;
     
     // Open real Discord invitation link in a new window/tab
-    window.open(`https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}`, "_blank");
+    window.open("https://discord.com/oauth2/authorize?client_id=1518952247927640276", "_blank");
     
     setAuthStep("loading");
     setTimeout(() => {

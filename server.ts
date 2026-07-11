@@ -22,7 +22,14 @@ let botStats = {
   recentLogs: [] as string[],
   radarNodes: [] as any[],
   segments: [] as any[],
-  barData: [] as any[]
+  barData: [] as any[],
+  totalTickets: 0,
+  totalXp: 0,
+  totalSetups: 0,
+  setupSuccessRate: "0%",
+  genTime: "0.0s",
+  guildCategories: [] as any[],
+  dailySetups: [] as number[]
 };
 
 // GET ENDPOINT - Fetches stats to render on the React front-end, proxying from the external Render URL
@@ -32,8 +39,7 @@ app.get("/api/bot-stats", async (req, res) => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 45000);
 
-    const statsApiBase = process.env.STATS_API_BASE_URL || "https://discord-server-setup-bot.onrender.com";
-    const externalResponse = await fetch(statsApiBase, {
+    const externalResponse = await fetch("https://discord-server-setup-bot.onrender.com", {
       signal: controller.signal
     });
     clearTimeout(timeoutId);
@@ -50,6 +56,11 @@ app.get("/api/bot-stats", async (req, res) => {
       // Store custom variables on the telemetry cache object
       if (data.totalTickets !== undefined) (botStats as any).totalTickets = Number(data.totalTickets);
       if (data.totalXp !== undefined) (botStats as any).totalXp = Number(data.totalXp);
+      if (data.totalSetups !== undefined) (botStats as any).totalSetups = Number(data.totalSetups);
+      if (data.setupSuccessRate !== undefined) (botStats as any).setupSuccessRate = data.setupSuccessRate;
+      if (data.genTime !== undefined) (botStats as any).genTime = data.genTime;
+      if (data.guildCategories !== undefined) (botStats as any).guildCategories = data.guildCategories;
+      if (data.dailySetups !== undefined) (botStats as any).dailySetups = data.dailySetups;
       if (data.uptime !== undefined) botStats.uptime = data.uptime;
       if (data.ramUsage !== undefined) botStats.ramUsage = data.ramUsage;
       if (data.activeShards !== undefined) botStats.activeShards = data.activeShards;
