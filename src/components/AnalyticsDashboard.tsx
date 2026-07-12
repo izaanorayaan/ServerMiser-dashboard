@@ -39,8 +39,13 @@ export default function AnalyticsDashboard({ onBack, setIsHovering, isDarkMode =
     activeShards: "0 / 0",
     securityCompliance: "0%",
     totalTickets: 0,
-    totalXp: 0
+    totalXp: 0,
+    totalSetups: 0,
+    setupSuccessRate: "0%",
+    genTime: "0.0s"
   });
+
+  const [hasData, setHasData] = useState(false);
 
   const [radarNodes, setRadarNodes] = useState([
     { id: "gateway", name: "Discord API Gateway", x: 220, y: 130, latency: 0, status: "offline" },
@@ -49,12 +54,7 @@ export default function AnalyticsDashboard({ onBack, setIsHovering, isDarkMode =
     { id: "websocket", name: "Voice WebSocket", x: 170, y: 280, latency: 0, status: "offline" },
   ]);
 
-  const [segments, setSegments] = useState([
-    { name: "Gaming Guilds", percentage: 0, count: "0", color: "#ff3b5c", desc: "Esports servers, stream hubs, and localized clans using heavy warning & moderation modules." },
-    { name: "Community Hubs", percentage: 0, count: "0", color: "#e2f9b8", desc: "General chat guilds, interest groups, and hobby portals with leveling systems." },
-    { name: "Creators & Artists", percentage: 0, count: "0", color: "#2e7b8f", desc: "Influencer guilds, YouTube hubs, and fan spaces deploying ticketing counters." },
-    { name: "Developer & Pro", percentage: 0, count: "0", color: "#fca5a5", desc: "Code clusters, software networks, and corporate desks with automated 1-click layouts." },
-  ]);
+  const [segments, setSegments] = useState<{ name: string; percentage: number; count: string; color: string; desc: string }[]>([]);
 
   const [barData, setBarData] = useState([
     { day: "MON", setups: 0, height: 0 },
@@ -66,15 +66,20 @@ export default function AnalyticsDashboard({ onBack, setIsHovering, isDarkMode =
     { day: "SUN", setups: 0, height: 0 },
   ]);
 
+  const CATEGORY_COLORS = ["#ff3b5c", "#e2f9b8", "#2e7b8f", "#fca5a5", "#a78bfa", "#38bdf8"];
   const [hoveredNode, setHoveredNode] = useState<any>(null);
+  const DAY_LABELS = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
 
   const setStats = (fetchedData: any) => {
     if (!fetchedData) return;
-    const servers = fetchedData.totalServers !== undefined ? Number(fetchedData.totalServers) : (fetchedData.totalGuilds || 0);
-    const users = fetchedData.totalUsers !== undefined ? Number(fetchedData.totalUsers) : (fetchedData.totalMembers || 0);
-    const ping = fetchedData.botPing !== undefined ? Number(fetchedData.botPing) : (fetchedData.wsPing || 0);
-    const tickets = fetchedData.totalTickets !== undefined ? Number(fetchedData.totalTickets) : (fetchedData.totalTickets || 0);
-    const xp = fetchedData.totalXp !== undefined ? Number(fetchedData.totalXp) : (fetchedData.totalXp || 0);
+    const servers = fetchedData.totalServers !== undefined ? Number(fetchedData.totalServers) : Number(fetchedData.totalGuilds || 0);
+    const users = fetchedData.totalUsers !== undefined ? Number(fetchedData.totalUsers) : Number(fetchedData.totalMembers || 0);
+    const ping = fetchedData.botPing !== undefined ? Number(fetchedData.botPing) : Number(fetchedData.wsPing || 0);
+    const tickets = Number(fetchedData.totalTickets || 0);
+    const xp = Number(fetchedData.totalXp || 0);
+    const totalSetups = Number(fetchedData.totalSetups || 0);
+    const setupSuccessRate = fetchedData.setupSuccessRate || "0%";
+    const genTime = fetchedData.genTime || "0.0s";
 
     setBotStats(prev => ({
       ...prev,
@@ -83,30 +88,55 @@ export default function AnalyticsDashboard({ onBack, setIsHovering, isDarkMode =
       wsPing: ping,
       totalTickets: tickets,
       totalXp: xp,
+      totalSetups,
+      setupSuccessRate,
+      genTime,
       uptime: fetchedData.uptime || prev.uptime,
       ramUsage: fetchedData.ramUsage || prev.ramUsage,
       activeShards: fetchedData.activeShards || prev.activeShards,
       securityCompliance: fetchedData.securityCompliance || prev.securityCompliance
     }));
 
-    setSegments([
-      { name: "Gaming Guilds", percentage: servers > 0 ? 45 : 0, count: Math.round(servers * 0.45).toLocaleString(), color: "#ff3b5c", desc: "Esports servers, stream hubs, and localized clans using heavy warning & moderation modules." },
-      { name: "Community Hubs", percentage: servers > 0 ? 30 : 0, count: Math.round(servers * 0.30).toLocaleString(), color: "#e2f9b8", desc: "General chat guilds, interest groups, and hobby portals with leveling systems." },
-      { name: "Creators & Artists", percentage: servers > 0 ? 15 : 0, count: Math.round(servers * 0.15).toLocaleString(), color: "#2e7b8f", desc: "Influencer guilds, YouTube hubs, and fan spaces deploying ticketing counters." },
-      { name: "Developer & Pro", percentage: servers > 0 ? 10 : 0, count: Math.round(servers * 0.10).toLocaleString(), color: "#fca5a5", desc: "Code clusters, software networks, and corporate desks with automated 1-click layouts." },
-    ]);
+    setHasData(true);
 
-    const calculatedBaseSetups = Math.max(120, Math.round(servers * 0.28));
-    setBarData([
-      { day: "MON", setups: Math.round(calculatedBaseSetups * 0.7), height: servers > 0 ? 45 : 0 },
-      { day: "TUE", setups: Math.round(calculatedBaseSetups * 1.1), height: servers > 0 ? 62 : 0 },
-      { day: "WED", setups: Math.round(calculatedBaseSetups * 1.2), height: servers > 0 ? 68 : 0 },
-      { day: "THU", setups: Math.round(calculatedBaseSetups * 1.3), height: servers > 0 ? 75 : 0 },
-      { day: "FRI", setups: Math.round(calculatedBaseSetups * 1.6), height: servers > 0 ? 95 : 0 },
-      { day: "SAT", setups: Math.round(calculatedBaseSetups * 0.9), height: servers > 0 ? 54 : 0 },
-      { day: "SUN", setups: Math.round(calculatedBaseSetups * 0.8), height: servers > 0 ? 47 : 0 },
-    ]);
+    // GUILD CATEGORY SEGMENTS: only rendered if the bot actually reports them.
+    // We no longer fabricate a fixed 45/30/15/10 split — that data doesn't exist
+    // unless your bot tracks and sends real category counts via guildCategories.
+    if (Array.isArray(fetchedData.guildCategories) && fetchedData.guildCategories.length > 0) {
+      const totalCategorized = fetchedData.guildCategories.reduce((sum: number, c: any) => sum + Number(c.count || 0), 0);
+      setSegments(
+        fetchedData.guildCategories.map((c: any, idx: number) => ({
+          name: c.name || `Category ${idx + 1}`,
+          count: Number(c.count || 0).toLocaleString(),
+          percentage: totalCategorized > 0 ? Math.round((Number(c.count || 0) / totalCategorized) * 100) : 0,
+          color: c.color || CATEGORY_COLORS[idx % CATEGORY_COLORS.length],
+          desc: c.desc || ""
+        }))
+      );
+    } else {
+      setSegments([]);
+    }
 
+    // SETUP COMMAND ACTIVITY: only rendered if the bot reports real daily counts.
+    // Previously this was a made-up formula (servers * 0.28 * arbitrary weights).
+    if (Array.isArray(fetchedData.dailySetups) && fetchedData.dailySetups.length === 7) {
+      const counts = fetchedData.dailySetups.map((n: any) => Number(n) || 0);
+      const max = Math.max(1, ...counts);
+      setBarData(
+        DAY_LABELS.map((day, idx) => ({
+          day,
+          setups: counts[idx],
+          height: Math.round((counts[idx] / max) * 100)
+        }))
+      );
+    } else {
+      setBarData(DAY_LABELS.map((day) => ({ day, setups: 0, height: 0 })));
+    }
+
+    // RADAR NODES: latency is derived from the one real measurement we have
+    // (WebSocket ping), fanned out across visual nodes with small fixed
+    // multipliers purely for visual variety. These are estimates, not
+    // independently measured per-node latencies.
     setRadarNodes([
       { id: "gateway", name: "Discord API Gateway", x: 220, y: 130, latency: ping, status: ping > 0 ? "optimal" : "offline" },
       { id: "shard", name: "Shard #01 Host", x: 290, y: 210, latency: Math.round(ping * 1.1), status: ping > 0 ? "optimal" : "offline" },
@@ -115,30 +145,23 @@ export default function AnalyticsDashboard({ onBack, setIsHovering, isDarkMode =
     ]);
   };
 
-    // FETCH REAL STATISTICS FROM OUR LIVE RENDER BOT URL (FULLY UNLOCKED)
+    // FETCH REAL STATISTICS FROM OUR OWN DASHBOARD SERVER
+  // IMPORTANT: The browser must never call the bot's Render URL directly.
+  // Doing so would expose live guild/member/ping data publicly to anyone,
+  // with no authentication, since fetch() runs client-side and is visible
+  // in the browser's network tab. Instead we call our own server.ts, which
+  // safely proxies the bot's data server-side (see GET /api/bot-stats).
   useEffect(() => {
     async function fetchLiveTelemetry() {
       try {
-        // BOOM! Added /api/stats to the end so it grabs your live numbers!
-        const baseUrl = import.meta.env.VITE_STATS_API_BASE_URL || 'https://discord-server-setup-bot.onrender.com';
-        const response = await fetch(`${baseUrl}/api/stats`);
-        
+        const response = await fetch('/api/bot-stats', { credentials: 'include' });
+
         if (response.ok) {
           const data = await response.json();
-          setStats(data); // Syncs everything straight to your pie charts instantly!
-          console.log('🔥 LIVE TELEMETRY SYNCED SUCCESSFULLY:', data);
+          setStats(data);
         }
       } catch (error) {
-        console.error('❌ DIRECT FETCH BLOCKED, TRYING WORKSPACE TUNNEL:', error);
-        
-        // Backup sandbox bypass if Google Cloud Run tries to throttle the socket
-        try {
-          const sandboxResponse = await fetch('/api/stats', { credentials: 'include' });
-          if (sandboxResponse.ok) {
-            const sandboxData = await sandboxResponse.json();
-            setStats(sandboxData);
-          }
-        } catch (_) {}
+        console.error('[AnalyticsDashboard] Could not reach dashboard telemetry endpoint:', error);
       }
     }
 
@@ -198,7 +221,7 @@ export default function AnalyticsDashboard({ onBack, setIsHovering, isDarkMode =
           </button>
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-none flex items-center justify-center ${isDarkMode ? "bg-[#ff3b5c]/15 border border-[#ff3b5c]/45 text-[#ff3b5c]" : "bg-[#ff3b5c]/5 border border-[#ff3b5c]/25 text-[#ff3b5c]"}`}>
-              <a href={`https://discord.com/oauth2/authorize?client_id=${import.meta.env.VITE_DISCORD_CLIENT_ID || '1518952247927640276'}`} target="_blank" rel="noopener noreferrer" className="block leading-none">
+              <a href="https://discord.com/oauth2/authorize?client_id=1518952247927640276" target="_blank" rel="noopener noreferrer" className="block leading-none">
                 <Logo size={42} glow={true} className="transition-transform duration-500 hover:rotate-180 shrink-0 cursor-pointer" />
               </a>
             </div>
@@ -369,35 +392,41 @@ export default function AnalyticsDashboard({ onBack, setIsHovering, isDarkMode =
 
             {/* Interactive Segment Readout */}
             <div className="md:col-span-6 flex flex-col gap-4">
-              {segments.map((seg, idx) => {
-                const isHighlighted = activeSegment === idx;
-                return (
-                  <div
-                    key={idx}
-                    onMouseEnter={() => setActiveSegment(idx)}
-                    onMouseLeave={() => setActiveSegment(null)}
-                    className={`p-3 border transition-all duration-300 cursor-pointer ${
-                      isDarkMode 
-                        ? (isHighlighted ? "bg-[#0b0c16] border-slate-700" : "bg-black/40 border-slate-900")
-                        : (isHighlighted ? "bg-slate-100 border-slate-300" : "bg-slate-50/50 border-slate-200")
-                    }`}
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-2">
-                        <span className="w-2.5 h-2.5 shrink-0" style={{ backgroundColor: seg.color }} />
-                        <span className={`font-mono text-xs font-bold uppercase ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>{seg.name}</span>
+              {segments.length === 0 ? (
+                <div className={`p-3 border font-mono text-[10px] uppercase leading-relaxed ${isDarkMode ? "bg-black/40 border-slate-900 text-slate-500" : "bg-slate-50/50 border-slate-200 text-slate-400"}`}>
+                  No guild category data reported yet. This section populates once your bot sends a <span className={isDarkMode ? "text-slate-300" : "text-slate-600"}>guildCategories</span> breakdown.
+                </div>
+              ) : (
+                segments.map((seg, idx) => {
+                  const isHighlighted = activeSegment === idx;
+                  return (
+                    <div
+                      key={idx}
+                      onMouseEnter={() => setActiveSegment(idx)}
+                      onMouseLeave={() => setActiveSegment(null)}
+                      className={`p-3 border transition-all duration-300 cursor-pointer ${
+                        isDarkMode 
+                          ? (isHighlighted ? "bg-[#0b0c16] border-slate-700" : "bg-black/40 border-slate-900")
+                          : (isHighlighted ? "bg-slate-100 border-slate-300" : "bg-slate-50/50 border-slate-200")
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-2">
+                          <span className="w-2.5 h-2.5 shrink-0" style={{ backgroundColor: seg.color }} />
+                          <span className={`font-mono text-xs font-bold uppercase ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>{seg.name}</span>
+                        </div>
+                        <span className={`font-mono text-xs font-extrabold ${isDarkMode ? "text-slate-400" : "text-slate-600"}`}>{seg.percentage}%</span>
                       </div>
-                      <span className={`font-mono text-xs font-extrabold ${isDarkMode ? "text-slate-400" : "text-slate-600"}`}>{seg.percentage}%</span>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              )}
             </div>
           </div>
 
           {/* Description of active segment */}
           <div className={`h-20 border-t pt-4 font-mono text-[11px] leading-relaxed uppercase ${isDarkMode ? "border-slate-900 text-slate-400" : "border-slate-200 text-slate-500"}`}>
-            {activeSegment !== null ? (
+            {activeSegment !== null && segments[activeSegment] ? (
               <div>
                 <span className="text-[#ff3b5c] font-bold">SEGMENT META // </span>
                 <span className={isDarkMode ? "text-slate-200" : "text-slate-800"}>{segments[activeSegment].count} Servers in category. </span>
@@ -516,23 +545,23 @@ export default function AnalyticsDashboard({ onBack, setIsHovering, isDarkMode =
                     stroke="#2e7b8f"
                     strokeWidth="8"
                     strokeDasharray={`${2 * Math.PI * 38}`}
-                    strokeDashoffset={`${2 * Math.PI * 38 * (1 - 0.989)}`}
+                    strokeDashoffset={`${2 * Math.PI * 38 * (1 - (parseFloat(botStats.setupSuccessRate) || 0) / 100)}`}
                     initial={{ strokeDashoffset: 2 * Math.PI * 38 }}
-                    animate={{ strokeDashoffset: 2 * Math.PI * 38 * (1 - 0.989) }}
+                    animate={{ strokeDashoffset: 2 * Math.PI * 38 * (1 - (parseFloat(botStats.setupSuccessRate) || 0) / 100) }}
                     transition={{ duration: 1.5, ease: "easeOut" }}
                   />
                 </svg>
 
                 {/* Gauge digital readout */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center leading-none">
-                  <span className={`font-display font-extrabold text-lg ${isDarkMode ? "text-slate-100" : "text-slate-950"}`}>1.4s</span>
+                  <span className={`font-display font-extrabold text-lg ${isDarkMode ? "text-slate-100" : "text-slate-950"}`}>{botStats.genTime}</span>
                   <span className={`font-mono text-[8px] uppercase tracking-widest mt-1 ${isDarkMode ? "text-slate-500" : "text-slate-400"}`}>GEN TIME</span>
                 </div>
               </div>
 
               <div className="flex flex-col gap-1 items-center mt-3 text-center">
-                <span className={`font-mono text-[10px] font-black ${isDarkMode ? "text-[#e2f9b8]" : "text-emerald-600"}`}>42,105 TOTAL SETUPS</span>
-                <span className={`font-mono text-[9px] ${isDarkMode ? "text-slate-400" : "text-slate-500"}`}>98.9% SUCCESS INDEX</span>
+                <span className={`font-mono text-[10px] font-black ${isDarkMode ? "text-[#e2f9b8]" : "text-emerald-600"}`}>{botStats.totalSetups.toLocaleString()} TOTAL SETUPS</span>
+                <span className={`font-mono text-[9px] ${isDarkMode ? "text-slate-400" : "text-slate-500"}`}>{botStats.setupSuccessRate} SUCCESS INDEX</span>
               </div>
             </div>
           </div>
