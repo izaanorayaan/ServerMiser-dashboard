@@ -264,26 +264,31 @@ client.once('ready', async () => {
       const memoryUsage = process.memoryUsage();
       const ramUsage = `${Math.round(memoryUsage.rss / 1024 / 1024)} MB`;
 
-      const [totalXp, counters, guildCategories, dailySetups] = await Promise.all([
-        database.getTotalXp().catch(() => 0),
+      const [counters, guildCategories, totalXp, totalTickets, dailySetups] = await Promise.all([
         database.getCounters().catch(() => ({})),
         database.getGuildCategories().catch(() => []),
+        database.getTotalXp().catch(() => 0),
+        database.getTotalTickets().catch(() => 0),
         database.getDailySetupCounts().catch(() => [0, 0, 0, 0, 0, 0, 0])
       ]);
 
-      const totalTickets = Number(counters.totalTickets || 0);
       const totalSetups = Number(counters.totalSetups || 0);
       const successfulSetups = Number(counters.successfulSetups || 0);
-      const setupSuccessRate = totalSetups > 0 ? `${((successfulSetups / totalSetups) * 100).toFixed(1)}%` : "0%";
-      const genTime = `${Math.max(0.2, Math.min(12, Number(wsPing) / 20 + 0.7)).toFixed(1)}s`;
 
       const payload = {
-        totalGuilds, totalMembers, wsPing, uptime, ramUsage,
+        totalGuilds,
+        totalMembers,
+        wsPing,
+        uptime,
+        ramUsage,
         activeShards: `1 / ${shardCount}`,
         securityCompliance: "100%",
-        totalXp, totalTickets, totalSetups, setupSuccessRate, genTime,
-        guildCategories,
-        dailySetups
+        totalTickets,
+        totalXp,
+        totalSetups,
+        setupSuccessRate: totalSetups > 0 ? `${((successfulSetups / totalSetups) * 100).toFixed(1)}%` : "0%",
+        ...(Array.isArray(guildCategories) && guildCategories.length > 0 ? { guildCategories } : {}),
+        ...(Array.isArray(dailySetups) && dailySetups.length === 7 ? { dailySetups } : {})
       };
 
       await fetch(dashboardUrl, {

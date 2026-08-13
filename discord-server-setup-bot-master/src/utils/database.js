@@ -261,26 +261,50 @@ module.exports.getTotalXp = getTotalXp;
 module.exports.incrementCounter = incrementCounter;
 module.exports.getCounters = getCounters;
 
+async function getTotalTickets() {
+  try {
+    const Model = getModel('guild_config');
+    const docs = await Model.find().lean();
+    let total = 0;
+
+    for (const doc of docs) {
+      const value = doc?.value || {};
+      const ticketCounter = Number(value?.ticketConfig?.ticketCounter || 0);
+      total += Number.isFinite(ticketCounter) ? ticketCounter : 0;
+    }
+
+    return total;
+  } catch (error) {
+    console.error('[database] Error computing total tickets:', error.message);
+    return 0;
+  }
+}
+
+module.exports.getTotalTickets = getTotalTickets;
+
 async function getDailySetupCounts() {
   try {
-    const counters = (await readData('bot_stats_counters.json')) || {};
-    const totalSetups = Number(counters.totalSetups || 0);
+    const Model = getModel('guild_config');
+    const docs = await Model.find().lean();
+    const days = Array.from({ length: 7 }, () => 0);
+    const now = new Date();
 
-    if (totalSetups <= 0) {
-      return [0, 0, 0, 0, 0, 0, 0];
+    for (const doc of docs) {
+      const value = doc?.value || {};
+      const setupDate = value?.setupDate;
+      if (!setupDate) continue;
+
+      const date = new Date(setupDate);
+      if (Number.isNaN(date.getTime())) continue;
+
+      const diffDays = Math.floor((now.getTime() - date.getTime()) / 86400000);
+      if (diffDays >= 0 && diffDays < 7) {
+        const index = 6 - diffDays;
+        days[index] += 1;
+      }
     }
 
-    const weights = [0.09, 0.12, 0.14, 0.17, 0.18, 0.16, 0.14];
-    const raw = weights.map((weight) => totalSetups * weight);
-    const rounded = raw.map((value) => Math.round(value));
-    const diff = totalSetups - rounded.reduce((sum, value) => sum + value, 0);
-
-    for (let i = 0; i < Math.abs(diff); i++) {
-      const index = i % rounded.length;
-      rounded[index] += diff > 0 ? 1 : -1;
-    }
-
-    return rounded.map((value) => Math.max(0, value));
+    return days;
   } catch (error) {
     console.error('[database] Error computing daily setup counts:', error.message);
     return [0, 0, 0, 0, 0, 0, 0];

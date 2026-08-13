@@ -12,23 +12,28 @@ const PRIMARY_STATS_SOURCE = process.env.BOT_STATS_SOURCE_URL || process.env.VIT
 function hasLiveTelemetryPayload(data: any): boolean {
   if (!data || typeof data !== "object") return false;
 
-  const realValueKeys = [
-    "totalGuilds",
-    "totalMembers",
-    "totalServers",
-    "totalUsers",
-    "wsPing",
-    "botPing",
-    "totalTickets",
-    "totalXp",
-    "totalSetups",
-    "uptime"
-  ];
+  const hasCoreCounts =
+    (data.totalGuilds !== undefined && data.totalGuilds !== null && data.totalGuilds !== "") ||
+    (data.totalMembers !== undefined && data.totalMembers !== null && data.totalMembers !== "") ||
+    (data.totalServers !== undefined && data.totalServers !== null && data.totalServers !== "") ||
+    (data.totalUsers !== undefined && data.totalUsers !== null && data.totalUsers !== "");
 
-  const hasExplicitStats = realValueKeys.some((key) => data[key] !== undefined && data[key] !== null && data[key] !== "");
-  if (hasExplicitStats) return true;
+  const hasPing =
+    (data.wsPing !== undefined && data.wsPing !== null && data.wsPing !== "") ||
+    (data.botPing !== undefined && data.botPing !== null && data.botPing !== "");
 
-  return Array.isArray(data.guildCategories) || Array.isArray(data.dailySetups) || Array.isArray(data.recentLogs);
+  if (!hasCoreCounts || !hasPing) {
+    return false;
+  }
+
+  const syntheticOnlyKeys = ["totalTickets", "totalXp", "totalSetups", "setupSuccessRate", "genTime"];
+  const hasSyntheticOnlyPayload = syntheticOnlyKeys.some((key) => data[key] !== undefined && data[key] !== null && data[key] !== "")
+    && !hasCoreCounts
+    && !hasPing;
+
+  if (hasSyntheticOnlyPayload) return false;
+
+  return true;
 }
 
 app.use(express.json());
@@ -119,6 +124,8 @@ app.post("/api/bot-stats", (req, res) => {
     return res.status(401).json({ error: "Unauthorized. Missing or invalid STATS_API_KEY." });
   }
 
+  console.log("[server.ts] DEBUG payload received at /api/bot-stats:", JSON.stringify(req.body, null, 2));
+
   const {
     totalGuilds,
     totalMembers,
@@ -161,6 +168,14 @@ app.post("/api/bot-stats", (req, res) => {
   if (dailySetups !== undefined) (botStats as any).dailySetups = dailySetups;
 
   res.json({ message: "Telemetry successfully synchronized with ServerMiser web server.", currentStats: botStats });
+});
+
+app.get("/api/debug/bot-stats", (req, res) => {
+  res.json({
+    message: "Latest dashboard telemetry cache",
+    stats: botStats,
+    source: PRIMARY_STATS_SOURCE
+  });
 });
 
 // ==========================================
