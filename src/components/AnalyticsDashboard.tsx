@@ -186,8 +186,8 @@ export default function AnalyticsDashboard({ onBack, setIsHovering, isDarkMode =
     // Fire it up instantly on window load!
     fetchLiveTelemetry();
     
-    // Smooth loops that continuously refresh your data metrics stream every 10 seconds!
-    const telemetryStream = setInterval(fetchLiveTelemetry, 10000);
+    // Smooth loops that continuously refresh the live metrics stream every second.
+    const telemetryStream = setInterval(fetchLiveTelemetry, 1000);
     return () => clearInterval(telemetryStream);
   }, []);
 

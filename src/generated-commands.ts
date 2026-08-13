@@ -53,19 +53,25 @@ export const COMMANDS: Command[] = [
   },
   {
     "name": "autodelete",
-    "description": "The auto-delete profile for ${channel} is now active.",
+    "description": "Set an automated delete rule with blacklist words, triggers, and blocked content categories.",
     "usage": "|autodelete",
     "category": "utility",
     "exampleOutput": "✓ autodelete  executed successfully.",
     "permission": "Administrator"
   },
   {
-    "name": "automessage",
-    "description": "Manage recurring scheduled message pings",
-    "usage": "|automessage",
+    "name": "automessage create",
+    "description": "Establish a fresh scheduled repeating message loop",
+    "usage": "|automessage create",
     "category": "utility",
-    "exampleOutput": "✓ automessage  executed successfully.",
-    "permission": "Administrator"
+    "exampleOutput": "✓ automessage create executed successfully."
+  },
+  {
+    "name": "automessage remove",
+    "description": "Cancel an active scheduled loop and take it offline",
+    "usage": "|automessage remove",
+    "category": "utility",
+    "exampleOutput": "✓ automessage remove executed successfully."
   },
   {
     "name": "automodrule setup",
@@ -89,12 +95,88 @@ export const COMMANDS: Command[] = [
     "exampleOutput": "✓ automodrule delete executed successfully."
   },
   {
-    "name": "autoresponder",
-    "description": "Configure each part below. Your changes preview live. Click **Save** when ready.",
-    "usage": "|autoresponder",
+    "name": "autoresponder setup",
+    "description": "Open the step-by-step wizard to build a responder",
+    "usage": "|autoresponder setup",
     "category": "automod",
-    "exampleOutput": "✓ autoresponder  executed successfully.",
-    "permission": "ManageGuild"
+    "exampleOutput": "✓ autoresponder setup executed successfully."
+  },
+  {
+    "name": "autoresponder add",
+    "description": "Quickly add a responder",
+    "usage": "|autoresponder add",
+    "category": "automod",
+    "exampleOutput": "✓ autoresponder add executed successfully."
+  },
+  {
+    "name": "autoresponder list",
+    "description": "List all auto responders",
+    "usage": "|autoresponder list",
+    "category": "automod",
+    "exampleOutput": "✓ autoresponder list executed successfully."
+  },
+  {
+    "name": "autoresponder info",
+    "description": "View one responder in detail",
+    "usage": "|autoresponder info",
+    "category": "automod",
+    "exampleOutput": "✓ autoresponder info executed successfully."
+  },
+  {
+    "name": "autoresponder edit",
+    "description": "Edit an existing responder in the wizard",
+    "usage": "|autoresponder edit",
+    "category": "automod",
+    "exampleOutput": "✓ autoresponder edit executed successfully."
+  },
+  {
+    "name": "autoresponder remove",
+    "description": "Delete a responder",
+    "usage": "|autoresponder remove",
+    "category": "automod",
+    "exampleOutput": "✓ autoresponder remove executed successfully."
+  },
+  {
+    "name": "autoresponder toggle",
+    "description": "Enable/disable a single responder",
+    "usage": "|autoresponder toggle",
+    "category": "automod",
+    "exampleOutput": "✓ autoresponder toggle executed successfully."
+  },
+  {
+    "name": "autoresponder test",
+    "description": "Preview how a responder renders",
+    "usage": "|autoresponder test",
+    "category": "automod",
+    "exampleOutput": "✓ autoresponder test executed successfully."
+  },
+  {
+    "name": "autoresponder variables",
+    "description": "See every placeholder variable you can use",
+    "usage": "|autoresponder variables",
+    "category": "automod",
+    "exampleOutput": "✓ autoresponder variables executed successfully."
+  },
+  {
+    "name": "autoresponder config",
+    "description": "View the module overview",
+    "usage": "|autoresponder config",
+    "category": "automod",
+    "exampleOutput": "✓ autoresponder config executed successfully."
+  },
+  {
+    "name": "autoresponder enable",
+    "description": "Enable the auto responder module (Manage Server)",
+    "usage": "|autoresponder enable",
+    "category": "automod",
+    "exampleOutput": "✓ autoresponder enable executed successfully."
+  },
+  {
+    "name": "autoresponder disable",
+    "description": "Disable the auto responder module (Manage Server)",
+    "usage": "|autoresponder disable",
+    "category": "automod",
+    "exampleOutput": "✓ autoresponder disable executed successfully."
   },
   {
     "name": "autorole all",
@@ -145,12 +227,88 @@ export const COMMANDS: Command[] = [
     "permission": "BanMembers"
   },
   {
-    "name": "birthdays",
-    "description": "Birthday management",
-    "usage": "|birthdays",
+    "name": "birthdays set",
+    "description": "Set your birthday",
+    "usage": "|birthdays set",
     "category": "social",
-    "exampleOutput": "✓ birthdays  executed successfully.",
-    "permission": "ManageGuild"
+    "exampleOutput": "✓ birthdays set executed successfully."
+  },
+  {
+    "name": "birthdays remove",
+    "description": "Remove your birthday",
+    "usage": "|birthdays remove",
+    "category": "social",
+    "exampleOutput": "✓ birthdays remove executed successfully."
+  },
+  {
+    "name": "birthdays check",
+    "description": "Check a birthday",
+    "usage": "|birthdays check",
+    "category": "social",
+    "exampleOutput": "✓ birthdays check executed successfully."
+  },
+  {
+    "name": "birthdays today",
+    "description": "Show all birthdays today in this server",
+    "usage": "|birthdays today",
+    "category": "social",
+    "exampleOutput": "✓ birthdays today executed successfully."
+  },
+  {
+    "name": "birthdays upcoming",
+    "description": "Show upcoming birthdays",
+    "usage": "|birthdays upcoming",
+    "category": "social",
+    "exampleOutput": "✓ birthdays upcoming executed successfully."
+  },
+  {
+    "name": "birthdays list",
+    "description": "List all members with a birthday set",
+    "usage": "|birthdays list",
+    "category": "social",
+    "exampleOutput": "✓ birthdays list executed successfully."
+  },
+  {
+    "name": "birthdays config",
+    "description": "Show current birthday module configuration (staff only)",
+    "usage": "|birthdays config",
+    "category": "social",
+    "exampleOutput": "✓ birthdays config executed successfully."
+  },
+  {
+    "name": "birthdays set-channel",
+    "description": "Set the birthday announcement channel (staff only)",
+    "usage": "|birthdays set-channel",
+    "category": "social",
+    "exampleOutput": "✓ birthdays set-channel executed successfully."
+  },
+  {
+    "name": "birthdays set-role",
+    "description": "Set the birthday role (staff only)",
+    "usage": "|birthdays set-role",
+    "category": "social",
+    "exampleOutput": "✓ birthdays set-role executed successfully."
+  },
+  {
+    "name": "birthdays set-time",
+    "description": "Time in HH:MM UTC format",
+    "usage": "|birthdays set-time",
+    "category": "social",
+    "exampleOutput": "✓ birthdays set-time executed successfully."
+  },
+  {
+    "name": "birthdays toggle",
+    "description": "Enable or disable the birthday module (staff only)",
+    "usage": "|birthdays toggle",
+    "category": "social",
+    "exampleOutput": "✓ birthdays toggle executed successfully."
+  },
+  {
+    "name": "birthdays test",
+    "description": "Test the birthday announcement for yourself right now (staff only)",
+    "usage": "|birthdays test",
+    "category": "social",
+    "exampleOutput": "✓ birthdays test executed successfully."
   },
   {
     "name": "capabilities",
@@ -174,12 +332,39 @@ export const COMMANDS: Command[] = [
     "exampleOutput": "✓ cat  executed successfully."
   },
   {
-    "name": "channels",
-    "description": "Create, edit, customize, and delete channels and categories.",
-    "usage": "|channels",
+    "name": "channels create",
+    "description": "Create a new channel or category.",
+    "usage": "|channels create",
     "category": "utility",
-    "exampleOutput": "✓ channels  executed successfully.",
-    "permission": "ManageChannels"
+    "exampleOutput": "✓ channels create executed successfully."
+  },
+  {
+    "name": "channels delete",
+    "description": "Delete an existing channel or category.",
+    "usage": "|channels delete",
+    "category": "utility",
+    "exampleOutput": "✓ channels delete executed successfully."
+  },
+  {
+    "name": "channels edit",
+    "description": "Edit a channel name, topic, slowmode, and NSFW status.",
+    "usage": "|channels edit",
+    "category": "utility",
+    "exampleOutput": "✓ channels edit executed successfully."
+  },
+  {
+    "name": "channels customize",
+    "description": "Customize permissions, locks, and access for a channel.",
+    "usage": "|channels customize",
+    "category": "utility",
+    "exampleOutput": "✓ channels customize executed successfully."
+  },
+  {
+    "name": "channels category",
+    "description": "Create, delete, or customize a category.",
+    "usage": "|channels category",
+    "category": "utility",
+    "exampleOutput": "✓ channels category executed successfully."
   },
   {
     "name": "coinflip",
@@ -218,6 +403,48 @@ export const COMMANDS: Command[] = [
     "exampleOutput": "✓ dog  executed successfully."
   },
   {
+    "name": "embed field add",
+    "description": "Open a modal to add a field to your embed",
+    "usage": "|embed field add",
+    "category": "utility",
+    "exampleOutput": "✓ embed add executed successfully."
+  },
+  {
+    "name": "embed field remove",
+    "description": "Remove a field from your embed by index",
+    "usage": "|embed field remove",
+    "category": "utility",
+    "exampleOutput": "✓ embed remove executed successfully."
+  },
+  {
+    "name": "embed template save",
+    "description": "Save current embed as a named template",
+    "usage": "|embed template save",
+    "category": "utility",
+    "exampleOutput": "✓ embed save executed successfully."
+  },
+  {
+    "name": "embed template load",
+    "description": "Load a saved template into your session",
+    "usage": "|embed template load",
+    "category": "utility",
+    "exampleOutput": "✓ embed load executed successfully."
+  },
+  {
+    "name": "embed template list",
+    "description": "List all saved templates for this server",
+    "usage": "|embed template list",
+    "category": "utility",
+    "exampleOutput": "✓ embed list executed successfully."
+  },
+  {
+    "name": "embed template delete",
+    "description": "Delete a saved template",
+    "usage": "|embed template delete",
+    "category": "utility",
+    "exampleOutput": "✓ embed delete executed successfully."
+  },
+  {
     "name": "embed create",
     "description": "Open a modal to build a new embed",
     "usage": "|embed create",
@@ -239,23 +466,9 @@ export const COMMANDS: Command[] = [
     "exampleOutput": "✓ embed send executed successfully."
   },
   {
-    "name": "embed field add",
-    "description": "Open a modal to add a field to your embed",
-    "usage": "|embed field add",
-    "category": "utility",
-    "exampleOutput": "✓ embed add executed successfully."
-  },
-  {
-    "name": "embed field remove",
-    "description": "Remove a field from your embed by index",
-    "usage": "|embed field remove",
-    "category": "utility",
-    "exampleOutput": "✓ embed remove executed successfully."
-  },
-  {
-    "name": "embed field image",
+    "name": "embed image",
     "description": "Set the large image URL on your embed",
-    "usage": "|embed field image",
+    "usage": "|embed image",
     "category": "utility",
     "exampleOutput": "✓ embed image executed successfully."
   },
@@ -302,34 +515,6 @@ export const COMMANDS: Command[] = [
     "exampleOutput": "✓ embed clear executed successfully."
   },
   {
-    "name": "embed template save",
-    "description": "Save current embed as a named template",
-    "usage": "|embed template save",
-    "category": "utility",
-    "exampleOutput": "✓ embed save executed successfully."
-  },
-  {
-    "name": "embed template load",
-    "description": "Load a saved template into your session",
-    "usage": "|embed template load",
-    "category": "utility",
-    "exampleOutput": "✓ embed load executed successfully."
-  },
-  {
-    "name": "embed list",
-    "description": "List all saved templates for this server",
-    "usage": "|embed list",
-    "category": "utility",
-    "exampleOutput": "✓ embed list executed successfully."
-  },
-  {
-    "name": "embed delete",
-    "description": "Delete a saved template",
-    "usage": "|embed delete",
-    "category": "utility",
-    "exampleOutput": "✓ embed delete executed successfully."
-  },
-  {
     "name": "flavor",
     "description": "Discover your current ice cream flavor personality.",
     "usage": "|flavor",
@@ -359,12 +544,25 @@ export const COMMANDS: Command[] = [
     "permission": "ManageGuild"
   },
   {
-    "name": "giveaway",
-    "description": "Establish and manage customizable item drops",
-    "usage": "|giveaway",
+    "name": "giveaway start",
+    "description": "Launch a fresh background scheduled giveaway pool",
+    "usage": "|giveaway start",
     "category": "social",
-    "exampleOutput": "✓ giveaway  executed successfully.",
-    "permission": "Administrator"
+    "exampleOutput": "✓ giveaway start executed successfully."
+  },
+  {
+    "name": "giveaway reroll",
+    "description": "Pick new winners from an existing ended giveaway database profile",
+    "usage": "|giveaway reroll",
+    "category": "social",
+    "exampleOutput": "✓ giveaway reroll executed successfully."
+  },
+  {
+    "name": "giveaway end",
+    "description": "Forcefully end an active giveaway pool and draw winners immediately",
+    "usage": "|giveaway end",
+    "category": "social",
+    "exampleOutput": "✓ giveaway end executed successfully."
   },
   {
     "name": "guilds",
@@ -389,12 +587,74 @@ export const COMMANDS: Command[] = [
     "exampleOutput": "✓ hug  executed successfully."
   },
   {
-    "name": "invites",
-    "description": "Advanced invite tracking system",
-    "usage": "|invites",
+    "name": "invites check",
+    "description": "Check invite stats for a user",
+    "usage": "|invites check",
     "category": "utility",
-    "exampleOutput": "✓ invites  executed successfully.",
-    "permission": "ManageGuild"
+    "exampleOutput": "✓ invites check executed successfully."
+  },
+  {
+    "name": "invites leaderboard",
+    "description": "Top 10 inviters by net invites",
+    "usage": "|invites leaderboard",
+    "category": "utility",
+    "exampleOutput": "✓ invites leaderboard executed successfully."
+  },
+  {
+    "name": "invites reset",
+    "description": "Reset invite counts (staff only)",
+    "usage": "|invites reset",
+    "category": "utility",
+    "exampleOutput": "✓ invites reset executed successfully."
+  },
+  {
+    "name": "invites config",
+    "description": "Set the invite log channel (staff only)",
+    "usage": "|invites config",
+    "category": "utility",
+    "exampleOutput": "✓ invites config executed successfully."
+  },
+  {
+    "name": "invites add",
+    "description": "Add bonus invites to a user (staff only)",
+    "usage": "|invites add",
+    "category": "utility",
+    "exampleOutput": "✓ invites add executed successfully."
+  },
+  {
+    "name": "invites remove",
+    "description": "Remove invites from a user (staff only)",
+    "usage": "|invites remove",
+    "category": "utility",
+    "exampleOutput": "✓ invites remove executed successfully."
+  },
+  {
+    "name": "invites toggle",
+    "description": "Enable or disable invite tracking (staff only)",
+    "usage": "|invites toggle",
+    "category": "utility",
+    "exampleOutput": "✓ invites toggle executed successfully."
+  },
+  {
+    "name": "invites stats",
+    "description": "Server-wide invite statistics (staff only)",
+    "usage": "|invites stats",
+    "category": "utility",
+    "exampleOutput": "✓ invites stats executed successfully."
+  },
+  {
+    "name": "invites code",
+    "description": "Look up a specific invite code (staff only)",
+    "usage": "|invites code",
+    "category": "utility",
+    "exampleOutput": "✓ invites code executed successfully."
+  },
+  {
+    "name": "invites fake-threshold",
+    "description": "Minimum account age in days (default 7)",
+    "usage": "|invites fake-threshold",
+    "category": "utility",
+    "exampleOutput": "✓ invites fake-threshold executed successfully."
   },
   {
     "name": "joke",
@@ -410,6 +670,41 @@ export const COMMANDS: Command[] = [
     "category": "moderation",
     "exampleOutput": "✓ Kicked member @user",
     "permission": "KickMembers"
+  },
+  {
+    "name": "level xp add",
+    "description": "Add XP to a user",
+    "usage": "|level xp add",
+    "category": "leveling",
+    "exampleOutput": "📈 Leveling system updated."
+  },
+  {
+    "name": "level xp remove",
+    "description": "Remove XP from a user",
+    "usage": "|level xp remove",
+    "category": "leveling",
+    "exampleOutput": "📈 Leveling system updated."
+  },
+  {
+    "name": "level xp set",
+    "description": "Target user",
+    "usage": "|level xp set",
+    "category": "leveling",
+    "exampleOutput": "📈 Leveling system updated."
+  },
+  {
+    "name": "level xp reset",
+    "description": "Target user",
+    "usage": "|level xp reset",
+    "category": "leveling",
+    "exampleOutput": "📈 Leveling system updated."
+  },
+  {
+    "name": "level rank",
+    "description": "User to check (defaults to you)",
+    "usage": "|level rank",
+    "category": "leveling",
+    "exampleOutput": "📈 Leveling system updated."
   },
   {
     "name": "level leaderboard",
@@ -433,26 +728,18 @@ export const COMMANDS: Command[] = [
     "exampleOutput": "📈 Leveling system updated."
   },
   {
-    "name": "level xp add",
-    "description": "Add XP to a user",
-    "usage": "|level xp add",
-    "category": "leveling",
-    "exampleOutput": "📈 Leveling system updated."
-  },
-  {
-    "name": "level xp remove",
-    "description": "Remove XP from a user",
-    "usage": "|level xp remove",
-    "category": "leveling",
-    "exampleOutput": "📈 Leveling system updated."
-  },
-  {
-    "name": "lockdown",
-    "description": "Freeze or thaw text channels during emergencies",
-    "usage": "|lockdown",
+    "name": "lockdown on",
+    "description": "Lock down a channel to prevent standard users from messaging",
+    "usage": "|lockdown on",
     "category": "moderation",
-    "exampleOutput": "✓ lockdown  executed successfully.",
-    "permission": "Administrator"
+    "exampleOutput": "✓ lockdown on executed successfully."
+  },
+  {
+    "name": "lockdown off",
+    "description": "Lift a lockdown and allow standard text activity again",
+    "usage": "|lockdown off",
+    "category": "moderation",
+    "exampleOutput": "✓ lockdown off executed successfully."
   },
   {
     "name": "meme",
@@ -485,12 +772,18 @@ export const COMMANDS: Command[] = [
     "exampleOutput": "✓ mydata  executed successfully."
   },
   {
-    "name": "poll",
-    "description": "Create and manage polls",
-    "usage": "|poll",
+    "name": "poll create",
+    "description": "Create a poll with vote buttons",
+    "usage": "|poll create",
     "category": "social",
-    "exampleOutput": "✓ poll  executed successfully.",
-    "permission": "Administrator"
+    "exampleOutput": "✓ poll create executed successfully."
+  },
+  {
+    "name": "poll setup",
+    "description": "Configure who can create polls in this server (admin only)",
+    "usage": "|poll setup",
+    "category": "social",
+    "exampleOutput": "✓ poll setup executed successfully."
   },
   {
     "name": "predict-love",
@@ -500,20 +793,46 @@ export const COMMANDS: Command[] = [
     "exampleOutput": "✓ predict-love  executed successfully."
   },
   {
-    "name": "premium",
-    "description": "Premium includes everything in the Free tier, plus the additions below.",
-    "usage": "|premium",
+    "name": "premium about",
+    "description": "See what ServerMiser Premium is and how to get it",
+    "usage": "|premium about",
     "category": "utility",
-    "exampleOutput": "✓ premium  executed successfully.",
-    "permission": "SendMessages"
+    "exampleOutput": "✓ premium about executed successfully."
   },
   {
-    "name": "purge",
-    "description": "Bulk delete messages using advanced filtering",
-    "usage": "|purge",
+    "name": "premium info",
+    "description": "Compare Free and Premium side by side",
+    "usage": "|premium info",
+    "category": "utility",
+    "exampleOutput": "✓ premium info executed successfully."
+  },
+  {
+    "name": "purge any",
+    "description": "Delete any recent messages matching no specific filter",
+    "usage": "|purge any",
     "category": "moderation",
-    "exampleOutput": "✓ purge  executed successfully.",
-    "permission": "Administrator"
+    "exampleOutput": "✓ purge any executed successfully."
+  },
+  {
+    "name": "purge user",
+    "description": "Purge messages sent exclusively by a specific member",
+    "usage": "|purge user",
+    "category": "moderation",
+    "exampleOutput": "✓ purge user executed successfully."
+  },
+  {
+    "name": "purge bot",
+    "description": "Purge messages sent exclusively by automated bots",
+    "usage": "|purge bot",
+    "category": "moderation",
+    "exampleOutput": "✓ purge bot executed successfully."
+  },
+  {
+    "name": "purge links",
+    "description": "Purge recent messages containing HTTP/HTTPS links",
+    "usage": "|purge links",
+    "category": "moderation",
+    "exampleOutput": "✓ purge links executed successfully."
   },
   {
     "name": "purpose",
@@ -585,12 +904,100 @@ export const COMMANDS: Command[] = [
     "exampleOutput": "✓ roast  executed successfully."
   },
   {
-    "name": "role",
-    "description": "Role management system",
-    "usage": "|role",
+    "name": "role user",
+    "description": "The target member",
+    "usage": "|role user",
     "category": "roles",
     "exampleOutput": "✓ Role management command executed successfully.",
-    "permission": "ManageRoles"
+    "permission": "Manage Roles"
+  },
+  {
+    "name": "role remove",
+    "description": "The target member",
+    "usage": "|role remove",
+    "category": "roles",
+    "exampleOutput": "✓ Role management command executed successfully.",
+    "permission": "Manage Roles"
+  },
+  {
+    "name": "role create",
+    "description": "The name of the new role",
+    "usage": "|role create",
+    "category": "roles",
+    "exampleOutput": "✓ Role management command executed successfully.",
+    "permission": "Manage Roles"
+  },
+  {
+    "name": "role delete",
+    "description": "The role to delete",
+    "usage": "|role delete",
+    "category": "roles",
+    "exampleOutput": "✓ Role management command executed successfully.",
+    "permission": "Manage Roles"
+  },
+  {
+    "name": "role everyone",
+    "description": "The role to give to everyone",
+    "usage": "|role everyone",
+    "category": "roles",
+    "exampleOutput": "✓ Role management command executed successfully.",
+    "permission": "Manage Roles"
+  },
+  {
+    "name": "role bots",
+    "description": "The role to give to all bots",
+    "usage": "|role bots",
+    "category": "roles",
+    "exampleOutput": "✓ Role management command executed successfully.",
+    "permission": "Manage Roles"
+  },
+  {
+    "name": "role humans",
+    "description": "The role to give to all humans",
+    "usage": "|role humans",
+    "category": "roles",
+    "exampleOutput": "✓ Role management command executed successfully.",
+    "permission": "Manage Roles"
+  },
+  {
+    "name": "role info",
+    "description": "The target role",
+    "usage": "|role info",
+    "category": "roles",
+    "exampleOutput": "✓ Role management command executed successfully.",
+    "permission": "Manage Roles"
+  },
+  {
+    "name": "role color",
+    "description": "The role to modify",
+    "usage": "|role color",
+    "category": "roles",
+    "exampleOutput": "✓ Role management command executed successfully.",
+    "permission": "Manage Roles"
+  },
+  {
+    "name": "role rename",
+    "description": "The role to rename",
+    "usage": "|role rename",
+    "category": "roles",
+    "exampleOutput": "✓ Role management command executed successfully.",
+    "permission": "Manage Roles"
+  },
+  {
+    "name": "role hoist",
+    "description": "The role to toggle hoist status",
+    "usage": "|role hoist",
+    "category": "roles",
+    "exampleOutput": "✓ Role management command executed successfully.",
+    "permission": "Manage Roles"
+  },
+  {
+    "name": "role mentionable",
+    "description": "The role to toggle mention status",
+    "usage": "|role mentionable",
+    "category": "roles",
+    "exampleOutput": "✓ Role management command executed successfully.",
+    "permission": "Manage Roles"
   },
   {
     "name": "roll",
@@ -608,12 +1015,60 @@ export const COMMANDS: Command[] = [
     "permission": "Administrator"
   },
   {
-    "name": "selfvoice",
-    "description": "\udf99️ Create self-managed temporary voice channels that clean themselves up.",
-    "usage": "|selfvoice",
+    "name": "selfvoice create",
+    "description": "Create your own temporary voice channel (must be enabled by staff).",
+    "usage": "|selfvoice create",
     "category": "voice",
     "exampleOutput": "🔊 Voice room created successfully.",
-    "permission": "Administrator"
+    "permission": "Manage Server"
+  },
+  {
+    "name": "selfvoice setup",
+    "description": "[Staff] Launch the guided Self Voice setup wizard.",
+    "usage": "|selfvoice setup",
+    "category": "voice",
+    "exampleOutput": "🔊 Voice room created successfully.",
+    "permission": "Manage Server"
+  },
+  {
+    "name": "selfvoice enable",
+    "description": "[Staff] Enable the Self Voice module for this server.",
+    "usage": "|selfvoice enable",
+    "category": "voice",
+    "exampleOutput": "🔊 Voice room created successfully.",
+    "permission": "Manage Server"
+  },
+  {
+    "name": "selfvoice disable",
+    "description": "[Staff] Disable the Self Voice module for this server.",
+    "usage": "|selfvoice disable",
+    "category": "voice",
+    "exampleOutput": "🔊 Voice room created successfully.",
+    "permission": "Manage Server"
+  },
+  {
+    "name": "selfvoice config",
+    "description": "View the current Self Voice configuration.",
+    "usage": "|selfvoice config",
+    "category": "voice",
+    "exampleOutput": "🔊 Voice room created successfully.",
+    "permission": "Manage Server"
+  },
+  {
+    "name": "selfvoice panel",
+    "description": "Resend the control panel for your active room.",
+    "usage": "|selfvoice panel",
+    "category": "voice",
+    "exampleOutput": "🔊 Voice room created successfully.",
+    "permission": "Manage Server"
+  },
+  {
+    "name": "selfvoice set",
+    "description": "[Staff] Tweak a single Self Voice setting.",
+    "usage": "|selfvoice set",
+    "category": "voice",
+    "exampleOutput": "🔊 Voice room created successfully.",
+    "permission": "Manage Server"
   },
   {
     "name": "setup-audit",
@@ -639,12 +1094,32 @@ export const COMMANDS: Command[] = [
     "exampleOutput": "✓ slap  executed successfully."
   },
   {
-    "name": "slowmode",
-    "description": "Manage channel slowmode intervals",
-    "usage": "|slowmode",
+    "name": "slowmode create",
+    "description": "Establish a slowmode restriction on a channel",
+    "usage": "|slowmode create",
     "category": "moderation",
-    "exampleOutput": "✓ slowmode  executed successfully.",
-    "permission": "ManageMessages"
+    "exampleOutput": "✓ slowmode create executed successfully."
+  },
+  {
+    "name": "slowmode edit",
+    "description": "Modify an existing channel slowmode interval",
+    "usage": "|slowmode edit",
+    "category": "moderation",
+    "exampleOutput": "✓ slowmode edit executed successfully."
+  },
+  {
+    "name": "slowmode remove",
+    "description": "Completely remove slowmode restrictions from a channel",
+    "usage": "|slowmode remove",
+    "category": "moderation",
+    "exampleOutput": "✓ slowmode remove executed successfully."
+  },
+  {
+    "name": "slowmode exempt",
+    "description": "Audit who bypasses the slowmode rule inside a channel",
+    "usage": "|slowmode exempt",
+    "category": "moderation",
+    "exampleOutput": "✓ slowmode exempt executed successfully."
   },
   {
     "name": "spacefact",
@@ -703,12 +1178,18 @@ export const COMMANDS: Command[] = [
     "exampleOutput": "✓ starboard stats executed successfully."
   },
   {
-    "name": "stickies",
-    "description": "Deploy and manage a single sticky message per channel.",
-    "usage": "|stickies",
+    "name": "stickies deploy",
+    "description": "Deploy a sticky in the selected channel and delete the previous sticky",
+    "usage": "|stickies deploy",
     "category": "utility",
-    "exampleOutput": "✓ stickies  executed successfully.",
-    "permission": "Administrator"
+    "exampleOutput": "✓ stickies deploy executed successfully."
+  },
+  {
+    "name": "stickies clear",
+    "description": "Remove the active sticky in the selected channel",
+    "usage": "|stickies clear",
+    "category": "utility",
+    "exampleOutput": "✓ stickies clear executed successfully."
   },
   {
     "name": "suggestions setup",
@@ -781,12 +1262,32 @@ export const COMMANDS: Command[] = [
     "exampleOutput": "✓ suggestions my executed successfully."
   },
   {
-    "name": "ticket",
-    "description": "\udf9f️ Advanced support ticket configuration and management system",
-    "usage": "|ticket",
+    "name": "ticket setup",
+    "description": "Launch the interactive ticket panel deployment wizard",
+    "usage": "|ticket setup",
     "category": "tickets",
-    "exampleOutput": "🎫 Ticket system configured.",
-    "permission": "Administrator"
+    "exampleOutput": "🎫 Ticket system configured."
+  },
+  {
+    "name": "ticket ongoing",
+    "description": "\udccb View all live, active support ticket sessions",
+    "usage": "|ticket ongoing",
+    "category": "tickets",
+    "exampleOutput": "🎫 Ticket system configured."
+  },
+  {
+    "name": "ticket history",
+    "description": "\udcdc View all ticket history with pagination and transcript search",
+    "usage": "|ticket history",
+    "category": "tickets",
+    "exampleOutput": "🎫 Ticket system configured."
+  },
+  {
+    "name": "ticket purge",
+    "description": "⚠️ Instantly delete all active tickets from the datastore",
+    "usage": "|ticket purge",
+    "category": "tickets",
+    "exampleOutput": "🎫 Ticket system configured."
   },
   {
     "name": "trivia",
@@ -1079,19 +1580,25 @@ export const COMMANDS_BY_CATEGORY = {
   "utility": [
     {
       "name": "autodelete",
-      "description": "The auto-delete profile for ${channel} is now active.",
+      "description": "Set an automated delete rule with blacklist words, triggers, and blocked content categories.",
       "usage": "|autodelete",
       "category": "utility",
       "exampleOutput": "✓ autodelete  executed successfully.",
       "permission": "Administrator"
     },
     {
-      "name": "automessage",
-      "description": "Manage recurring scheduled message pings",
-      "usage": "|automessage",
+      "name": "automessage create",
+      "description": "Establish a fresh scheduled repeating message loop",
+      "usage": "|automessage create",
       "category": "utility",
-      "exampleOutput": "✓ automessage  executed successfully.",
-      "permission": "Administrator"
+      "exampleOutput": "✓ automessage create executed successfully."
+    },
+    {
+      "name": "automessage remove",
+      "description": "Cancel an active scheduled loop and take it offline",
+      "usage": "|automessage remove",
+      "category": "utility",
+      "exampleOutput": "✓ automessage remove executed successfully."
     },
     {
       "name": "capabilities",
@@ -1101,12 +1608,81 @@ export const COMMANDS_BY_CATEGORY = {
       "exampleOutput": "✓ capabilities  executed successfully."
     },
     {
-      "name": "channels",
-      "description": "Create, edit, customize, and delete channels and categories.",
-      "usage": "|channels",
+      "name": "channels create",
+      "description": "Create a new channel or category.",
+      "usage": "|channels create",
       "category": "utility",
-      "exampleOutput": "✓ channels  executed successfully.",
-      "permission": "ManageChannels"
+      "exampleOutput": "✓ channels create executed successfully."
+    },
+    {
+      "name": "channels delete",
+      "description": "Delete an existing channel or category.",
+      "usage": "|channels delete",
+      "category": "utility",
+      "exampleOutput": "✓ channels delete executed successfully."
+    },
+    {
+      "name": "channels edit",
+      "description": "Edit a channel name, topic, slowmode, and NSFW status.",
+      "usage": "|channels edit",
+      "category": "utility",
+      "exampleOutput": "✓ channels edit executed successfully."
+    },
+    {
+      "name": "channels customize",
+      "description": "Customize permissions, locks, and access for a channel.",
+      "usage": "|channels customize",
+      "category": "utility",
+      "exampleOutput": "✓ channels customize executed successfully."
+    },
+    {
+      "name": "channels category",
+      "description": "Create, delete, or customize a category.",
+      "usage": "|channels category",
+      "category": "utility",
+      "exampleOutput": "✓ channels category executed successfully."
+    },
+    {
+      "name": "embed field add",
+      "description": "Open a modal to add a field to your embed",
+      "usage": "|embed field add",
+      "category": "utility",
+      "exampleOutput": "✓ embed add executed successfully."
+    },
+    {
+      "name": "embed field remove",
+      "description": "Remove a field from your embed by index",
+      "usage": "|embed field remove",
+      "category": "utility",
+      "exampleOutput": "✓ embed remove executed successfully."
+    },
+    {
+      "name": "embed template save",
+      "description": "Save current embed as a named template",
+      "usage": "|embed template save",
+      "category": "utility",
+      "exampleOutput": "✓ embed save executed successfully."
+    },
+    {
+      "name": "embed template load",
+      "description": "Load a saved template into your session",
+      "usage": "|embed template load",
+      "category": "utility",
+      "exampleOutput": "✓ embed load executed successfully."
+    },
+    {
+      "name": "embed template list",
+      "description": "List all saved templates for this server",
+      "usage": "|embed template list",
+      "category": "utility",
+      "exampleOutput": "✓ embed list executed successfully."
+    },
+    {
+      "name": "embed template delete",
+      "description": "Delete a saved template",
+      "usage": "|embed template delete",
+      "category": "utility",
+      "exampleOutput": "✓ embed delete executed successfully."
     },
     {
       "name": "embed create",
@@ -1130,23 +1706,9 @@ export const COMMANDS_BY_CATEGORY = {
       "exampleOutput": "✓ embed send executed successfully."
     },
     {
-      "name": "embed field add",
-      "description": "Open a modal to add a field to your embed",
-      "usage": "|embed field add",
-      "category": "utility",
-      "exampleOutput": "✓ embed add executed successfully."
-    },
-    {
-      "name": "embed field remove",
-      "description": "Remove a field from your embed by index",
-      "usage": "|embed field remove",
-      "category": "utility",
-      "exampleOutput": "✓ embed remove executed successfully."
-    },
-    {
-      "name": "embed field image",
+      "name": "embed image",
       "description": "Set the large image URL on your embed",
-      "usage": "|embed field image",
+      "usage": "|embed image",
       "category": "utility",
       "exampleOutput": "✓ embed image executed successfully."
     },
@@ -1193,34 +1755,6 @@ export const COMMANDS_BY_CATEGORY = {
       "exampleOutput": "✓ embed clear executed successfully."
     },
     {
-      "name": "embed template save",
-      "description": "Save current embed as a named template",
-      "usage": "|embed template save",
-      "category": "utility",
-      "exampleOutput": "✓ embed save executed successfully."
-    },
-    {
-      "name": "embed template load",
-      "description": "Load a saved template into your session",
-      "usage": "|embed template load",
-      "category": "utility",
-      "exampleOutput": "✓ embed load executed successfully."
-    },
-    {
-      "name": "embed list",
-      "description": "List all saved templates for this server",
-      "usage": "|embed list",
-      "category": "utility",
-      "exampleOutput": "✓ embed list executed successfully."
-    },
-    {
-      "name": "embed delete",
-      "description": "Delete a saved template",
-      "usage": "|embed delete",
-      "category": "utility",
-      "exampleOutput": "✓ embed delete executed successfully."
-    },
-    {
       "name": "flavor",
       "description": "Discover your current ice cream flavor personality.",
       "usage": "|flavor",
@@ -1243,12 +1777,74 @@ export const COMMANDS_BY_CATEGORY = {
       "exampleOutput": "✓ help  executed successfully."
     },
     {
-      "name": "invites",
-      "description": "Advanced invite tracking system",
-      "usage": "|invites",
+      "name": "invites check",
+      "description": "Check invite stats for a user",
+      "usage": "|invites check",
       "category": "utility",
-      "exampleOutput": "✓ invites  executed successfully.",
-      "permission": "ManageGuild"
+      "exampleOutput": "✓ invites check executed successfully."
+    },
+    {
+      "name": "invites leaderboard",
+      "description": "Top 10 inviters by net invites",
+      "usage": "|invites leaderboard",
+      "category": "utility",
+      "exampleOutput": "✓ invites leaderboard executed successfully."
+    },
+    {
+      "name": "invites reset",
+      "description": "Reset invite counts (staff only)",
+      "usage": "|invites reset",
+      "category": "utility",
+      "exampleOutput": "✓ invites reset executed successfully."
+    },
+    {
+      "name": "invites config",
+      "description": "Set the invite log channel (staff only)",
+      "usage": "|invites config",
+      "category": "utility",
+      "exampleOutput": "✓ invites config executed successfully."
+    },
+    {
+      "name": "invites add",
+      "description": "Add bonus invites to a user (staff only)",
+      "usage": "|invites add",
+      "category": "utility",
+      "exampleOutput": "✓ invites add executed successfully."
+    },
+    {
+      "name": "invites remove",
+      "description": "Remove invites from a user (staff only)",
+      "usage": "|invites remove",
+      "category": "utility",
+      "exampleOutput": "✓ invites remove executed successfully."
+    },
+    {
+      "name": "invites toggle",
+      "description": "Enable or disable invite tracking (staff only)",
+      "usage": "|invites toggle",
+      "category": "utility",
+      "exampleOutput": "✓ invites toggle executed successfully."
+    },
+    {
+      "name": "invites stats",
+      "description": "Server-wide invite statistics (staff only)",
+      "usage": "|invites stats",
+      "category": "utility",
+      "exampleOutput": "✓ invites stats executed successfully."
+    },
+    {
+      "name": "invites code",
+      "description": "Look up a specific invite code (staff only)",
+      "usage": "|invites code",
+      "category": "utility",
+      "exampleOutput": "✓ invites code executed successfully."
+    },
+    {
+      "name": "invites fake-threshold",
+      "description": "Minimum account age in days (default 7)",
+      "usage": "|invites fake-threshold",
+      "category": "utility",
+      "exampleOutput": "✓ invites fake-threshold executed successfully."
     },
     {
       "name": "mod-logs-toggle",
@@ -1266,12 +1862,18 @@ export const COMMANDS_BY_CATEGORY = {
       "exampleOutput": "✓ mydata  executed successfully."
     },
     {
-      "name": "premium",
-      "description": "Premium includes everything in the Free tier, plus the additions below.",
-      "usage": "|premium",
+      "name": "premium about",
+      "description": "See what ServerMiser Premium is and how to get it",
+      "usage": "|premium about",
       "category": "utility",
-      "exampleOutput": "✓ premium  executed successfully.",
-      "permission": "SendMessages"
+      "exampleOutput": "✓ premium about executed successfully."
+    },
+    {
+      "name": "premium info",
+      "description": "Compare Free and Premium side by side",
+      "usage": "|premium info",
+      "category": "utility",
+      "exampleOutput": "✓ premium info executed successfully."
     },
     {
       "name": "purpose",
@@ -1338,12 +1940,18 @@ export const COMMANDS_BY_CATEGORY = {
       "exampleOutput": "✓ starboard stats executed successfully."
     },
     {
-      "name": "stickies",
-      "description": "Deploy and manage a single sticky message per channel.",
-      "usage": "|stickies",
+      "name": "stickies deploy",
+      "description": "Deploy a sticky in the selected channel and delete the previous sticky",
+      "usage": "|stickies deploy",
       "category": "utility",
-      "exampleOutput": "✓ stickies  executed successfully.",
-      "permission": "Administrator"
+      "exampleOutput": "✓ stickies deploy executed successfully."
+    },
+    {
+      "name": "stickies clear",
+      "description": "Remove the active sticky in the selected channel",
+      "usage": "|stickies clear",
+      "category": "utility",
+      "exampleOutput": "✓ stickies clear executed successfully."
     },
     {
       "name": "unwarn",
@@ -1377,12 +1985,88 @@ export const COMMANDS_BY_CATEGORY = {
       "exampleOutput": "✓ automodrule delete executed successfully."
     },
     {
-      "name": "autoresponder",
-      "description": "Configure each part below. Your changes preview live. Click **Save** when ready.",
-      "usage": "|autoresponder",
+      "name": "autoresponder setup",
+      "description": "Open the step-by-step wizard to build a responder",
+      "usage": "|autoresponder setup",
       "category": "automod",
-      "exampleOutput": "✓ autoresponder  executed successfully.",
-      "permission": "ManageGuild"
+      "exampleOutput": "✓ autoresponder setup executed successfully."
+    },
+    {
+      "name": "autoresponder add",
+      "description": "Quickly add a responder",
+      "usage": "|autoresponder add",
+      "category": "automod",
+      "exampleOutput": "✓ autoresponder add executed successfully."
+    },
+    {
+      "name": "autoresponder list",
+      "description": "List all auto responders",
+      "usage": "|autoresponder list",
+      "category": "automod",
+      "exampleOutput": "✓ autoresponder list executed successfully."
+    },
+    {
+      "name": "autoresponder info",
+      "description": "View one responder in detail",
+      "usage": "|autoresponder info",
+      "category": "automod",
+      "exampleOutput": "✓ autoresponder info executed successfully."
+    },
+    {
+      "name": "autoresponder edit",
+      "description": "Edit an existing responder in the wizard",
+      "usage": "|autoresponder edit",
+      "category": "automod",
+      "exampleOutput": "✓ autoresponder edit executed successfully."
+    },
+    {
+      "name": "autoresponder remove",
+      "description": "Delete a responder",
+      "usage": "|autoresponder remove",
+      "category": "automod",
+      "exampleOutput": "✓ autoresponder remove executed successfully."
+    },
+    {
+      "name": "autoresponder toggle",
+      "description": "Enable/disable a single responder",
+      "usage": "|autoresponder toggle",
+      "category": "automod",
+      "exampleOutput": "✓ autoresponder toggle executed successfully."
+    },
+    {
+      "name": "autoresponder test",
+      "description": "Preview how a responder renders",
+      "usage": "|autoresponder test",
+      "category": "automod",
+      "exampleOutput": "✓ autoresponder test executed successfully."
+    },
+    {
+      "name": "autoresponder variables",
+      "description": "See every placeholder variable you can use",
+      "usage": "|autoresponder variables",
+      "category": "automod",
+      "exampleOutput": "✓ autoresponder variables executed successfully."
+    },
+    {
+      "name": "autoresponder config",
+      "description": "View the module overview",
+      "usage": "|autoresponder config",
+      "category": "automod",
+      "exampleOutput": "✓ autoresponder config executed successfully."
+    },
+    {
+      "name": "autoresponder enable",
+      "description": "Enable the auto responder module (Manage Server)",
+      "usage": "|autoresponder enable",
+      "category": "automod",
+      "exampleOutput": "✓ autoresponder enable executed successfully."
+    },
+    {
+      "name": "autoresponder disable",
+      "description": "Disable the auto responder module (Manage Server)",
+      "usage": "|autoresponder disable",
+      "category": "automod",
+      "exampleOutput": "✓ autoresponder disable executed successfully."
     }
   ],
   "roles": [
@@ -1475,12 +2159,100 @@ export const COMMANDS_BY_CATEGORY = {
       "permission": "Manage Roles"
     },
     {
-      "name": "role",
-      "description": "Role management system",
-      "usage": "|role",
+      "name": "role user",
+      "description": "The target member",
+      "usage": "|role user",
       "category": "roles",
       "exampleOutput": "✓ Role management command executed successfully.",
-      "permission": "ManageRoles"
+      "permission": "Manage Roles"
+    },
+    {
+      "name": "role remove",
+      "description": "The target member",
+      "usage": "|role remove",
+      "category": "roles",
+      "exampleOutput": "✓ Role management command executed successfully.",
+      "permission": "Manage Roles"
+    },
+    {
+      "name": "role create",
+      "description": "The name of the new role",
+      "usage": "|role create",
+      "category": "roles",
+      "exampleOutput": "✓ Role management command executed successfully.",
+      "permission": "Manage Roles"
+    },
+    {
+      "name": "role delete",
+      "description": "The role to delete",
+      "usage": "|role delete",
+      "category": "roles",
+      "exampleOutput": "✓ Role management command executed successfully.",
+      "permission": "Manage Roles"
+    },
+    {
+      "name": "role everyone",
+      "description": "The role to give to everyone",
+      "usage": "|role everyone",
+      "category": "roles",
+      "exampleOutput": "✓ Role management command executed successfully.",
+      "permission": "Manage Roles"
+    },
+    {
+      "name": "role bots",
+      "description": "The role to give to all bots",
+      "usage": "|role bots",
+      "category": "roles",
+      "exampleOutput": "✓ Role management command executed successfully.",
+      "permission": "Manage Roles"
+    },
+    {
+      "name": "role humans",
+      "description": "The role to give to all humans",
+      "usage": "|role humans",
+      "category": "roles",
+      "exampleOutput": "✓ Role management command executed successfully.",
+      "permission": "Manage Roles"
+    },
+    {
+      "name": "role info",
+      "description": "The target role",
+      "usage": "|role info",
+      "category": "roles",
+      "exampleOutput": "✓ Role management command executed successfully.",
+      "permission": "Manage Roles"
+    },
+    {
+      "name": "role color",
+      "description": "The role to modify",
+      "usage": "|role color",
+      "category": "roles",
+      "exampleOutput": "✓ Role management command executed successfully.",
+      "permission": "Manage Roles"
+    },
+    {
+      "name": "role rename",
+      "description": "The role to rename",
+      "usage": "|role rename",
+      "category": "roles",
+      "exampleOutput": "✓ Role management command executed successfully.",
+      "permission": "Manage Roles"
+    },
+    {
+      "name": "role hoist",
+      "description": "The role to toggle hoist status",
+      "usage": "|role hoist",
+      "category": "roles",
+      "exampleOutput": "✓ Role management command executed successfully.",
+      "permission": "Manage Roles"
+    },
+    {
+      "name": "role mentionable",
+      "description": "The role to toggle mention status",
+      "usage": "|role mentionable",
+      "category": "roles",
+      "exampleOutput": "✓ Role management command executed successfully.",
+      "permission": "Manage Roles"
     }
   ],
   "moderation": [
@@ -1501,12 +2273,18 @@ export const COMMANDS_BY_CATEGORY = {
       "permission": "KickMembers"
     },
     {
-      "name": "lockdown",
-      "description": "Freeze or thaw text channels during emergencies",
-      "usage": "|lockdown",
+      "name": "lockdown on",
+      "description": "Lock down a channel to prevent standard users from messaging",
+      "usage": "|lockdown on",
       "category": "moderation",
-      "exampleOutput": "✓ lockdown  executed successfully.",
-      "permission": "Administrator"
+      "exampleOutput": "✓ lockdown on executed successfully."
+    },
+    {
+      "name": "lockdown off",
+      "description": "Lift a lockdown and allow standard text activity again",
+      "usage": "|lockdown off",
+      "category": "moderation",
+      "exampleOutput": "✓ lockdown off executed successfully."
     },
     {
       "name": "mute",
@@ -1517,20 +2295,60 @@ export const COMMANDS_BY_CATEGORY = {
       "permission": "ModerateMembers"
     },
     {
-      "name": "purge",
-      "description": "Bulk delete messages using advanced filtering",
-      "usage": "|purge",
+      "name": "purge any",
+      "description": "Delete any recent messages matching no specific filter",
+      "usage": "|purge any",
       "category": "moderation",
-      "exampleOutput": "✓ purge  executed successfully.",
-      "permission": "Administrator"
+      "exampleOutput": "✓ purge any executed successfully."
     },
     {
-      "name": "slowmode",
-      "description": "Manage channel slowmode intervals",
-      "usage": "|slowmode",
+      "name": "purge user",
+      "description": "Purge messages sent exclusively by a specific member",
+      "usage": "|purge user",
       "category": "moderation",
-      "exampleOutput": "✓ slowmode  executed successfully.",
-      "permission": "ManageMessages"
+      "exampleOutput": "✓ purge user executed successfully."
+    },
+    {
+      "name": "purge bot",
+      "description": "Purge messages sent exclusively by automated bots",
+      "usage": "|purge bot",
+      "category": "moderation",
+      "exampleOutput": "✓ purge bot executed successfully."
+    },
+    {
+      "name": "purge links",
+      "description": "Purge recent messages containing HTTP/HTTPS links",
+      "usage": "|purge links",
+      "category": "moderation",
+      "exampleOutput": "✓ purge links executed successfully."
+    },
+    {
+      "name": "slowmode create",
+      "description": "Establish a slowmode restriction on a channel",
+      "usage": "|slowmode create",
+      "category": "moderation",
+      "exampleOutput": "✓ slowmode create executed successfully."
+    },
+    {
+      "name": "slowmode edit",
+      "description": "Modify an existing channel slowmode interval",
+      "usage": "|slowmode edit",
+      "category": "moderation",
+      "exampleOutput": "✓ slowmode edit executed successfully."
+    },
+    {
+      "name": "slowmode remove",
+      "description": "Completely remove slowmode restrictions from a channel",
+      "usage": "|slowmode remove",
+      "category": "moderation",
+      "exampleOutput": "✓ slowmode remove executed successfully."
+    },
+    {
+      "name": "slowmode exempt",
+      "description": "Audit who bypasses the slowmode rule inside a channel",
+      "usage": "|slowmode exempt",
+      "category": "moderation",
+      "exampleOutput": "✓ slowmode exempt executed successfully."
     },
     {
       "name": "unban",
@@ -1567,28 +2385,123 @@ export const COMMANDS_BY_CATEGORY = {
   ],
   "social": [
     {
-      "name": "birthdays",
-      "description": "Birthday management",
-      "usage": "|birthdays",
+      "name": "birthdays set",
+      "description": "Set your birthday",
+      "usage": "|birthdays set",
       "category": "social",
-      "exampleOutput": "✓ birthdays  executed successfully.",
-      "permission": "ManageGuild"
+      "exampleOutput": "✓ birthdays set executed successfully."
     },
     {
-      "name": "giveaway",
-      "description": "Establish and manage customizable item drops",
-      "usage": "|giveaway",
+      "name": "birthdays remove",
+      "description": "Remove your birthday",
+      "usage": "|birthdays remove",
       "category": "social",
-      "exampleOutput": "✓ giveaway  executed successfully.",
-      "permission": "Administrator"
+      "exampleOutput": "✓ birthdays remove executed successfully."
     },
     {
-      "name": "poll",
-      "description": "Create and manage polls",
-      "usage": "|poll",
+      "name": "birthdays check",
+      "description": "Check a birthday",
+      "usage": "|birthdays check",
       "category": "social",
-      "exampleOutput": "✓ poll  executed successfully.",
-      "permission": "Administrator"
+      "exampleOutput": "✓ birthdays check executed successfully."
+    },
+    {
+      "name": "birthdays today",
+      "description": "Show all birthdays today in this server",
+      "usage": "|birthdays today",
+      "category": "social",
+      "exampleOutput": "✓ birthdays today executed successfully."
+    },
+    {
+      "name": "birthdays upcoming",
+      "description": "Show upcoming birthdays",
+      "usage": "|birthdays upcoming",
+      "category": "social",
+      "exampleOutput": "✓ birthdays upcoming executed successfully."
+    },
+    {
+      "name": "birthdays list",
+      "description": "List all members with a birthday set",
+      "usage": "|birthdays list",
+      "category": "social",
+      "exampleOutput": "✓ birthdays list executed successfully."
+    },
+    {
+      "name": "birthdays config",
+      "description": "Show current birthday module configuration (staff only)",
+      "usage": "|birthdays config",
+      "category": "social",
+      "exampleOutput": "✓ birthdays config executed successfully."
+    },
+    {
+      "name": "birthdays set-channel",
+      "description": "Set the birthday announcement channel (staff only)",
+      "usage": "|birthdays set-channel",
+      "category": "social",
+      "exampleOutput": "✓ birthdays set-channel executed successfully."
+    },
+    {
+      "name": "birthdays set-role",
+      "description": "Set the birthday role (staff only)",
+      "usage": "|birthdays set-role",
+      "category": "social",
+      "exampleOutput": "✓ birthdays set-role executed successfully."
+    },
+    {
+      "name": "birthdays set-time",
+      "description": "Time in HH:MM UTC format",
+      "usage": "|birthdays set-time",
+      "category": "social",
+      "exampleOutput": "✓ birthdays set-time executed successfully."
+    },
+    {
+      "name": "birthdays toggle",
+      "description": "Enable or disable the birthday module (staff only)",
+      "usage": "|birthdays toggle",
+      "category": "social",
+      "exampleOutput": "✓ birthdays toggle executed successfully."
+    },
+    {
+      "name": "birthdays test",
+      "description": "Test the birthday announcement for yourself right now (staff only)",
+      "usage": "|birthdays test",
+      "category": "social",
+      "exampleOutput": "✓ birthdays test executed successfully."
+    },
+    {
+      "name": "giveaway start",
+      "description": "Launch a fresh background scheduled giveaway pool",
+      "usage": "|giveaway start",
+      "category": "social",
+      "exampleOutput": "✓ giveaway start executed successfully."
+    },
+    {
+      "name": "giveaway reroll",
+      "description": "Pick new winners from an existing ended giveaway database profile",
+      "usage": "|giveaway reroll",
+      "category": "social",
+      "exampleOutput": "✓ giveaway reroll executed successfully."
+    },
+    {
+      "name": "giveaway end",
+      "description": "Forcefully end an active giveaway pool and draw winners immediately",
+      "usage": "|giveaway end",
+      "category": "social",
+      "exampleOutput": "✓ giveaway end executed successfully."
+    },
+    {
+      "name": "poll create",
+      "description": "Create a poll with vote buttons",
+      "usage": "|poll create",
+      "category": "social",
+      "exampleOutput": "✓ poll create executed successfully."
+    },
+    {
+      "name": "poll setup",
+      "description": "Configure who can create polls in this server (admin only)",
+      "usage": "|poll setup",
+      "category": "social",
+      "exampleOutput": "✓ poll setup executed successfully."
     },
     {
       "name": "suggestions setup",
@@ -1705,6 +2618,41 @@ export const COMMANDS_BY_CATEGORY = {
   ],
   "leveling": [
     {
+      "name": "level xp add",
+      "description": "Add XP to a user",
+      "usage": "|level xp add",
+      "category": "leveling",
+      "exampleOutput": "📈 Leveling system updated."
+    },
+    {
+      "name": "level xp remove",
+      "description": "Remove XP from a user",
+      "usage": "|level xp remove",
+      "category": "leveling",
+      "exampleOutput": "📈 Leveling system updated."
+    },
+    {
+      "name": "level xp set",
+      "description": "Target user",
+      "usage": "|level xp set",
+      "category": "leveling",
+      "exampleOutput": "📈 Leveling system updated."
+    },
+    {
+      "name": "level xp reset",
+      "description": "Target user",
+      "usage": "|level xp reset",
+      "category": "leveling",
+      "exampleOutput": "📈 Leveling system updated."
+    },
+    {
+      "name": "level rank",
+      "description": "User to check (defaults to you)",
+      "usage": "|level rank",
+      "category": "leveling",
+      "exampleOutput": "📈 Leveling system updated."
+    },
+    {
       "name": "level leaderboard",
       "description": "Show the top 10 users by XP",
       "usage": "|level leaderboard",
@@ -1724,40 +2672,94 @@ export const COMMANDS_BY_CATEGORY = {
       "usage": "|level multiplier",
       "category": "leveling",
       "exampleOutput": "📈 Leveling system updated."
-    },
-    {
-      "name": "level xp add",
-      "description": "Add XP to a user",
-      "usage": "|level xp add",
-      "category": "leveling",
-      "exampleOutput": "📈 Leveling system updated."
-    },
-    {
-      "name": "level xp remove",
-      "description": "Remove XP from a user",
-      "usage": "|level xp remove",
-      "category": "leveling",
-      "exampleOutput": "📈 Leveling system updated."
     }
   ],
   "voice": [
     {
-      "name": "selfvoice",
-      "description": "\udf99️ Create self-managed temporary voice channels that clean themselves up.",
-      "usage": "|selfvoice",
+      "name": "selfvoice create",
+      "description": "Create your own temporary voice channel (must be enabled by staff).",
+      "usage": "|selfvoice create",
       "category": "voice",
       "exampleOutput": "🔊 Voice room created successfully.",
-      "permission": "Administrator"
+      "permission": "Manage Server"
+    },
+    {
+      "name": "selfvoice setup",
+      "description": "[Staff] Launch the guided Self Voice setup wizard.",
+      "usage": "|selfvoice setup",
+      "category": "voice",
+      "exampleOutput": "🔊 Voice room created successfully.",
+      "permission": "Manage Server"
+    },
+    {
+      "name": "selfvoice enable",
+      "description": "[Staff] Enable the Self Voice module for this server.",
+      "usage": "|selfvoice enable",
+      "category": "voice",
+      "exampleOutput": "🔊 Voice room created successfully.",
+      "permission": "Manage Server"
+    },
+    {
+      "name": "selfvoice disable",
+      "description": "[Staff] Disable the Self Voice module for this server.",
+      "usage": "|selfvoice disable",
+      "category": "voice",
+      "exampleOutput": "🔊 Voice room created successfully.",
+      "permission": "Manage Server"
+    },
+    {
+      "name": "selfvoice config",
+      "description": "View the current Self Voice configuration.",
+      "usage": "|selfvoice config",
+      "category": "voice",
+      "exampleOutput": "🔊 Voice room created successfully.",
+      "permission": "Manage Server"
+    },
+    {
+      "name": "selfvoice panel",
+      "description": "Resend the control panel for your active room.",
+      "usage": "|selfvoice panel",
+      "category": "voice",
+      "exampleOutput": "🔊 Voice room created successfully.",
+      "permission": "Manage Server"
+    },
+    {
+      "name": "selfvoice set",
+      "description": "[Staff] Tweak a single Self Voice setting.",
+      "usage": "|selfvoice set",
+      "category": "voice",
+      "exampleOutput": "🔊 Voice room created successfully.",
+      "permission": "Manage Server"
     }
   ],
   "tickets": [
     {
-      "name": "ticket",
-      "description": "\udf9f️ Advanced support ticket configuration and management system",
-      "usage": "|ticket",
+      "name": "ticket setup",
+      "description": "Launch the interactive ticket panel deployment wizard",
+      "usage": "|ticket setup",
       "category": "tickets",
-      "exampleOutput": "🎫 Ticket system configured.",
-      "permission": "Administrator"
+      "exampleOutput": "🎫 Ticket system configured."
+    },
+    {
+      "name": "ticket ongoing",
+      "description": "\udccb View all live, active support ticket sessions",
+      "usage": "|ticket ongoing",
+      "category": "tickets",
+      "exampleOutput": "🎫 Ticket system configured."
+    },
+    {
+      "name": "ticket history",
+      "description": "\udcdc View all ticket history with pagination and transcript search",
+      "usage": "|ticket history",
+      "category": "tickets",
+      "exampleOutput": "🎫 Ticket system configured."
+    },
+    {
+      "name": "ticket purge",
+      "description": "⚠️ Instantly delete all active tickets from the datastore",
+      "usage": "|ticket purge",
+      "category": "tickets",
+      "exampleOutput": "🎫 Ticket system configured."
     }
   ],
   "verification": [

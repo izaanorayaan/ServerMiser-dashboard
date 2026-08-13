@@ -1601,13 +1601,23 @@ export default function App() {
       return;
     }
 
+    if (pathname === "/support/behindthename" || pathname === "/support/origin") {
+      setCurrentView("support");
+      setSupportTab("formal");
+      return;
+    }
+
     setCurrentView("home");
     setSupportTab("terms");
   };
 
   const navigateToRoute = (view: "home" | "sandbox" | "commands" | "analytics" | "support", nextSupportTab?: "terms" | "privacy" | "formal") => {
     if (view === "support") {
-      const target = nextSupportTab === "privacy" ? "/support/privacypolicy" : "/support/tos";
+      const target = nextSupportTab === "privacy"
+        ? "/support/privacypolicy"
+        : nextSupportTab === "formal"
+          ? "/support/behindthename"
+          : "/support/tos";
       window.history.pushState({}, "", target);
       setCurrentView("support");
       setSupportTab(nextSupportTab || "terms");
@@ -1669,7 +1679,11 @@ export default function App() {
     }
 
     const path = currentView === "support"
-      ? (supportTab === "privacy" ? "/support/privacypolicy" : "/support/tos")
+      ? (supportTab === "privacy"
+          ? "/support/privacypolicy"
+          : supportTab === "formal"
+            ? "/support/behindthename"
+            : "/support/tos")
       : `/${currentView}`;
 
     if (window.location.pathname !== path) {
