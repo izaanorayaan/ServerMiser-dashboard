@@ -22,9 +22,10 @@ interface AnalyticsDashboardProps {
   onBack: () => void;
   setIsHovering: (hover: boolean) => void;
   isDarkMode?: boolean;
+  onLoadComplete?: () => void;
 }
 
-export default function AnalyticsDashboard({ onBack, setIsHovering, isDarkMode = true }: AnalyticsDashboardProps) {
+export default function AnalyticsDashboard({ onBack, setIsHovering, isDarkMode = true, onLoadComplete }: AnalyticsDashboardProps) {
   // Total stats values (simulated/real counters)
   const [activeSegment, setActiveSegment] = useState<number | null>(null);
   const [activeBar, setActiveBar] = useState<number | null>(null);
@@ -46,6 +47,7 @@ export default function AnalyticsDashboard({ onBack, setIsHovering, isDarkMode =
   });
 
   const [hasData, setHasData] = useState(false);
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
 
   const [radarNodes, setRadarNodes] = useState([
     { id: "gateway", name: "Discord API Gateway", x: 220, y: 130, latency: 0, status: "offline" },
@@ -177,6 +179,12 @@ export default function AnalyticsDashboard({ onBack, setIsHovering, isDarkMode =
         if (response.ok) {
           const data = await response.json();
           setStats(data);
+          
+          // Call onLoadComplete on first successful load
+          if (isFirstLoad) {
+            setIsFirstLoad(false);
+            onLoadComplete?.();
+          }
         }
       } catch (error) {
         console.error('[AnalyticsDashboard] Could not reach dashboard telemetry endpoint:', error);
@@ -189,7 +197,7 @@ export default function AnalyticsDashboard({ onBack, setIsHovering, isDarkMode =
     // Smooth loops that continuously refresh the live metrics stream every second.
     const telemetryStream = setInterval(fetchLiveTelemetry, 1000);
     return () => clearInterval(telemetryStream);
-  }, []);
+  }, [isFirstLoad, onLoadComplete]);
 
 
   // Trigger slight fluctuation in ping rates for realism if offline

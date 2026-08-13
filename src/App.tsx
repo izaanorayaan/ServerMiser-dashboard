@@ -1569,6 +1569,7 @@ export default function App() {
 
   const [activeFaqIdx, setActiveFaqIdx] = useState<number | null>(null);
   const [currentView, setCurrentView] = useState<"home" | "sandbox" | "commands" | "analytics" | "support">("home");
+  const [analyticsIsLoading, setAnalyticsIsLoading] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
 
   const syncRouteFromLocation = () => {
@@ -1586,6 +1587,7 @@ export default function App() {
 
     if (pathname === "/analytics") {
       setCurrentView("analytics");
+      setAnalyticsIsLoading(true);
       return;
     }
 
@@ -1612,6 +1614,9 @@ export default function App() {
   };
 
   const navigateToRoute = (view: "home" | "sandbox" | "commands" | "analytics" | "support", nextSupportTab?: "terms" | "privacy" | "formal") => {
+    if (view === "analytics") {
+      setAnalyticsIsLoading(true);
+    }
     if (view === "support") {
       const target = nextSupportTab === "privacy"
         ? "/support/privacypolicy"
@@ -2318,7 +2323,33 @@ export default function App() {
 
       {/* --- RENDER CURRENT VIEW --- */}
       {currentView === "analytics" && (
-        <AnalyticsDashboard onBack={() => setCurrentView("home")} setIsHovering={setIsHovering} isDarkMode={isDarkMode} />
+        <>
+          {analyticsIsLoading && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm"
+            >
+              <div className="flex flex-col items-center gap-6">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+                  className="w-16 h-16 border-4 border-[#ff3b5c] border-t-transparent rounded-full"
+                />
+                <div className="text-center">
+                  <h2 className="font-mono text-lg tracking-widest uppercase text-[#e2f9b8] mb-2">
+                    Loading Analytics
+                  </h2>
+                  <p className="font-mono text-xs tracking-wider text-slate-400">
+                    Fetching real-time telemetry data...
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+          <AnalyticsDashboard onBack={() => setCurrentView("home")} setIsHovering={setIsHovering} isDarkMode={isDarkMode} onLoadComplete={() => setAnalyticsIsLoading(false)} />
+        </>
       )}
 
       {currentView === "support" && (
