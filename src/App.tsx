@@ -4247,6 +4247,7 @@ export default function App() {
                     <span className="font-mono text-xs font-bold text-[#ff3b5c] select-none">|</span>
                     <input
                       type="text"
+                      autoFocus
                       value={simInputArguments}
                       onChange={(e) => {
                         if (simState === "running") return;
