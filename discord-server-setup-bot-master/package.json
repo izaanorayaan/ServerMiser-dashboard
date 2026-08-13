@@ -1,0 +1,27 @@
+{
+  "name": "discord-server-setup-bot",
+  "version": "1.0.0",
+  "description": "Discord bot for server setup, ticketing, leveling, and moderation",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "deploy": "node src/deploy-commands.js",
+    "sync-botnexus": "node src/sync-botnexus-commands.js"
+  },
+  "dependencies": {
+    "@napi-rs/canvas": "^1.0.3",
+    "axios": "^1.6.0",
+    "cors": "^2.8.6",
+    "discord.js": "^14.14.0",
+    "dotenv": "^16.6.1",
+    "express": "^4.18.2",
+    "mongoose": "^6.12.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": "24.18.0"
+  }
+}

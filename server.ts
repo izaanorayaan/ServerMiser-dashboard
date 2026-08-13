@@ -100,7 +100,14 @@ app.post("/api/bot-stats", (req, res) => {
     recentLogs,
     radarNodes,
     segments,
-    barData
+    barData,
+    totalTickets,
+    totalXp,
+    totalSetups,
+    setupSuccessRate,
+    genTime,
+    guildCategories,
+    dailySetups
   } = req.body;
 
   // Update stats incrementally if provided
@@ -115,6 +122,13 @@ app.post("/api/bot-stats", (req, res) => {
   if (radarNodes !== undefined) botStats.radarNodes = radarNodes;
   if (segments !== undefined) botStats.segments = segments;
   if (barData !== undefined) botStats.barData = barData;
+  if (totalTickets !== undefined) (botStats as any).totalTickets = Number(totalTickets);
+  if (totalXp !== undefined) (botStats as any).totalXp = Number(totalXp);
+  if (totalSetups !== undefined) (botStats as any).totalSetups = Number(totalSetups);
+  if (setupSuccessRate !== undefined) (botStats as any).setupSuccessRate = setupSuccessRate;
+  if (genTime !== undefined) (botStats as any).genTime = genTime;
+  if (guildCategories !== undefined) (botStats as any).guildCategories = guildCategories;
+  if (dailySetups !== undefined) (botStats as any).dailySetups = dailySetups;
 
   res.json({ message: "Telemetry successfully synchronized with ServerMiser web server.", currentStats: botStats });
 });
