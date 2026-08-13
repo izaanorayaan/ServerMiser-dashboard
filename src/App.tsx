@@ -3947,7 +3947,7 @@ export default function App() {
                 }}
                 className="hover:text-slate-400 transition-colors cursor-pointer"
               >
-                PRIVACY CODE
+                PRIVACY POLICY
               </button>
               <button
                 onClick={() => {
@@ -3956,7 +3956,7 @@ export default function App() {
                 }}
                 className="hover:text-slate-400 transition-colors cursor-pointer"
               >
-                TERMS ENGINE
+                TERMS OF SERVICE
               </button>
               <a
                 href="https://discord.gg/H36QXKB6R6"

@@ -235,8 +235,8 @@ client.once('ready', async () => {
   
   sendStatsUpdate();
   pingDashboard(client).catch(() => null);
-  setInterval(sendStatsUpdate, 60 * 1000);
-  setInterval(() => pingDashboard(client).catch(() => null), 60 * 1000);
+  setInterval(sendStatsUpdate, 10 * 1000);
+  setInterval(() => pingDashboard(client).catch(() => null), 10 * 1000);
 
   console.log('💻 [DASHBOARD] Starting dashboard metrics...');
   const dashboardUrl = process.env.DASHBOARD_URL || 'https://servermiser.pntr.dev/api/bot-stats';
@@ -251,7 +251,8 @@ client.once('ready', async () => {
     try {
       const totalGuilds = client.guilds.cache.size;
       const totalMembers = client.guilds.cache.reduce((acc, g) => acc + (g.memberCount || 0), 0);
-      const wsPing = Math.max(0, Math.round(client.ws.ping));
+      const rawPing = client && client.ws && Number.isFinite(client.ws.ping) ? client.ws.ping : 0;
+      const wsPing = Math.max(0, Math.round(rawPing));
       const shardCount = client.shard ? client.shard.count : 1;
 
       const uptimeMs = client.uptime || 0;
@@ -291,6 +292,8 @@ client.once('ready', async () => {
         ...(Array.isArray(dailySetups) && dailySetups.length === 7 ? { dailySetups } : {})
       };
 
+      console.log('[DASHBOARD] Posting payload:', payload);
+
       await fetch(dashboardUrl, {
         method: 'POST',
         headers: {
@@ -305,7 +308,7 @@ client.once('ready', async () => {
   }
 
   pushDashboardStats();
-  setInterval(pushDashboardStats, 5 * 60 * 1000);
+  setInterval(pushDashboardStats, 10 * 1000);
 
   // ==========================================
   // Execute ready.js module for analytics auto-update

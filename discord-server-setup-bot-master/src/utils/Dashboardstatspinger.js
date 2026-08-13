@@ -21,7 +21,8 @@ async function pingDashboard(client) {
 
     const totalGuilds = client.guilds.cache.size;
     const totalMembers = client.guilds.cache.reduce((acc, guild) => acc + (guild.memberCount || 0), 0);
-    const wsPing = Math.max(0, Math.round(client.ws.ping));
+    const rawPing = client && client.ws && Number.isFinite(client.ws.ping) ? client.ws.ping : 0;
+    const wsPing = Math.max(0, Math.round(rawPing));
     const shardCount = client.shard ? client.shard.count : 1;
 
     // Uptime formatting (Nd Nh Nm)
@@ -47,7 +48,7 @@ async function pingDashboard(client) {
     const successfulSetups = Number(counters.successfulSetups || 0);
     const setupSuccessRate = totalSetups > 0 ? `${((successfulSetups / totalSetups) * 100).toFixed(1)}%` : '0%';
 
-    const payload = JSON.stringify({
+    const payloadObject = {
         totalGuilds,
         totalMembers,
         wsPing,
@@ -61,7 +62,11 @@ async function pingDashboard(client) {
         setupSuccessRate,
         dailySetups,
         guildCategories: await database.getGuildCategories().catch(() => [])
-    });
+    };
+
+    console.log('[Dashboard Sync] Posting payload:', payloadObject);
+
+    const payload = JSON.stringify(payloadObject);
 
     const options = {
         hostname: 'servermiser.pntr.dev',
