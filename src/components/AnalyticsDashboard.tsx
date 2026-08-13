@@ -71,7 +71,25 @@ export default function AnalyticsDashboard({ onBack, setIsHovering, isDarkMode =
   const DAY_LABELS = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
 
   const setStats = (fetchedData: any) => {
-    if (!fetchedData) return;
+    if (!fetchedData || typeof fetchedData !== "object") return;
+
+    const hasRealStats =
+      fetchedData.totalGuilds !== undefined ||
+      fetchedData.totalMembers !== undefined ||
+      fetchedData.totalServers !== undefined ||
+      fetchedData.totalUsers !== undefined ||
+      fetchedData.wsPing !== undefined ||
+      fetchedData.botPing !== undefined ||
+      fetchedData.totalTickets !== undefined ||
+      fetchedData.totalXp !== undefined ||
+      fetchedData.totalSetups !== undefined ||
+      Array.isArray(fetchedData.guildCategories) ||
+      Array.isArray(fetchedData.dailySetups);
+
+    if (!hasRealStats) {
+      return;
+    }
+
     const servers = fetchedData.totalServers !== undefined ? Number(fetchedData.totalServers) : Number(fetchedData.totalGuilds || 0);
     const users = fetchedData.totalUsers !== undefined ? Number(fetchedData.totalUsers) : Number(fetchedData.totalMembers || 0);
     const ping = fetchedData.botPing !== undefined ? Number(fetchedData.botPing) : Number(fetchedData.wsPing || 0);

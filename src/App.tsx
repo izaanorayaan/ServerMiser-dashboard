@@ -1570,6 +1570,55 @@ export default function App() {
   const [activeFaqIdx, setActiveFaqIdx] = useState<number | null>(null);
   const [currentView, setCurrentView] = useState<"home" | "sandbox" | "commands" | "analytics" | "support">("home");
   const [isDarkMode, setIsDarkMode] = useState(true);
+
+  const syncRouteFromLocation = () => {
+    const pathname = window.location.pathname.toLowerCase();
+
+    if (pathname === "/sandbox") {
+      setCurrentView("sandbox");
+      return;
+    }
+
+    if (pathname === "/commands") {
+      setCurrentView("commands");
+      return;
+    }
+
+    if (pathname === "/analytics") {
+      setCurrentView("analytics");
+      return;
+    }
+
+    if (pathname === "/support" || pathname === "/support/tos") {
+      setCurrentView("support");
+      setSupportTab("terms");
+      return;
+    }
+
+    if (pathname === "/support/privacypolicy") {
+      setCurrentView("support");
+      setSupportTab("privacy");
+      return;
+    }
+
+    setCurrentView("home");
+    setSupportTab("terms");
+  };
+
+  const navigateToRoute = (view: "home" | "sandbox" | "commands" | "analytics" | "support", nextSupportTab?: "terms" | "privacy" | "formal") => {
+    if (view === "support") {
+      const target = nextSupportTab === "privacy" ? "/support/privacypolicy" : "/support/tos";
+      window.history.pushState({}, "", target);
+      setCurrentView("support");
+      setSupportTab(nextSupportTab || "terms");
+      return;
+    }
+
+    const targetPath = view === "home" ? "/" : `/${view}`;
+    window.history.pushState({}, "", targetPath);
+    setCurrentView(view);
+    if (view !== "support") setSupportTab("terms");
+  };
   const [pendingScrollTarget, setPendingScrollTarget] = useState<string | null>(null);
   const [scrollY, setScrollY] = useState(0);
   const [copiedCommandName, setCopiedCommandName] = useState<string | null>(null);
@@ -1592,6 +1641,13 @@ export default function App() {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    const onPopState = () => syncRouteFromLocation();
+    window.addEventListener("popstate", onPopState);
+    syncRouteFromLocation();
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+
   // Smooth scroll back to home section
   useEffect(() => {
     if (currentView === "home" && pendingScrollTarget) {
@@ -1603,6 +1659,23 @@ export default function App() {
       }, 150);
     }
   }, [currentView, pendingScrollTarget]);
+
+  useEffect(() => {
+    if (currentView === "home") {
+      if (window.location.pathname !== "/") {
+        window.history.replaceState({}, "", "/");
+      }
+      return;
+    }
+
+    const path = currentView === "support"
+      ? (supportTab === "privacy" ? "/support/privacypolicy" : "/support/tos")
+      : `/${currentView}`;
+
+    if (window.location.pathname !== path) {
+      window.history.replaceState({}, "", path);
+    }
+  }, [currentView, supportTab]);
 
   // Custom pointer trail position and hover state
   const [mousePos, setMousePos] = useState({ x: -100, y: -100 });
@@ -2026,7 +2099,7 @@ export default function App() {
               </button>
               <button
                 onClick={() => {
-                  setCurrentView("sandbox");
+                  navigateToRoute("sandbox");
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
                 className={`transition-colors relative group py-1 cursor-pointer font-mono text-xs tracking-widest uppercase ${
@@ -2042,7 +2115,7 @@ export default function App() {
               </button>
               <button
                 onClick={() => {
-                  setCurrentView("commands");
+                  navigateToRoute("commands");
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
                 className={`transition-colors relative group py-1 cursor-pointer font-mono text-xs tracking-widest uppercase ${
@@ -2077,8 +2150,7 @@ export default function App() {
               >
                 <button
                   onClick={() => {
-                    setCurrentView("support");
-                    setSupportTab("terms");
+                    navigateToRoute("support", "terms");
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
                   className={`transition-colors relative flex items-center gap-1 cursor-pointer font-mono text-xs tracking-widest uppercase ${
@@ -2130,8 +2202,7 @@ export default function App() {
                         {/* Option 2: Terms of Service */}
                         <button
                           onClick={() => {
-                            setCurrentView("support");
-                            setSupportTab("terms");
+                            navigateToRoute("support", "terms");
                             setIsSupportDropdownOpen(false);
                             window.scrollTo({ top: 0, behavior: "smooth" });
                           }}
@@ -2145,8 +2216,7 @@ export default function App() {
                         {/* Option 3: Privacy Policy */}
                         <button
                           onClick={() => {
-                            setCurrentView("support");
-                            setSupportTab("privacy");
+                            navigateToRoute("support", "privacy");
                             setIsSupportDropdownOpen(false);
                             window.scrollTo({ top: 0, behavior: "smooth" });
                           }}
@@ -2160,8 +2230,7 @@ export default function App() {
                         {/* Option 4: Behind the Name */}
                         <button
                           onClick={() => {
-                            setCurrentView("support");
-                            setSupportTab("formal");
+                            navigateToRoute("support", "formal");
                             setIsSupportDropdownOpen(false);
                             window.scrollTo({ top: 0, behavior: "smooth" });
                           }}
@@ -2180,7 +2249,7 @@ export default function App() {
 
               <button
                 onClick={() => {
-                  setCurrentView("analytics");
+                  navigateToRoute("analytics");
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
                 className={`transition-colors relative group py-1 cursor-pointer font-mono text-xs tracking-widest uppercase ${
@@ -3843,8 +3912,7 @@ export default function App() {
               </button>
               <button
                 onClick={() => {
-                  setCurrentView("support");
-                  setSupportTab("terms");
+                  navigateToRoute("support", "terms");
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
                 className="hover:text-slate-400 transition-colors cursor-pointer"

@@ -50,7 +50,7 @@ async function pingDashboard(client) {
     });
 
     const options = {
-        hostname: 'servermiser.is-a.dev',
+        hostname: 'servermiser.pntr.dev',
         port: 443,
         path: '/api/bot-stats',
         method: 'POST',

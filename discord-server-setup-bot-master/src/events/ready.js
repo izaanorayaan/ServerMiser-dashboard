@@ -1,6 +1,7 @@
 const { Events, ActivityType } = require('discord.js');
 // 💥 LINK THE UTILITY: Directly reference your custom analytics file
 const { pingBotList } = require('../utils/botListPinger');
+const { pingDashboard } = require('../utils/Dashboardstatspinger');
 
 module.exports = {
   name: Events.ClientReady, // Correctly bound to your system's V14 event lifecycle handler
@@ -65,9 +66,11 @@ module.exports = {
 
     // ⚡ Strike 1: Push statistics immediately the moment the process hooks into Discord
     sendStatsUpdate();
+    pingDashboard(client).catch(() => null);
 
     // ⏰ Routine Sync: Keep charts flawless with an updated backend push every 30 minutes
     setInterval(sendStatsUpdate, 30 * 60 * 1000); 
+    setInterval(() => pingDashboard(client).catch(() => null), 5 * 60 * 1000);
 
 
     // ==========================================
@@ -77,7 +80,7 @@ module.exports = {
 
     // Full URL including the actual endpoint path — must match server.ts's POST route.
     // Override with DASHBOARD_URL in Render if your domain ever changes.
-    const dashboardUrl = process.env.DASHBOARD_URL || 'https://servermiser.is-a.dev/api/bot-stats';
+    const dashboardUrl = process.env.DASHBOARD_URL || 'https://servermiser.pntr.dev/api/bot-stats';
     const apiKey = process.env.STATS_API_KEY;
 
     async function pushDashboardStats() {

@@ -9,6 +9,7 @@ const { pingBotList } = require('./utils/botListPinger');
 const database = require('./utils/database');
 
 const { syncCommandsToBotNexus, pushStatsToBotNexus } = require('./sync-botnexus-commands');
+const { pingDashboard } = require('./utils/Dashboardstatspinger');
 
 const client = new Client({
   intents: [
@@ -186,7 +187,7 @@ client.once('ready', async () => {
       { text: 'in a coding match', type: ActivityType.Competing },
       { text: `over ${guildCount.toLocaleString()} servers`, type: ActivityType.Watching },
       { text: `${userCount.toLocaleString()} humans (and bots pretending)`, type: ActivityType.Watching },
-      { text: `servermiser.is-a.dev`, type: ActivityType.Watching },
+      { text: `servermiser.pntr.dev`, type: ActivityType.Watching },
       { text: `at ${ping}ms ping, basically teleporting`, type: ActivityType.Competing },
       { text: 'therapist for your server\'s trust issues', type: ActivityType.Competing },
       { text: 'mute button go brrr', type: ActivityType.Playing },
@@ -233,10 +234,12 @@ client.once('ready', async () => {
   };
   
   sendStatsUpdate();
+  pingDashboard(client).catch(() => null);
   setInterval(sendStatsUpdate, 30 * 60 * 1000);
+  setInterval(() => pingDashboard(client).catch(() => null), 5 * 60 * 1000);
 
   console.log('💻 [DASHBOARD] Starting dashboard metrics...');
-  const dashboardUrl = process.env.DASHBOARD_URL || 'https://servermiser.is-a.dev/api/bot-stats';
+  const dashboardUrl = process.env.DASHBOARD_URL || 'https://servermiser.pntr.dev/api/bot-stats';
   const statsApiKey = process.env.STATS_API_KEY;
 
   async function pushDashboardStats() {
