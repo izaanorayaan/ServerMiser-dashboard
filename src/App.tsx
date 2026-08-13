@@ -3360,7 +3360,7 @@ export default function App() {
             <div>
               <span className="font-mono text-xs tracking-widest uppercase text-[#ff3b5c]">03 / INTERACTIVE REFERENCE</span>
               <h2 className={`font-display font-black text-3xl sm:text-4xl md:text-5xl uppercase tracking-tighter mt-2 ${isDarkMode ? "text-slate-100" : "text-slate-950"}`}>
-                MISER MANUAL
+                OF COMMANDS
               </h2>
             </div>
             <p className={`font-mono text-xs tracking-wider max-w-xl leading-relaxed ${isDarkMode ? "text-slate-400" : "text-slate-600 font-medium"}`}>
