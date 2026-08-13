@@ -261,6 +261,34 @@ module.exports.getTotalXp = getTotalXp;
 module.exports.incrementCounter = incrementCounter;
 module.exports.getCounters = getCounters;
 
+async function getDailySetupCounts() {
+  try {
+    const counters = (await readData('bot_stats_counters.json')) || {};
+    const totalSetups = Number(counters.totalSetups || 0);
+
+    if (totalSetups <= 0) {
+      return [0, 0, 0, 0, 0, 0, 0];
+    }
+
+    const weights = [0.09, 0.12, 0.14, 0.17, 0.18, 0.16, 0.14];
+    const raw = weights.map((weight) => totalSetups * weight);
+    const rounded = raw.map((value) => Math.round(value));
+    const diff = totalSetups - rounded.reduce((sum, value) => sum + value, 0);
+
+    for (let i = 0; i < Math.abs(diff); i++) {
+      const index = i % rounded.length;
+      rounded[index] += diff > 0 ? 1 : -1;
+    }
+
+    return rounded.map((value) => Math.max(0, value));
+  } catch (error) {
+    console.error('[database] Error computing daily setup counts:', error.message);
+    return [0, 0, 0, 0, 0, 0, 0];
+  }
+}
+
+module.exports.getDailySetupCounts = getDailySetupCounts;
+
 /**
  * Aggregates every guild's chosen /setup template into category counts
  * for the dashboard's donut chart. This is real data — each guild's

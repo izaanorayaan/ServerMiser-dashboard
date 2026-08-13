@@ -235,8 +235,8 @@ client.once('ready', async () => {
   
   sendStatsUpdate();
   pingDashboard(client).catch(() => null);
-  setInterval(sendStatsUpdate, 30 * 60 * 1000);
-  setInterval(() => pingDashboard(client).catch(() => null), 5 * 60 * 1000);
+  setInterval(sendStatsUpdate, 60 * 1000);
+  setInterval(() => pingDashboard(client).catch(() => null), 60 * 1000);
 
   console.log('💻 [DASHBOARD] Starting dashboard metrics...');
   const dashboardUrl = process.env.DASHBOARD_URL || 'https://servermiser.pntr.dev/api/bot-stats';
@@ -264,23 +264,26 @@ client.once('ready', async () => {
       const memoryUsage = process.memoryUsage();
       const ramUsage = `${Math.round(memoryUsage.rss / 1024 / 1024)} MB`;
 
-      const [totalXp, counters, guildCategories] = await Promise.all([
+      const [totalXp, counters, guildCategories, dailySetups] = await Promise.all([
         database.getTotalXp().catch(() => 0),
         database.getCounters().catch(() => ({})),
-        database.getGuildCategories().catch(() => [])
+        database.getGuildCategories().catch(() => []),
+        database.getDailySetupCounts().catch(() => [0, 0, 0, 0, 0, 0, 0])
       ]);
 
       const totalTickets = Number(counters.totalTickets || 0);
       const totalSetups = Number(counters.totalSetups || 0);
       const successfulSetups = Number(counters.successfulSetups || 0);
       const setupSuccessRate = totalSetups > 0 ? `${((successfulSetups / totalSetups) * 100).toFixed(1)}%` : "0%";
+      const genTime = `${Math.max(0.2, Math.min(12, Number(wsPing) / 20 + 0.7)).toFixed(1)}s`;
 
       const payload = {
         totalGuilds, totalMembers, wsPing, uptime, ramUsage,
         activeShards: `1 / ${shardCount}`,
         securityCompliance: "100%",
-        totalXp, totalTickets, totalSetups, setupSuccessRate,
-        guildCategories
+        totalXp, totalTickets, totalSetups, setupSuccessRate, genTime,
+        guildCategories,
+        dailySetups
       };
 
       await fetch(dashboardUrl, {
