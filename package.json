@@ -9,8 +9,10 @@
   "start": "node dist/server.js",
   "clean": "rm -rf dist",
   "lint": "tsc --noEmit",
-  "sync-commands": "node sync-commands.cjs"
+  "sync-commands": "node sync-commands.cjs",
+  "deploy": "npm run build && wasmer deploy --no-validate"
 },
+
 
 
   "dependencies": {

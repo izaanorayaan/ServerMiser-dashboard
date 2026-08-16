@@ -1,9 +1,8 @@
+kind: wasmer.io/App.v0
 name: servermiser-dashboard
-app_id: da_RxJIdtAUXQ4p
 owner: izaanorayaan
 package: .
 domains:
-- servermiser.pntr.dev
+  - servermiser.pntr.dev
 cli_args:
-- dist/server.cjs
-kind: wasmer.io/App.v0
+  - "dist/server.js"

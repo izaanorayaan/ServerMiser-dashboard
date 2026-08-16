@@ -1,5 +1,15 @@
 [package]
 name = "izaanorayaan/servermiser-dashboard"
-version = "0.1.2"
-description = "ServerMiser Dashboard Site"
+version = "0.1.3"
+description = "Full-Stack Express Vite Dashboard"
 private = true
+
+[[modules]]
+name = "express-backend"
+source = "."
+backend = "edge.js"
+
+[[commands]]
+name = "run-server"
+module = "express-backend"
+runner = "https://webc.org"
