@@ -250,21 +250,21 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
+  const server = app.listen(PORT, "0.0.0.0", () => {
     console.log(`[ServerMiser Web Desk] Server active on http://0.0.0.0:${PORT}`);
+  });
+
+  server.on('error', (err: any) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`[ServerMiser Web Desk] Port ${PORT} is already in use. Retrying...`);
+      setTimeout(() => {
+        server.close();
+        server.listen(PORT, "0.0.0.0");
+      }, 1000);
+    } else {
+      throw err;
+    }
   });
 }
 
 startServer();
-// --- ADD THIS BLOCK TO THE VERY BOTTOM OF YOUR server.ts ---
-
-// 1. Serve Vite's compiled static dashboard assets
-app.use(express.static(path.join(process.cwd(), 'dist')));
-
-// 2. Catch-all route: sends index.html so React frontend routes work perfectly
-app.get('*', (req, res) => {
-  res.sendFile(path.join(process.cwd(), 'dist', 'index.html'));
-});
-
-// Wasmer will automatically inject the right cloud port via process.env.PORT
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
