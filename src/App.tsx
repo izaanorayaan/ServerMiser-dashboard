@@ -1570,6 +1570,7 @@ export default function App() {
   const [activeFaqIdx, setActiveFaqIdx] = useState<number | null>(null);
   const [currentView, setCurrentView] = useState<"home" | "sandbox" | "commands" | "analytics" | "support">("home");
   const [analyticsIsLoading, setAnalyticsIsLoading] = useState(false);
+  const [analyticsHasLoaded, setAnalyticsHasLoaded] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
 
   const syncRouteFromLocation = () => {
@@ -1587,7 +1588,7 @@ export default function App() {
 
     if (pathname === "/analytics") {
       setCurrentView("analytics");
-      setAnalyticsIsLoading(true);
+      setAnalyticsIsLoading(!analyticsHasLoaded);
       return;
     }
 
@@ -1615,7 +1616,7 @@ export default function App() {
 
   const navigateToRoute = (view: "home" | "sandbox" | "commands" | "analytics" | "support", nextSupportTab?: "terms" | "privacy" | "formal") => {
     if (view === "analytics") {
-      setAnalyticsIsLoading(true);
+      setAnalyticsIsLoading(!analyticsHasLoaded);
     }
     if (view === "support") {
       const target = nextSupportTab === "privacy"
@@ -1632,7 +1633,7 @@ export default function App() {
     const targetPath = view === "home" ? "/" : `/${view}`;
     window.history.pushState({}, "", targetPath);
     setCurrentView(view);
-    if (view !== "support") setSupportTab("terms");
+    setSupportTab("terms");
   };
   const [pendingScrollTarget, setPendingScrollTarget] = useState<string | null>(null);
   const [scrollY, setScrollY] = useState(0);
@@ -2326,29 +2327,34 @@ export default function App() {
         <>
           {analyticsIsLoading && (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm"
+              initial={{ opacity: 0, y: -12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              className="fixed inset-x-0 top-5 z-40 flex justify-center pointer-events-none"
             >
-              <div className="flex flex-col items-center gap-6">
+              <div className="flex items-center gap-3 rounded-full border border-[#ff3b5c]/40 bg-black/60 px-4 py-2 shadow-[0_0_30px_rgba(255,59,92,0.25)] backdrop-blur-sm">
                 <motion.div
                   animate={{ rotate: 360 }}
-                  transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-                  className="w-16 h-16 border-4 border-[#ff3b5c] border-t-transparent rounded-full"
+                  transition={{ repeat: Infinity, duration: 1.2, ease: "linear" }}
+                  className="w-4 h-4 border-2 border-[#ff3b5c] border-t-transparent rounded-full"
                 />
-                <div className="text-center">
-                  <h2 className="font-mono text-lg tracking-widest uppercase text-[#e2f9b8] mb-2">
-                    Loading Analytics
-                  </h2>
-                  <p className="font-mono text-xs tracking-wider text-slate-400">
-                    Fetching real-time telemetry data...
-                  </p>
-                </div>
+                <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-[#e2f9b8]">
+                  Loading analytics
+                </span>
               </div>
             </motion.div>
           )}
-          <AnalyticsDashboard onBack={() => setCurrentView("home")} setIsHovering={setIsHovering} isDarkMode={isDarkMode} onLoadComplete={() => setAnalyticsIsLoading(false)} />
+          <div className={analyticsIsLoading ? "opacity-90" : "opacity-100"}>
+            <AnalyticsDashboard
+              onBack={() => setCurrentView("home")}
+              setIsHovering={setIsHovering}
+              isDarkMode={isDarkMode}
+              onLoadComplete={() => {
+                setAnalyticsHasLoaded(true);
+                setAnalyticsIsLoading(false);
+              }}
+            />
+          </div>
         </>
       )}
 

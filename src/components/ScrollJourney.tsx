@@ -673,7 +673,6 @@ function ScrollSection({
         pointerEvents: isActive ? "auto" : "none"
       }}
       className={`w-full max-w-xl p-5 lg:p-8 rounded-2xl bg-slate-900/90 backdrop-blur-md border ${borderColor} flex flex-col gap-4 lg:gap-5`}
-      placeholder="ServerMiser Feature Card"
       id={`section-${title.toLowerCase().replace(/\s+/g, "-")}`}
     >
       {/* Header Info */}

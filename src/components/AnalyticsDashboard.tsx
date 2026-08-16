@@ -48,6 +48,8 @@ export default function AnalyticsDashboard({ onBack, setIsHovering, isDarkMode =
 
   const [hasData, setHasData] = useState(false);
   const [isFirstLoad, setIsFirstLoad] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState<string>("Waiting for first payload");
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const [radarNodes, setRadarNodes] = useState([
     { id: "gateway", name: "Discord API Gateway", x: 220, y: 130, latency: 0, status: "offline" },
@@ -174,28 +176,32 @@ export default function AnalyticsDashboard({ onBack, setIsHovering, isDarkMode =
   useEffect(() => {
     async function fetchLiveTelemetry() {
       try {
+        setIsRefreshing(true);
         const response = await fetch('/api/bot-stats', { credentials: 'include' });
 
         if (response.ok) {
           const data = await response.json();
           setStats(data);
-          
-          // Call onLoadComplete on first successful load
+          const now = new Date();
+          setLastUpdated(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+
           if (isFirstLoad) {
             setIsFirstLoad(false);
             onLoadComplete?.();
           }
+        } else {
+          setHasData(false);
         }
       } catch (error) {
         console.error('[AnalyticsDashboard] Could not reach dashboard telemetry endpoint:', error);
+        setHasData(false);
+      } finally {
+        setIsRefreshing(false);
       }
     }
 
-    // Fire it up instantly on window load!
     fetchLiveTelemetry();
-    
-    // Smooth loops that continuously refresh the live metrics stream every second.
-    const telemetryStream = setInterval(fetchLiveTelemetry, 1000);
+    const telemetryStream = setInterval(() => fetchLiveTelemetry(), 1000);
     return () => clearInterval(telemetryStream);
   }, [isFirstLoad, onLoadComplete]);
 
@@ -259,6 +265,31 @@ export default function AnalyticsDashboard({ onBack, setIsHovering, isDarkMode =
                 Visualizing Live Node Data, Gateway Speed, and Active Ingestions.
               </p>
             </div>
+          </div>
+
+          <div className="flex items-center gap-3 mt-4 flex-wrap">
+            <span className={`font-mono text-[10px] uppercase tracking-[0.2em] px-2 py-1 border ${isDarkMode ? "border-slate-800 bg-slate-950 text-slate-300" : "border-slate-200 bg-slate-50 text-slate-600"}`}>
+              {hasData ? "Live telemetry connected" : "Waiting for live telemetry"}
+            </span>
+            <span className={`font-mono text-[10px] uppercase tracking-[0.18em] ${isDarkMode ? "text-slate-500" : "text-slate-500"}`}>
+              Last update: {lastUpdated}
+            </span>
+            <button
+              type="button"
+              onClick={() => fetch('/api/bot-stats', { credentials: 'include' }).then(async (res) => {
+                if (!res.ok) {
+                  setHasData(false);
+                  return;
+                }
+                const data = await res.json();
+                setStats(data);
+                setLastUpdated(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+                setHasData(Boolean(data && typeof data === 'object'));
+              }).catch(() => setHasData(false))}
+              className={`font-mono text-[10px] uppercase tracking-[0.2em] border px-3 py-1.5 transition-colors ${isDarkMode ? "border-slate-700 bg-slate-950 text-[#e2f9b8] hover:text-white" : "border-slate-200 bg-white text-[#ff3b5c] hover:text-black"}`}
+            >
+              {isRefreshing ? "Refreshing..." : "Refresh feed"}
+            </button>
           </div>
         </div>
 
