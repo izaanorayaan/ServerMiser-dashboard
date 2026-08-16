@@ -2,6 +2,7 @@
 name = "izaanorayaan/servermiser-dashboard"
 version = "0.1.0"
 description = "ServerMiser Dashboard Site"
+private = true  # <--- ADD THIS LINE HERE
 
 [[modules]]
 name = "servermiser-site"

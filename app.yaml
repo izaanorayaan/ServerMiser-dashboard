@@ -1,10 +1,8 @@
-kind: wasmer.io/App.v0
 name: servermiser-dashboard
-package: izaanorayaan/servermiser-dashboard
-
-# Maps your verified free pntr.dev subdomain to this Wasmer web app
+owner: izaanorayaan
+package: .
 domains:
-  - "servermiser.pntr.dev"
-
+- servermiser.pntr.dev
 cli_args:
-  - "dist/index.js" # Verify this matches your compiled JS file path
+- dist/index.js
+kind: wasmer.io/App.v0
