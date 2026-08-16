@@ -1,8 +1,8 @@
+kind: wasmer.io/App.v0
 name: servermiser-dashboard
 owner: izaanorayaan
 package: .
 domains:
-- servermiser.pntr.dev
+  - servermiser.pntr.dev
 cli_args:
-- dist/index.js
-kind: wasmer.io/App.v0
+  - "dist/server.cjs" # Points directly to your compiled esbuild output
