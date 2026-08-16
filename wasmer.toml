@@ -1,0 +1,14 @@
+[package]
+name = "izaanorayaan/servermiser-dashboard"
+version = "0.1.0"
+description = "ServerMiser Dashboard Site"
+
+[[modules]]
+name = "servermiser-site"
+source = "."
+backend = "edge.js"
+
+[[commands]]
+name = "run-dashboard"
+module = "servermiser-site"
+runner = "https://webc.org"
