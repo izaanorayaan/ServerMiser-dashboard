@@ -9,6 +9,7 @@ const { pingBotList } = require('./utils/botListPinger');
 const database = require('./utils/database');
 
 const { syncCommandsToBotNexus, pushStatsToBotNexus } = require('./sync-botnexus-commands');
+const { pingDashboard } = require('./utils/Dashboardstatspinger');
 
 const client = new Client({
   intents: [
@@ -186,7 +187,7 @@ client.once('ready', async () => {
       { text: 'in a coding match', type: ActivityType.Competing },
       { text: `over ${guildCount.toLocaleString()} servers`, type: ActivityType.Watching },
       { text: `${userCount.toLocaleString()} humans (and bots pretending)`, type: ActivityType.Watching },
-      { text: `servermiser.is-a.dev`, type: ActivityType.Watching },
+      { text: `servermiser.pntr.dev`, type: ActivityType.Watching },
       { text: `at ${ping}ms ping, basically teleporting`, type: ActivityType.Competing },
       { text: 'therapist for your server\'s trust issues', type: ActivityType.Competing },
       { text: 'mute button go brrr', type: ActivityType.Playing },
@@ -233,10 +234,12 @@ client.once('ready', async () => {
   };
   
   sendStatsUpdate();
-  setInterval(sendStatsUpdate, 30 * 60 * 1000);
+  pingDashboard(client).catch(() => null);
+  setInterval(sendStatsUpdate, 10 * 1000);
+  setInterval(() => pingDashboard(client).catch(() => null), 10 * 1000);
 
   console.log('💻 [DASHBOARD] Starting dashboard metrics...');
-  const dashboardUrl = process.env.DASHBOARD_URL || 'https://servermiser.is-a.dev/api/bot-stats';
+  const dashboardUrl = process.env.DASHBOARD_URL || 'https://servermiser.pntr.dev/api/bot-stats';
   const statsApiKey = process.env.STATS_API_KEY;
 
   async function pushDashboardStats() {
@@ -248,7 +251,8 @@ client.once('ready', async () => {
     try {
       const totalGuilds = client.guilds.cache.size;
       const totalMembers = client.guilds.cache.reduce((acc, g) => acc + (g.memberCount || 0), 0);
-      const wsPing = Math.max(0, Math.round(client.ws.ping));
+      const rawPing = client && client.ws && Number.isFinite(client.ws.ping) ? client.ws.ping : 0;
+      const wsPing = Math.max(0, Math.round(rawPing));
       const shardCount = client.shard ? client.shard.count : 1;
 
       const uptimeMs = client.uptime || 0;
@@ -261,24 +265,34 @@ client.once('ready', async () => {
       const memoryUsage = process.memoryUsage();
       const ramUsage = `${Math.round(memoryUsage.rss / 1024 / 1024)} MB`;
 
-      const [totalXp, counters, guildCategories] = await Promise.all([
-        database.getTotalXp().catch(() => 0),
+      const [counters, guildCategories, totalXp, totalTickets, dailySetups] = await Promise.all([
         database.getCounters().catch(() => ({})),
-        database.getGuildCategories().catch(() => [])
+        database.getGuildCategories().catch(() => []),
+        database.getTotalXp().catch(() => 0),
+        database.getTotalTickets().catch(() => 0),
+        database.getDailySetupCounts().catch(() => [0, 0, 0, 0, 0, 0, 0])
       ]);
 
-      const totalTickets = Number(counters.totalTickets || 0);
       const totalSetups = Number(counters.totalSetups || 0);
       const successfulSetups = Number(counters.successfulSetups || 0);
-      const setupSuccessRate = totalSetups > 0 ? `${((successfulSetups / totalSetups) * 100).toFixed(1)}%` : "0%";
 
       const payload = {
-        totalGuilds, totalMembers, wsPing, uptime, ramUsage,
+        totalGuilds,
+        totalMembers,
+        wsPing,
+        uptime,
+        ramUsage,
         activeShards: `1 / ${shardCount}`,
         securityCompliance: "100%",
-        totalXp, totalTickets, totalSetups, setupSuccessRate,
-        guildCategories
+        totalTickets,
+        totalXp,
+        totalSetups,
+        setupSuccessRate: totalSetups > 0 ? `${((successfulSetups / totalSetups) * 100).toFixed(1)}%` : "0%",
+        ...(Array.isArray(guildCategories) && guildCategories.length > 0 ? { guildCategories } : {}),
+        ...(Array.isArray(dailySetups) && dailySetups.length === 7 ? { dailySetups } : {})
       };
+
+      console.log('[DASHBOARD] Posting payload:', payload);
 
       await fetch(dashboardUrl, {
         method: 'POST',
@@ -294,7 +308,7 @@ client.once('ready', async () => {
   }
 
   pushDashboardStats();
-  setInterval(pushDashboardStats, 5 * 60 * 1000);
+  setInterval(pushDashboardStats, 10 * 1000);
 
   // ==========================================
   // Execute ready.js module for analytics auto-update

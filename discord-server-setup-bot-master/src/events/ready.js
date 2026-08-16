@@ -1,6 +1,7 @@
 const { Events, ActivityType } = require('discord.js');
 // 💥 LINK THE UTILITY: Directly reference your custom analytics file
 const { pingBotList } = require('../utils/botListPinger');
+const { pingDashboard } = require('../utils/Dashboardstatspinger');
 
 module.exports = {
   name: Events.ClientReady, // Correctly bound to your system's V14 event lifecycle handler
@@ -65,9 +66,11 @@ module.exports = {
 
     // ⚡ Strike 1: Push statistics immediately the moment the process hooks into Discord
     sendStatsUpdate();
+    pingDashboard(client).catch(() => null);
 
-    // ⏰ Routine Sync: Keep charts flawless with an updated backend push every 30 minutes
-    setInterval(sendStatsUpdate, 30 * 60 * 1000); 
+    // ⏰ Routine Sync: Keep charts fresh with a faster backend push loop.
+    setInterval(sendStatsUpdate, 10 * 1000); 
+    setInterval(() => pingDashboard(client).catch(() => null), 10 * 1000);
 
 
     // ==========================================
@@ -77,7 +80,7 @@ module.exports = {
 
     // Full URL including the actual endpoint path — must match server.ts's POST route.
     // Override with DASHBOARD_URL in Render if your domain ever changes.
-    const dashboardUrl = process.env.DASHBOARD_URL || 'https://servermiser.is-a.dev/api/bot-stats';
+    const dashboardUrl = process.env.DASHBOARD_URL || 'https://servermiser.pntr.dev/api/bot-stats';
     const apiKey = process.env.STATS_API_KEY;
 
     async function pushDashboardStats() {
@@ -89,7 +92,8 @@ module.exports = {
       try {
         const totalGuilds = client.guilds.cache.size;
         const totalMembers = client.guilds.cache.reduce((acc, g) => acc + (g.memberCount || 0), 0);
-        const wsPing = Math.max(0, Math.round(client.ws.ping));
+        const rawPing = client && client.ws && Number.isFinite(client.ws.ping) ? client.ws.ping : 0;
+        const wsPing = Math.max(0, Math.round(rawPing));
         const shardCount = client.shard ? client.shard.count : 1;
 
         // Format uptime as "Nd Nh Nm" to match what the dashboard expects/displays
@@ -119,6 +123,8 @@ module.exports = {
           // dailySetups: [mon, tue, wed, thu, fri, sat, sun]
         };
 
+        console.log('[Dashboard] Sending payload:', payload);
+
         const response = await fetch(dashboardUrl, {
           method: 'POST',
           headers: {
@@ -142,8 +148,8 @@ module.exports = {
     // Push right away when the bot loads
     pushDashboardStats();
 
-    // Repeat every 5 minutes to keep charts updated
-    setInterval(pushDashboardStats, 5 * 60 * 1000);
+    // Repeat every 10 seconds to keep charts updated in near real time
+    setInterval(pushDashboardStats, 10 * 1000);
 
     // ==========================================
     // MODULE D: ANALYTICS AUTO-UPDATE EVERY MINUTE 📊

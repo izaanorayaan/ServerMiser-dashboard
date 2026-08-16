@@ -16,22 +16,17 @@ const OUTPUT_FILE = path.join(__dirname, 'src/generated-commands.ts');
  */
 function extractCommandData(filePath, fileName) {
   try {
-    // Read the file content
     const content = fs.readFileSync(filePath, 'utf-8');
 
-    // Extract command name from setName()
-    const nameMatch = content.match(/\.setName\(['"`]([^'"`]+)['"`]\)/);
+    const nameMatch = content.match(/new\s+SlashCommandBuilder\s*\(\)\s*\.?\s*\.setName\s*\(\s*['"`]([^'"`]+)['"`]\s*\)/s);
     const name = nameMatch ? nameMatch[1] : fileName.replace('.js', '');
 
-    // Extract description from setDescription()
-    const descMatch = content.match(/\.setDescription\(['"`]([^'"`]+)['"`]\)/);
+    const descMatch = content.match(/new\s+SlashCommandBuilder\s*\(\)\s*\.?\s*\.setName\s*\(\s*['"`][^'"`]+['"`]\s*\)\s*\.?\s*\.setDescription\s*\(\s*['"`]([^'"`]+)['"`]\s*\)/s);
     const description = descMatch ? descMatch[1] : 'No description';
 
-    // Extract permission from setDefaultMemberPermissions()
     const permMatch = content.match(/PermissionFlagsBits\.(\w+)/);
     const permission = permMatch ? permMatch[1] : undefined;
 
-    // Extract subcommands
     const subcommands = extractSubcommands(content, name);
 
     return {
@@ -48,27 +43,173 @@ function extractCommandData(filePath, fileName) {
 }
 
 /**
+ * Read balanced parentheses so we can safely capture nested subcommand groups.
+ */
+function readBalancedCall(source, openParenIndex) {
+  if (openParenIndex < 0 || openParenIndex >= source.length) return null;
+
+  let depth = 0;
+  let inSingle = false;
+  let inDouble = false;
+  let inTemplate = false;
+  let escaped = false;
+
+  for (let i = openParenIndex; i < source.length; i++) {
+    const ch = source[i];
+    const next = source[i + 1];
+
+    if (inSingle) {
+      if (escaped) escaped = false;
+      else if (ch === '\\') escaped = true;
+      else if (ch === "'") inSingle = false;
+      continue;
+    }
+
+    if (inDouble) {
+      if (escaped) escaped = false;
+      else if (ch === '\\') escaped = true;
+      else if (ch === '"') inDouble = false;
+      continue;
+    }
+
+    if (inTemplate) {
+      if (escaped) escaped = false;
+      else if (ch === '\\') escaped = true;
+      else if (ch === '`') inTemplate = false;
+      continue;
+    }
+
+    if (ch === '(') {
+      depth += 1;
+      continue;
+    }
+
+    if (ch === ')') {
+      depth -= 1;
+      if (depth === 0) {
+        return {
+          body: source.slice(openParenIndex + 1, i),
+          endIndex: i + 1
+        };
+      }
+      continue;
+    }
+
+    if (ch === "'") inSingle = true;
+    else if (ch === '"') inDouble = true;
+    else if (ch === '`') inTemplate = true;
+    else if (ch === '/' && next && next !== '/') {
+      // ignore regex literal edges when scanning; this is a safe fallback for typical SlashCommandBuilder chains
+    }
+  }
+
+  return null;
+}
+
+function findMethodCalls(source, methodName) {
+  const calls = [];
+  const regex = new RegExp(`\\.${methodName}\\s*\\(`, 'g');
+  let match;
+
+  while ((match = regex.exec(source)) !== null) {
+    const openParenIndex = source.indexOf('(', match.index + match[0].length - 1);
+    const parsed = readBalancedCall(source, openParenIndex);
+    if (!parsed) continue;
+    calls.push({
+      index: match.index,
+      endIndex: match.index + match[0].length - 1 + parsed.endIndex - openParenIndex,
+      body: parsed.body
+    });
+  }
+
+  return calls;
+}
+
+function extractSetName(body) {
+  const match = body.match(/\.setName\s*\(\s*['"`]([^'"`]+)['"`]\s*\)/s);
+  return match ? match[1] : null;
+}
+
+function extractSetDescription(body) {
+  const match = body.match(/\.setDescription\s*\(\s*['"`]([^'"`]+)['"`]\s*\)/s);
+  return match ? match[1] : null;
+}
+
+function extractDirectSubcommands(body, commandName, groupName = null) {
+  const subcommands = [];
+  const calls = findMethodCalls(body, 'addSubcommand');
+
+  for (const call of calls) {
+    const subName = extractSetName(call.body);
+    const subDesc = extractSetDescription(call.body);
+    if (!subName || !subDesc) continue;
+
+    const fullName = groupName ? `${commandName} ${groupName} ${subName}` : `${commandName} ${subName}`;
+    subcommands.push({
+      name: fullName,
+      description: cleanDescription(subDesc),
+      usage: `|${fullName}`,
+      category: inferCategory(commandName),
+      exampleOutput: generateExampleOutput(commandName, subName),
+      permission: inferPermission(commandName)
+    });
+  }
+
+  return subcommands;
+}
+
+/**
  * Extract subcommands and subcommand groups from command builder
  */
 function extractSubcommands(content, commandName) {
   const subcommands = [];
+  const groupCalls = findMethodCalls(content, 'addSubcommandGroup');
 
-  // Match all subcommand definitions: .addSubcommand(sub => sub.setName(...)...
-  const subRegex = /\.addSubcommand\(sub\s*=>\s*sub\s*\.setName\(['"`]([^'"`]+)['"`]\)\s*\.setDescription\(['"`]([^'"`]+)['"`]\)/g;
-  let match;
+  if (groupCalls.length > 0) {
+    const excludedRanges = [];
+    for (const groupCall of groupCalls) {
+      const groupName = extractSetName(groupCall.body);
+      const groupDesc = extractSetDescription(groupCall.body);
+      if (!groupName || !groupDesc) continue;
 
-  while ((match = subRegex.exec(content)) !== null) {
-    const subName = match[1];
-    const subDesc = match[2];
+      excludedRanges.push([groupCall.index, groupCall.endIndex]);
+      const groupSubs = extractDirectSubcommands(groupCall.body, commandName, groupName);
+      subcommands.push(...groupSubs);
+    }
 
-    // Check if this is part of a subcommand group
-    const subgroupMatch = content.slice(Math.max(0, match.index - 500), match.index).match(/\.addSubcommandGroup\(group\s*=>\s*group\s*\.setName\(['"`]([^'"`]+)['"`]\)/);
-    const subgroupName = subgroupMatch ? subgroupMatch[1] : null;
+    const topLevelSource = content;
+    const topLevelCalls = findMethodCalls(topLevelSource, 'addSubcommand');
+    for (const call of topLevelCalls) {
+      const insideExcludedRange = excludedRanges.some(([start, end]) => call.index >= start && call.endIndex <= end);
+      if (insideExcludedRange) continue;
+
+      const subName = extractSetName(call.body);
+      const subDesc = extractSetDescription(call.body);
+      if (!subName || !subDesc) continue;
+
+      subcommands.push({
+        name: `${commandName} ${subName}`,
+        description: cleanDescription(subDesc),
+        usage: `|${commandName} ${subName}`,
+        category: inferCategory(commandName),
+        exampleOutput: generateExampleOutput(commandName, subName),
+        permission: inferPermission(commandName)
+      });
+    }
+
+    return subcommands;
+  }
+
+  const calls = findMethodCalls(content, 'addSubcommand');
+  for (const call of calls) {
+    const subName = extractSetName(call.body);
+    const subDesc = extractSetDescription(call.body);
+    if (!subName || !subDesc) continue;
 
     subcommands.push({
-      name: `${commandName}${subgroupName ? ` ${subgroupName}` : ''} ${subName}`,
+      name: `${commandName} ${subName}`,
       description: cleanDescription(subDesc),
-      usage: `|${commandName}${subgroupName ? ` ${subgroupName}` : ''} ${subName}`,
+      usage: `|${commandName} ${subName}`,
       category: inferCategory(commandName),
       exampleOutput: generateExampleOutput(commandName, subName),
       permission: inferPermission(commandName)

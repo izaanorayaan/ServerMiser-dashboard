@@ -7,6 +7,34 @@ dotenv.config();
 
 const app = express();
 const PORT = Number(process.env.PORT || 7860);
+const PRIMARY_STATS_SOURCE = process.env.BOT_STATS_SOURCE_URL || process.env.VITE_STATS_API_BASE_URL || "https://servermiser.pntr.dev/api/bot-stats";
+
+function hasLiveTelemetryPayload(data: any): boolean {
+  if (!data || typeof data !== "object") return false;
+
+  const hasCoreCounts =
+    (data.totalGuilds !== undefined && data.totalGuilds !== null && data.totalGuilds !== "") ||
+    (data.totalMembers !== undefined && data.totalMembers !== null && data.totalMembers !== "") ||
+    (data.totalServers !== undefined && data.totalServers !== null && data.totalServers !== "") ||
+    (data.totalUsers !== undefined && data.totalUsers !== null && data.totalUsers !== "");
+
+  const hasPing =
+    (data.wsPing !== undefined && data.wsPing !== null && data.wsPing !== "") ||
+    (data.botPing !== undefined && data.botPing !== null && data.botPing !== "");
+
+  if (!hasCoreCounts || !hasPing) {
+    return false;
+  }
+
+  const syntheticOnlyKeys = ["totalTickets", "totalXp", "totalSetups", "setupSuccessRate", "genTime"];
+  const hasSyntheticOnlyPayload = syntheticOnlyKeys.some((key) => data[key] !== undefined && data[key] !== null && data[key] !== "")
+    && !hasCoreCounts
+    && !hasPing;
+
+  if (hasSyntheticOnlyPayload) return false;
+
+  return true;
+}
 
 app.use(express.json());
 
@@ -39,33 +67,40 @@ app.get("/api/bot-stats", async (req, res) => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 45000);
 
-    const externalResponse = await fetch("https://discord-server-setup-bot.onrender.com", {
+    const externalResponse = await fetch(PRIMARY_STATS_SOURCE, {
       signal: controller.signal
     });
     clearTimeout(timeoutId);
 
     if (externalResponse.ok) {
       const data: any = await externalResponse.json();
-      console.log("[server.ts] Successfully proxied telemetry from Render bot:", data);
 
-      // Map external bot payload to our cache cleanly
-      if (data.totalServers !== undefined) botStats.totalGuilds = Number(data.totalServers);
-      if (data.totalUsers !== undefined) botStats.totalMembers = Number(data.totalUsers);
-      if (data.botPing !== undefined) botStats.wsPing = Number(data.botPing);
-      
-      // Store custom variables on the telemetry cache object
-      if (data.totalTickets !== undefined) (botStats as any).totalTickets = Number(data.totalTickets);
-      if (data.totalXp !== undefined) (botStats as any).totalXp = Number(data.totalXp);
-      if (data.totalSetups !== undefined) (botStats as any).totalSetups = Number(data.totalSetups);
-      if (data.setupSuccessRate !== undefined) (botStats as any).setupSuccessRate = data.setupSuccessRate;
-      if (data.genTime !== undefined) (botStats as any).genTime = data.genTime;
-      if (data.guildCategories !== undefined) (botStats as any).guildCategories = data.guildCategories;
-      if (data.dailySetups !== undefined) (botStats as any).dailySetups = data.dailySetups;
-      if (data.uptime !== undefined) botStats.uptime = data.uptime;
-      if (data.ramUsage !== undefined) botStats.ramUsage = data.ramUsage;
-      if (data.activeShards !== undefined) botStats.activeShards = data.activeShards;
-      if (data.securityCompliance !== undefined) botStats.securityCompliance = data.securityCompliance;
-      if (data.recentLogs !== undefined) botStats.recentLogs = data.recentLogs;
+      if (!hasLiveTelemetryPayload(data)) {
+        console.warn("[server.ts] Ignoring placeholder telemetry payload from upstream; keeping last known live stats.", data);
+      } else {
+        console.log("[server.ts] Successfully proxied telemetry from upstream:", data);
+
+        // Map external bot payload to our cache cleanly
+        if (data.totalServers !== undefined) botStats.totalGuilds = Number(data.totalServers);
+        if (data.totalGuilds !== undefined) botStats.totalGuilds = Number(data.totalGuilds);
+        if (data.totalUsers !== undefined) botStats.totalMembers = Number(data.totalUsers);
+        if (data.totalMembers !== undefined) botStats.totalMembers = Number(data.totalMembers);
+        if (data.botPing !== undefined) botStats.wsPing = Number(data.botPing);
+        if (data.wsPing !== undefined) botStats.wsPing = Number(data.wsPing);
+
+        if (data.totalTickets !== undefined) (botStats as any).totalTickets = Number(data.totalTickets);
+        if (data.totalXp !== undefined) (botStats as any).totalXp = Number(data.totalXp);
+        if (data.totalSetups !== undefined) (botStats as any).totalSetups = Number(data.totalSetups);
+        if (data.setupSuccessRate !== undefined) (botStats as any).setupSuccessRate = data.setupSuccessRate;
+        if (data.genTime !== undefined) (botStats as any).genTime = data.genTime;
+        if (data.guildCategories !== undefined) (botStats as any).guildCategories = data.guildCategories;
+        if (data.dailySetups !== undefined) (botStats as any).dailySetups = data.dailySetups;
+        if (data.uptime !== undefined) botStats.uptime = data.uptime;
+        if (data.ramUsage !== undefined) botStats.ramUsage = data.ramUsage;
+        if (data.activeShards !== undefined) botStats.activeShards = data.activeShards;
+        if (data.securityCompliance !== undefined) botStats.securityCompliance = data.securityCompliance;
+        if (data.recentLogs !== undefined) botStats.recentLogs = data.recentLogs;
+      }
     }
   } catch (err: any) {
     console.warn("[server.ts] Could not retrieve telemetry from Render bot directly (e.g. cold starts or offline), returning cached values:", err.message);
@@ -88,6 +123,8 @@ app.post("/api/bot-stats", (req, res) => {
   if (!authHeader || authHeader !== `Bearer ${secretKey}`) {
     return res.status(401).json({ error: "Unauthorized. Missing or invalid STATS_API_KEY." });
   }
+
+  console.log("[server.ts] DEBUG payload received at /api/bot-stats:", JSON.stringify(req.body, null, 2));
 
   const {
     totalGuilds,
@@ -131,6 +168,14 @@ app.post("/api/bot-stats", (req, res) => {
   if (dailySetups !== undefined) (botStats as any).dailySetups = dailySetups;
 
   res.json({ message: "Telemetry successfully synchronized with ServerMiser web server.", currentStats: botStats });
+});
+
+app.get("/api/debug/bot-stats", (req, res) => {
+  res.json({
+    message: "Latest dashboard telemetry cache",
+    stats: botStats,
+    source: PRIMARY_STATS_SOURCE
+  });
 });
 
 // ==========================================

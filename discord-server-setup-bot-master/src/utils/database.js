@@ -261,6 +261,58 @@ module.exports.getTotalXp = getTotalXp;
 module.exports.incrementCounter = incrementCounter;
 module.exports.getCounters = getCounters;
 
+async function getTotalTickets() {
+  try {
+    const Model = getModel('guild_config');
+    const docs = await Model.find().lean();
+    let total = 0;
+
+    for (const doc of docs) {
+      const value = doc?.value || {};
+      const ticketCounter = Number(value?.ticketConfig?.ticketCounter || 0);
+      total += Number.isFinite(ticketCounter) ? ticketCounter : 0;
+    }
+
+    return total;
+  } catch (error) {
+    console.error('[database] Error computing total tickets:', error.message);
+    return 0;
+  }
+}
+
+module.exports.getTotalTickets = getTotalTickets;
+
+async function getDailySetupCounts() {
+  try {
+    const Model = getModel('guild_config');
+    const docs = await Model.find().lean();
+    const days = Array.from({ length: 7 }, () => 0);
+    const now = new Date();
+
+    for (const doc of docs) {
+      const value = doc?.value || {};
+      const setupDate = value?.setupDate;
+      if (!setupDate) continue;
+
+      const date = new Date(setupDate);
+      if (Number.isNaN(date.getTime())) continue;
+
+      const diffDays = Math.floor((now.getTime() - date.getTime()) / 86400000);
+      if (diffDays >= 0 && diffDays < 7) {
+        const index = 6 - diffDays;
+        days[index] += 1;
+      }
+    }
+
+    return days;
+  } catch (error) {
+    console.error('[database] Error computing daily setup counts:', error.message);
+    return [0, 0, 0, 0, 0, 0, 0];
+  }
+}
+
+module.exports.getDailySetupCounts = getDailySetupCounts;
+
 /**
  * Aggregates every guild's chosen /setup template into category counts
  * for the dashboard's donut chart. This is real data — each guild's

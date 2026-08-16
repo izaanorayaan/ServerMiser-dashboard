@@ -1569,7 +1569,71 @@ export default function App() {
 
   const [activeFaqIdx, setActiveFaqIdx] = useState<number | null>(null);
   const [currentView, setCurrentView] = useState<"home" | "sandbox" | "commands" | "analytics" | "support">("home");
+  const [analyticsIsLoading, setAnalyticsIsLoading] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
+
+  const syncRouteFromLocation = () => {
+    const pathname = window.location.pathname.toLowerCase();
+
+    if (pathname === "/sandbox") {
+      setCurrentView("sandbox");
+      return;
+    }
+
+    if (pathname === "/commands") {
+      setCurrentView("commands");
+      return;
+    }
+
+    if (pathname === "/analytics") {
+      setCurrentView("analytics");
+      setAnalyticsIsLoading(true);
+      return;
+    }
+
+    if (pathname === "/support" || pathname === "/support/tos") {
+      setCurrentView("support");
+      setSupportTab("terms");
+      return;
+    }
+
+    if (pathname === "/support/privacypolicy") {
+      setCurrentView("support");
+      setSupportTab("privacy");
+      return;
+    }
+
+    if (pathname === "/support/behindthename" || pathname === "/support/origin") {
+      setCurrentView("support");
+      setSupportTab("formal");
+      return;
+    }
+
+    setCurrentView("home");
+    setSupportTab("terms");
+  };
+
+  const navigateToRoute = (view: "home" | "sandbox" | "commands" | "analytics" | "support", nextSupportTab?: "terms" | "privacy" | "formal") => {
+    if (view === "analytics") {
+      setAnalyticsIsLoading(true);
+    }
+    if (view === "support") {
+      const target = nextSupportTab === "privacy"
+        ? "/support/privacypolicy"
+        : nextSupportTab === "formal"
+          ? "/support/behindthename"
+          : "/support/tos";
+      window.history.pushState({}, "", target);
+      setCurrentView("support");
+      setSupportTab(nextSupportTab || "terms");
+      return;
+    }
+
+    const targetPath = view === "home" ? "/" : `/${view}`;
+    window.history.pushState({}, "", targetPath);
+    setCurrentView(view);
+    if (view !== "support") setSupportTab("terms");
+  };
   const [pendingScrollTarget, setPendingScrollTarget] = useState<string | null>(null);
   const [scrollY, setScrollY] = useState(0);
   const [copiedCommandName, setCopiedCommandName] = useState<string | null>(null);
@@ -1592,6 +1656,13 @@ export default function App() {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    const onPopState = () => syncRouteFromLocation();
+    window.addEventListener("popstate", onPopState);
+    syncRouteFromLocation();
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+
   // Smooth scroll back to home section
   useEffect(() => {
     if (currentView === "home" && pendingScrollTarget) {
@@ -1603,6 +1674,27 @@ export default function App() {
       }, 150);
     }
   }, [currentView, pendingScrollTarget]);
+
+  useEffect(() => {
+    if (currentView === "home") {
+      if (window.location.pathname !== "/") {
+        window.history.replaceState({}, "", "/");
+      }
+      return;
+    }
+
+    const path = currentView === "support"
+      ? (supportTab === "privacy"
+          ? "/support/privacypolicy"
+          : supportTab === "formal"
+            ? "/support/behindthename"
+            : "/support/tos")
+      : `/${currentView}`;
+
+    if (window.location.pathname !== path) {
+      window.history.replaceState({}, "", path);
+    }
+  }, [currentView, supportTab]);
 
   // Custom pointer trail position and hover state
   const [mousePos, setMousePos] = useState({ x: -100, y: -100 });
@@ -2026,7 +2118,7 @@ export default function App() {
               </button>
               <button
                 onClick={() => {
-                  setCurrentView("sandbox");
+                  navigateToRoute("sandbox");
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
                 className={`transition-colors relative group py-1 cursor-pointer font-mono text-xs tracking-widest uppercase ${
@@ -2042,7 +2134,7 @@ export default function App() {
               </button>
               <button
                 onClick={() => {
-                  setCurrentView("commands");
+                  navigateToRoute("commands");
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
                 className={`transition-colors relative group py-1 cursor-pointer font-mono text-xs tracking-widest uppercase ${
@@ -2077,8 +2169,7 @@ export default function App() {
               >
                 <button
                   onClick={() => {
-                    setCurrentView("support");
-                    setSupportTab("terms");
+                    navigateToRoute("support", "terms");
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
                   className={`transition-colors relative flex items-center gap-1 cursor-pointer font-mono text-xs tracking-widest uppercase ${
@@ -2130,8 +2221,7 @@ export default function App() {
                         {/* Option 2: Terms of Service */}
                         <button
                           onClick={() => {
-                            setCurrentView("support");
-                            setSupportTab("terms");
+                            navigateToRoute("support", "terms");
                             setIsSupportDropdownOpen(false);
                             window.scrollTo({ top: 0, behavior: "smooth" });
                           }}
@@ -2145,8 +2235,7 @@ export default function App() {
                         {/* Option 3: Privacy Policy */}
                         <button
                           onClick={() => {
-                            setCurrentView("support");
-                            setSupportTab("privacy");
+                            navigateToRoute("support", "privacy");
                             setIsSupportDropdownOpen(false);
                             window.scrollTo({ top: 0, behavior: "smooth" });
                           }}
@@ -2160,8 +2249,7 @@ export default function App() {
                         {/* Option 4: Behind the Name */}
                         <button
                           onClick={() => {
-                            setCurrentView("support");
-                            setSupportTab("formal");
+                            navigateToRoute("support", "formal");
                             setIsSupportDropdownOpen(false);
                             window.scrollTo({ top: 0, behavior: "smooth" });
                           }}
@@ -2180,7 +2268,7 @@ export default function App() {
 
               <button
                 onClick={() => {
-                  setCurrentView("analytics");
+                  navigateToRoute("analytics");
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
                 className={`transition-colors relative group py-1 cursor-pointer font-mono text-xs tracking-widest uppercase ${
@@ -2235,7 +2323,33 @@ export default function App() {
 
       {/* --- RENDER CURRENT VIEW --- */}
       {currentView === "analytics" && (
-        <AnalyticsDashboard onBack={() => setCurrentView("home")} setIsHovering={setIsHovering} isDarkMode={isDarkMode} />
+        <>
+          {analyticsIsLoading && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm"
+            >
+              <div className="flex flex-col items-center gap-6">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+                  className="w-16 h-16 border-4 border-[#ff3b5c] border-t-transparent rounded-full"
+                />
+                <div className="text-center">
+                  <h2 className="font-mono text-lg tracking-widest uppercase text-[#e2f9b8] mb-2">
+                    Loading Analytics
+                  </h2>
+                  <p className="font-mono text-xs tracking-wider text-slate-400">
+                    Fetching real-time telemetry data...
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+          <AnalyticsDashboard onBack={() => setCurrentView("home")} setIsHovering={setIsHovering} isDarkMode={isDarkMode} onLoadComplete={() => setAnalyticsIsLoading(false)} />
+        </>
       )}
 
       {currentView === "support" && (
@@ -2429,6 +2543,18 @@ export default function App() {
                             YOU EXPRESSLY WAIVE ANY CLASS-ACTION LITIGATION CONCESSIONS IN DISPUTE CHANNELS. GOVERNING CODES SHALL REMAIN GROUNDED STRICTLY IN TRADITIONAL SYSTEM PURITY AND SECURE SOFTWARE PERSISTENCE STANDARDS.
                           </p>
                         </div>
+
+                        <div>
+                          <h3 className={`font-bold text-sm mb-2 ${isDarkMode ? "text-slate-200" : "text-slate-950"}`}>
+                            7. RISK MODEL, PERFORMANCE EXPECTATIONS, AND SERVICE CONTINUITY
+                          </h3>
+                          <p className="mb-2">
+                            SERVERMISER IS BUILT FOR MODERN DISCORD COMMUNITIES AND PRIORITIZES STABILITY, FAST CONFIGURATION, AND SIGNIFICANTLY REDUCED ADMINISTRATIVE OVERHEAD. WHILE THE BOT ATTEMPTS TO MAINTAIN MAXIMUM RELIABILITY, FEATURES CAN TEMPORARILY BE DELAYED BY DISCORD API LIMITS, SHARD LATENCY, DATABASE THROTTLING, OR UNDUE SERVICE LOADS.
+                          </p>
+                          <p>
+                            WE DO NOT GUARANTEE ZERO OUTAGES OR INSTANT RESPONSE TIMES AT ALL MOMENTS OF THE DAY. WE DO, HOWEVER, COMMIT TO CONTINUOUS IMPROVEMENT, BADGE-LEVEL MAINTENANCE, AND FAST ISSUE RESOLUTION THROUGH OUR SUPPORT CHANNELS.
+                          </p>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -2512,6 +2638,18 @@ export default function App() {
                             WE INSTEAD EMPLOY LOCALSTORAGE TO SECURE AND PRESERVE BASIC CLIENT-SIDE INTERACTION PARAMETERS (E.G., PREFERRED THEME PRESETS: DARK VS LIGHT) STABLE IN YOUR LOCAL BROWSER SANDBOX. WE VALUE AND REINFORCE MAXIMUM USER ANONYMITY AND SECURE LOGICAL ISOLATION.
                           </p>
                         </div>
+
+                        <div>
+                          <h3 className={`font-bold text-sm mb-2 ${isDarkMode ? "text-slate-200" : "text-slate-950"}`}>
+                            6. SUPPORT, DATA REQUESTS, AND ACCOUNTER RIGHTS
+                          </h3>
+                          <p className="mb-2">
+                            USERS MAY REQUEST CLARITY REGARDING WHAT DATA IS STORED, HOW IT IS RETAINED, OR WHICH PROFILE FIELDS ARE ASSOCIATED WITH THEIR GUILD OR ACCOUNT. REQUESTS ARE HANDLED THROUGH THE OFFICIAL SUPPORT SERVER, MODERATION SUPPORT CHANNELS, OR IN-DASHBOARD SUPPORT CHANNELS PROVIDED BY THE PROJECT.
+                          </p>
+                          <p>
+                            WE ATTEMPT TO RESPOND PROMPTLY AND RESPECT ALL VALID USER CONCERNS. IF A GUILD IS REMOVED OR A BOT PERMISSION SET IS REVOKED, WE MAY PURGE RELATED RECORDS AND SECURELY ARCHIVE ONLY THE BASIC METADATA REQUIRED TO MAINTAIN COMPLIANCE AND OPERATIONAL INTEGRITY.
+                          </p>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -2533,6 +2671,21 @@ export default function App() {
                         <p className={`border-l-4 border-[#2e7b8f] pl-4 italic text-sm ${isDarkMode ? "text-slate-200" : "text-slate-900"}`}>
                           "A 'MISER' IS HISTORICALLY DEFINED AS A CONSERVATOR, A HIGHLY VIGILANT AND THRIFTY ENTITY THAT CONSERVES PRECIOUS ASSETS AND SYSTEM RESOURCES RELENTLESSLY TO PREVENT LEAKAGE AND INEFFICIENCY."
                         </p>
+
+                        <div className={`space-y-5 ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
+                          <p>
+                            SERVERMISER WAS BUILT AROUND THE IDEA OF TIGHT SYSTEM CONTROL: CRISP MODERATION, TRIMMING WASTEFUL CHANNELS, ORGANIZING GUILDS WITH PRECISION, AND MAKING AUTOMATION FEEL CLEAN RATHER THAN CLUTTERED. THE NAME SIGNALS THAT ENERGY DIRECTLY — A TOOL THAT MAKES EVERY RESOURCE COUNT.
+                          </p>
+                          <p>
+                            IT ALSO REPRESENTS OUR PHILOSOPHY: KEEP THE BOT FAST, KEEP THE EXPERIENCE FOCUSED, AND KEEP THE COMMUNITY SAFE. EVERY FEATURE SHOULD SERVE A CLEAR PURPOSE. NO DEAD SPACE, NO EXCESS NOISE, NO UNNECESSARY LAG.
+                          </p>
+                          <p>
+                            IN PRACTICE, THAT MEANS THINGS LIKE RAPID SERVER CONFIGURATION, POLISHED SUPPORT SYSTEMS, AND MODERATION TOOLS THAT FEEL DELIBERATE RATHER THAN OVERBUILT. IT IS NOT ABOUT SLOW, SHOWY SOFTWARE. IT IS ABOUT SYSTEMS THAT STAY EFFICIENT UNDER PRESSURE.
+                          </p>
+                          <p>
+                            THAT IS WHY THE NAME CARRIES THE FORMALITY OF A CONSTRUCTIVE, DISCIPLINED ENGINEERING ETHOS. IT SUGGESTS CONTROL, ORDER, AND TECHNICAL INTENT — ALL THE QUALITIES A MODERATED COMMUNITY DESERVES.
+                          </p>
+                        </div>
 
                         <p>
                           IN MODERN DISCORD SERVER ARCHITECTURE AND DESIGN, THE FOREMOST IMPEDIMENT TO ENJOYABLE AND LONG-LASTING COMMUNITY INTERACTION IS CLUTTER, REDUNDANT BOT SPRAWL, CPU CHOKES, AND ENDLESS CONVERSATIONAL NOISE. RUNNING SIX OR SEVEN INDEPENDENT BOTS (ONE FOR TICKETS, ONE FOR XP, ONE FOR MINI-GAMES, ONE FOR COMMAND SANDBOXES, AND ANOTHER FOR AUDITING) FLOODS THE SYSTEM SHARDS, CRIPPLES RESPONSIVENESS, AND ACCRUES MASSIVE LOGICAL NOISE.
@@ -3207,7 +3360,7 @@ export default function App() {
             <div>
               <span className="font-mono text-xs tracking-widest uppercase text-[#ff3b5c]">03 / INTERACTIVE REFERENCE</span>
               <h2 className={`font-display font-black text-3xl sm:text-4xl md:text-5xl uppercase tracking-tighter mt-2 ${isDarkMode ? "text-slate-100" : "text-slate-950"}`}>
-                MISER MANUAL
+                COMMANDS
               </h2>
             </div>
             <p className={`font-mono text-xs tracking-wider max-w-xl leading-relaxed ${isDarkMode ? "text-slate-400" : "text-slate-600 font-medium"}`}>
@@ -3839,17 +3992,16 @@ export default function App() {
                 }}
                 className="hover:text-slate-400 transition-colors cursor-pointer"
               >
-                PRIVACY CODE
+                PRIVACY POLICY
               </button>
               <button
                 onClick={() => {
-                  setCurrentView("support");
-                  setSupportTab("terms");
+                  navigateToRoute("support", "terms");
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
                 className="hover:text-slate-400 transition-colors cursor-pointer"
               >
-                TERMS ENGINE
+                TERMS OF SERVICE
               </button>
               <a
                 href="https://discord.gg/H36QXKB6R6"
@@ -4126,6 +4278,7 @@ export default function App() {
                     <span className="font-mono text-xs font-bold text-[#ff3b5c] select-none">|</span>
                     <input
                       type="text"
+                      autoFocus
                       value={simInputArguments}
                       onChange={(e) => {
                         if (simState === "running") return;

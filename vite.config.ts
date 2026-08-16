@@ -22,9 +22,9 @@ export default defineConfig(() => {
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
       proxy: {
         '/api': {
-          target: process.env.VITE_STATS_API_BASE_URL || 'https://discord-server-setup-bot.onrender.com',
+          target: process.env.VITE_STATS_API_BASE_URL || 'https://servermiser.pntr.dev',
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, ''),
+          rewrite: (path) => path,
         },
       },
     },

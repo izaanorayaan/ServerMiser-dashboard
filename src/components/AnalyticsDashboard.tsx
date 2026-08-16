@@ -22,9 +22,10 @@ interface AnalyticsDashboardProps {
   onBack: () => void;
   setIsHovering: (hover: boolean) => void;
   isDarkMode?: boolean;
+  onLoadComplete?: () => void;
 }
 
-export default function AnalyticsDashboard({ onBack, setIsHovering, isDarkMode = true }: AnalyticsDashboardProps) {
+export default function AnalyticsDashboard({ onBack, setIsHovering, isDarkMode = true, onLoadComplete }: AnalyticsDashboardProps) {
   // Total stats values (simulated/real counters)
   const [activeSegment, setActiveSegment] = useState<number | null>(null);
   const [activeBar, setActiveBar] = useState<number | null>(null);
@@ -46,6 +47,7 @@ export default function AnalyticsDashboard({ onBack, setIsHovering, isDarkMode =
   });
 
   const [hasData, setHasData] = useState(false);
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
 
   const [radarNodes, setRadarNodes] = useState([
     { id: "gateway", name: "Discord API Gateway", x: 220, y: 130, latency: 0, status: "offline" },
@@ -71,7 +73,25 @@ export default function AnalyticsDashboard({ onBack, setIsHovering, isDarkMode =
   const DAY_LABELS = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
 
   const setStats = (fetchedData: any) => {
-    if (!fetchedData) return;
+    if (!fetchedData || typeof fetchedData !== "object") return;
+
+    const hasRealStats =
+      fetchedData.totalGuilds !== undefined ||
+      fetchedData.totalMembers !== undefined ||
+      fetchedData.totalServers !== undefined ||
+      fetchedData.totalUsers !== undefined ||
+      fetchedData.wsPing !== undefined ||
+      fetchedData.botPing !== undefined ||
+      fetchedData.totalTickets !== undefined ||
+      fetchedData.totalXp !== undefined ||
+      fetchedData.totalSetups !== undefined ||
+      Array.isArray(fetchedData.guildCategories) ||
+      Array.isArray(fetchedData.dailySetups);
+
+    if (!hasRealStats) {
+      return;
+    }
+
     const servers = fetchedData.totalServers !== undefined ? Number(fetchedData.totalServers) : Number(fetchedData.totalGuilds || 0);
     const users = fetchedData.totalUsers !== undefined ? Number(fetchedData.totalUsers) : Number(fetchedData.totalMembers || 0);
     const ping = fetchedData.botPing !== undefined ? Number(fetchedData.botPing) : Number(fetchedData.wsPing || 0);
@@ -159,6 +179,12 @@ export default function AnalyticsDashboard({ onBack, setIsHovering, isDarkMode =
         if (response.ok) {
           const data = await response.json();
           setStats(data);
+          
+          // Call onLoadComplete on first successful load
+          if (isFirstLoad) {
+            setIsFirstLoad(false);
+            onLoadComplete?.();
+          }
         }
       } catch (error) {
         console.error('[AnalyticsDashboard] Could not reach dashboard telemetry endpoint:', error);
@@ -168,10 +194,10 @@ export default function AnalyticsDashboard({ onBack, setIsHovering, isDarkMode =
     // Fire it up instantly on window load!
     fetchLiveTelemetry();
     
-    // Smooth loops that continuously refresh your data metrics stream every 10 seconds!
-    const telemetryStream = setInterval(fetchLiveTelemetry, 10000);
+    // Smooth loops that continuously refresh the live metrics stream every second.
+    const telemetryStream = setInterval(fetchLiveTelemetry, 1000);
     return () => clearInterval(telemetryStream);
-  }, []);
+  }, [isFirstLoad, onLoadComplete]);
 
 
   // Trigger slight fluctuation in ping rates for realism if offline

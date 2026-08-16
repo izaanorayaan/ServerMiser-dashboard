@@ -1,4 +1,5 @@
 const https = require('https');
+const database = require('./database');
 
 /**
  * Pushes live bot telemetry to the ServerMiser dashboard's secured
@@ -20,7 +21,8 @@ async function pingDashboard(client) {
 
     const totalGuilds = client.guilds.cache.size;
     const totalMembers = client.guilds.cache.reduce((acc, guild) => acc + (guild.memberCount || 0), 0);
-    const wsPing = Math.max(0, Math.round(client.ws.ping));
+    const rawPing = client && client.ws && Number.isFinite(client.ws.ping) ? client.ws.ping : 0;
+    const wsPing = Math.max(0, Math.round(rawPing));
     const shardCount = client.shard ? client.shard.count : 1;
 
     // Uptime formatting (Nd Nh Nm)
@@ -35,22 +37,39 @@ async function pingDashboard(client) {
     const memUsedMb = Math.round(process.memoryUsage().rss / 1024 / 1024);
     const ramUsage = `${memUsedMb} MB`;
 
-    const payload = JSON.stringify({
+    const [counters, totalXp, totalTickets, dailySetups] = await Promise.all([
+        database.getCounters().catch(() => ({})),
+        database.getTotalXp().catch(() => 0),
+        database.getTotalTickets().catch(() => 0),
+        database.getDailySetupCounts().catch(() => [0, 0, 0, 0, 0, 0, 0])
+    ]);
+
+    const totalSetups = Number(counters.totalSetups || 0);
+    const successfulSetups = Number(counters.successfulSetups || 0);
+    const setupSuccessRate = totalSetups > 0 ? `${((successfulSetups / totalSetups) * 100).toFixed(1)}%` : '0%';
+
+    const payloadObject = {
         totalGuilds,
         totalMembers,
         wsPing,
         uptime,
         ramUsage,
         activeShards: `1 / ${shardCount}`,
-        securityCompliance: "100%"
-        // Optional fields you can add once you track them:
-        // totalTickets, totalXp, totalSetups, setupSuccessRate, genTime,
-        // guildCategories: [{ name, count, color, desc }],
-        // dailySetups: [mon, tue, wed, thu, fri, sat, sun]
-    });
+        securityCompliance: "100%",
+        totalTickets,
+        totalXp,
+        totalSetups,
+        setupSuccessRate,
+        dailySetups,
+        guildCategories: await database.getGuildCategories().catch(() => [])
+    };
+
+    console.log('[Dashboard Sync] Posting payload:', payloadObject);
+
+    const payload = JSON.stringify(payloadObject);
 
     const options = {
-        hostname: 'servermiser.is-a.dev',
+        hostname: 'servermiser.pntr.dev',
         port: 443,
         path: '/api/bot-stats',
         method: 'POST',
