@@ -3,15 +3,15 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
- "scripts": {
-  "dev": "tsx server.ts",
-  "build": "vite build && esbuild server.ts --bundle --platform=node --format=esm --sourcemap --outfile=dist/server.js",
-  "start": "node dist/server.js",
-  "clean": "rm -rf dist",
-  "lint": "tsc --noEmit",
-  "sync-commands": "node sync-commands.cjs",
-  "deploy": "npm run build && wasmer deploy --no-validate"
-},
+  "scripts": {
+    "dev": "tsx server.ts",
+    "build": "vite build && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs",
+    "start": "node dist/server.cjs",
+    "clean": "rm -rf dist",
+    "lint": "tsc --noEmit",
+    "sync-commands": "node sync-commands.cjs",
+    "deploy": "npm run build && wasmer deploy --no-validate"
+  },
 
 
 

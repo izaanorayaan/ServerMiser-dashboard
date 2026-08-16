@@ -5,4 +5,4 @@ package: .
 domains:
   - servermiser.pntr.dev
 cli_args:
-  - "dist/server.js"
+  - "dist/server.cjs"
