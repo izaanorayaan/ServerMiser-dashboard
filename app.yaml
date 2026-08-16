@@ -3,6 +3,7 @@ name: servermiser-dashboard
 owner: izaanorayaan
 package: .
 domains:
-  - servermiser.pntr.dev
+- servermiser.pntr.dev
 cli_args:
-  - "dist/server.cjs" # Points directly to your compiled esbuild output
+- dist/server.cjs
+app_id: da_RxJIdtAUXQ4p

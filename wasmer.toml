@@ -1,15 +1,5 @@
 [package]
 name = "izaanorayaan/servermiser-dashboard"
-version = "0.1.0"
+version = "0.1.1"
 description = "ServerMiser Dashboard Site"
-private = true  # <--- ADD THIS LINE HERE
-
-[[modules]]
-name = "servermiser-site"
-source = "."
-backend = "edge.js"
-
-[[commands]]
-name = "run-dashboard"
-module = "servermiser-site"
-runner = "https://webc.org"
+private = true
