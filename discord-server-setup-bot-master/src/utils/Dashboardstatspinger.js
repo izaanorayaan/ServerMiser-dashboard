@@ -69,7 +69,7 @@ async function pingDashboard(client) {
     const payload = JSON.stringify(payloadObject);
 
     const options = {
-        hostname: 'servermiser.pntr.dev',
+        hostname: 'discord-server-setup-bot-w22o.onrender.com',
         port: 443,
         path: '/api/bot-stats',
         method: 'POST',

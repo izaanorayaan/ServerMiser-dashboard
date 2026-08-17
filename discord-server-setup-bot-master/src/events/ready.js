@@ -80,7 +80,7 @@ module.exports = {
 
     // Full URL including the actual endpoint path — must match server.ts's POST route.
     // Override with DASHBOARD_URL in Render if your domain ever changes.
-    const dashboardUrl = process.env.DASHBOARD_URL || 'https://servermiser.pntr.dev/api/bot-stats';
+    const dashboardUrl = process.env.DASHBOARD_URL || 'https://discord-server-setup-bot-w22o.onrender.com/api/bot-stats';
     const apiKey = process.env.STATS_API_KEY;
 
     async function pushDashboardStats() {

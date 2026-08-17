@@ -7,7 +7,7 @@ dotenv.config();
 
 const app = express();
 const PORT = Number(process.env.PORT || 7860);
-const PRIMARY_STATS_SOURCE = process.env.BOT_STATS_SOURCE_URL || process.env.VITE_STATS_API_BASE_URL || "https://servermiser.pntr.dev/api/bot-stats";
+const PRIMARY_STATS_SOURCE = process.env.BOT_STATS_SOURCE_URL || process.env.VITE_STATS_API_BASE_URL || "https://discord-server-setup-bot-w22o.onrender.com/api/bot-stats";
 
 function hasLiveTelemetryPayload(data: any): boolean {
   if (!data || typeof data !== "object") return false;
