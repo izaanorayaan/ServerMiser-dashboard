@@ -10,6 +10,22 @@ const path = require('path');
 // Path to bot commands directory
 const BOT_COMMANDS_PATH = path.join(__dirname, 'discord-server-setup-bot-master/src/commands');
 const OUTPUT_FILE = path.join(__dirname, 'src/generated-commands.ts');
+const COMMAND_FILE_EXTENSIONS = new Set(['.js', '.cjs', '.mjs']);
+
+function findCommandFiles(directory) {
+  const files = [];
+
+  for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+    const entryPath = path.join(directory, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...findCommandFiles(entryPath));
+    } else if (COMMAND_FILE_EXTENSIONS.has(path.extname(entry.name))) {
+      files.push(entryPath);
+    }
+  }
+
+  return files.sort();
+}
 
 /**
  * Extract command data from Discord.js command builder
@@ -18,8 +34,12 @@ function extractCommandData(filePath, fileName) {
   try {
     const content = fs.readFileSync(filePath, 'utf-8');
 
-    const nameMatch = content.match(/new\s+SlashCommandBuilder\s*\(\)\s*\.?\s*\.setName\s*\(\s*['"`]([^'"`]+)['"`]\s*\)/s);
-    const name = nameMatch ? nameMatch[1] : fileName.replace('.js', '');
+    const nameMatch = content.match(/(?:new\s+SlashCommandBuilder\s*\(\)|\bdata\s*=\s*new\s+SlashCommandBuilder\s*\(\))\s*\.?\s*\.setName\s*\(\s*['"`]([^'"`]+)['"`]\s*\)/s);
+    if (!nameMatch) {
+      console.warn(`⚠️ Skipping ${fileName}: no SlashCommandBuilder .setName() found`);
+      return null;
+    }
+    const name = nameMatch[1];
 
     const descMatch = content.match(/new\s+SlashCommandBuilder\s*\(\)\s*\.?\s*\.setName\s*\(\s*['"`][^'"`]+['"`]\s*\)\s*\.?\s*\.setDescription\s*\(\s*['"`]([^'"`]+)['"`]\s*\)/s);
     const description = descMatch ? descMatch[1] : 'No description';
@@ -148,7 +168,7 @@ function extractDirectSubcommands(body, commandName, groupName = null) {
     subcommands.push({
       name: fullName,
       description: cleanDescription(subDesc),
-      usage: `|${fullName}`,
+      usage: fullName,
       category: inferCategory(commandName),
       exampleOutput: generateExampleOutput(commandName, subName),
       permission: inferPermission(commandName)
@@ -190,7 +210,7 @@ function extractSubcommands(content, commandName) {
       subcommands.push({
         name: `${commandName} ${subName}`,
         description: cleanDescription(subDesc),
-        usage: `|${commandName} ${subName}`,
+        usage: `${commandName} ${subName}`,
         category: inferCategory(commandName),
         exampleOutput: generateExampleOutput(commandName, subName),
         permission: inferPermission(commandName)
@@ -209,7 +229,7 @@ function extractSubcommands(content, commandName) {
     subcommands.push({
       name: `${commandName} ${subName}`,
       description: cleanDescription(subDesc),
-      usage: `|${commandName} ${subName}`,
+      usage: `${commandName} ${subName}`,
       category: inferCategory(commandName),
       exampleOutput: generateExampleOutput(commandName, subName),
       permission: inferPermission(commandName)
@@ -358,16 +378,15 @@ function generateCommandsTemplate() {
     process.exit(1);
   }
 
-  const commandFiles = fs.readdirSync(BOT_COMMANDS_PATH)
-    .filter(file => file.endsWith('.js'));
+  const commandFiles = findCommandFiles(BOT_COMMANDS_PATH);
 
   console.log(`\n📋 Found ${commandFiles.length} command files\n`);
 
   const commands = [];
   const commandsByCategory = {};
 
-  for (const file of commandFiles) {
-    const filePath = path.join(BOT_COMMANDS_PATH, file);
+  for (const filePath of commandFiles) {
+    const file = path.relative(BOT_COMMANDS_PATH, filePath);
     const cmdData = extractCommandData(filePath, file);
 
     if (cmdData) {
@@ -376,7 +395,7 @@ function generateCommandsTemplate() {
         const baseCmd = {
           name: cmdData.name,
           description: cmdData.description,
-          usage: `|${cmdData.name}`,
+          usage: cmdData.name,
           category: inferCategory(cmdData.name),
           exampleOutput: generateExampleOutput(cmdData.name, ''),
           permission: cmdData.permission

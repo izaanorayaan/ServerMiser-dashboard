@@ -2929,7 +2929,7 @@ export default function App() {
             </div>
 
             {/* Benefit Card 2 (Moderation) */}
-            <div className={`p-6 border transition-colors duration-300 flex flex-col justify-between h-64 group relative ${isDarkMode ? "border-slate-800 bg-[#06060a] hover:border-[#ff3b5c]" : "border-slate-200 bg-white hover:border-[#ff3b5c] shadow-sm"}`}>
+            <div className={`p-6 border transition-colors duration-300 flex flex-col justify-between min-h-64 group relative ${isDarkMode ? "border-slate-800 bg-[#06060a] hover:border-[#ff3b5c]" : "border-slate-200 bg-white hover:border-[#ff3b5c] shadow-sm"}`}>
               <div className={`absolute top-0 right-0 w-8 h-8 border-b border-l font-mono text-xs flex items-center justify-center group-hover:text-[#ff3b5c] group-hover:border-[#ff3b5c] transition-colors ${isDarkMode ? "border-slate-800 text-slate-600" : "border-slate-200 text-slate-400"}`}>
                 02
               </div>
@@ -2941,7 +2941,7 @@ export default function App() {
                   MODERATION
                 </h3>
                 <p className={`font-mono text-[10px] uppercase mt-2 tracking-widest leading-relaxed transition-colors ${isDarkMode ? "text-slate-500" : "text-slate-600 font-medium"}`}>
-                  Advanced filters, automatic timeouts, warnings, kicks, and bans to keep your community safe.
+                  A complete staff response chain: warnings, timeouts, kicks, bans, softbans, and searchable case records. Use <span className="text-[#ff3b5c] font-bold">cases search</span> to locate incidents, <span className="text-[#ff3b5c] font-bold">cases note</span> to preserve evidence, and <span className="text-[#ff3b5c] font-bold">cases export</span> to download moderation history.
                 </p>
               </div>
             </div>
@@ -3019,7 +3019,7 @@ export default function App() {
             </div>
 
             {/* Benefit Card 7 (Auto-Mod) */}
-            <div className={`p-6 border transition-all duration-300 flex flex-col justify-between h-64 group relative ${isDarkMode ? "border-amber-900/50 bg-amber-950/20 hover:bg-amber-950/30 hover:border-[#ff9f1c]" : "border-amber-200 bg-amber-50/50 hover:border-amber-500 hover:bg-amber-50/85 shadow-sm"}`}>
+            <div className={`p-6 border transition-all duration-300 flex flex-col justify-between min-h-64 group relative ${isDarkMode ? "border-amber-900/50 bg-amber-950/20 hover:bg-amber-950/30 hover:border-[#ff9f1c]" : "border-amber-200 bg-amber-50/50 hover:border-amber-500 hover:bg-amber-50/85 shadow-sm"}`}>
               <div className={`absolute top-0 right-0 w-8 h-8 border-b border-l font-mono text-xs flex items-center justify-center transition-colors ${isDarkMode ? "border-amber-900/50 text-amber-700/80 group-hover:text-[#ff9f1c] group-hover:border-[#ff9f1c]" : "border-amber-200 text-amber-600 group-hover:text-amber-700 group-hover:border-amber-450"}`}>
                 07
               </div>
@@ -3031,13 +3031,13 @@ export default function App() {
                   AUTO-MOD
                 </h3>
                 <p className={`font-mono text-[10px] uppercase mt-2 tracking-widest leading-relaxed transition-colors ${isDarkMode ? "text-slate-500" : "text-slate-600 font-medium"}`}>
-                  Ironclad automated filters, link protection schemes, anti-spam thresholds, and programmable autoresponders.
+                  Layered protection for live servers: configurable content filters, link controls, anti-spam thresholds, autoresponders, and <span className="text-[#ff9f1c] font-bold">honeypot</span> traps. Honeypot setup guides staff through a channel, enforcement action, message deletion, and a plain-text or embed warning before the response fires; disable or delete the profile when the trap is no longer needed.
                 </p>
               </div>
             </div>
 
             {/* Benefit Card 8 (Verification) */}
-            <div className={`p-6 border transition-all duration-300 flex flex-col justify-between h-64 group relative ${isDarkMode ? "border-indigo-900/50 bg-indigo-950/20 hover:bg-indigo-950/30 hover:border-[#8338ec]" : "border-indigo-200 bg-indigo-50/50 hover:border-indigo-500 hover:bg-indigo-50/85 shadow-sm"}`}>
+            <div className={`p-6 border transition-all duration-300 flex flex-col justify-between min-h-64 group relative ${isDarkMode ? "border-indigo-900/50 bg-indigo-950/20 hover:bg-indigo-950/30 hover:border-[#8338ec]" : "border-indigo-200 bg-indigo-50/50 hover:border-indigo-500 hover:bg-indigo-50/85 shadow-sm"}`}>
               <div className={`absolute top-0 right-0 w-8 h-8 border-b border-l font-mono text-xs flex items-center justify-center transition-colors ${isDarkMode ? "border-indigo-900/50 text-indigo-700/80 group-hover:text-[#8338ec] group-hover:border-[#8338ec]" : "border-indigo-200 text-indigo-600 group-hover:text-indigo-700 group-hover:border-indigo-450"}`}>
                 08
               </div>
@@ -3049,7 +3049,7 @@ export default function App() {
                   VERIFICATION
                 </h3>
                 <p className={`font-mono text-[10px] uppercase mt-2 tracking-widest leading-relaxed transition-colors ${isDarkMode ? "text-slate-500" : "text-slate-600 font-medium"}`}>
-                  Sophisticated interactive onboarding and verification gatekeepers to filter bots and validate new users.
+                  Sophisticated onboarding for safer communities: verification gatekeepers validate new users while <span className="text-[#8338ec] font-bold">smartwelcome setup</span> sends a personalized welcome prompt with selectable interest roles. Members choose their interests directly, and staff can use <span className="text-[#8338ec] font-bold">smartwelcome disable</span> to pause the profile without losing its configuration.
                 </p>
               </div>
             </div>
@@ -3108,8 +3108,8 @@ export default function App() {
               </div>
             </div>
 
-            {/* Benefit Card 12 (Utility & Telemetry) */}
-            <div className={`p-6 border transition-all duration-300 flex flex-col justify-between h-64 group relative ${isDarkMode ? "border-cyan-900/50 bg-cyan-950/20 hover:bg-cyan-950/30 hover:border-[#00f5ff]" : "border-cyan-200 bg-cyan-50/50 hover:border-cyan-500 hover:bg-cyan-50/85 shadow-sm"}`}>
+            {/* Benefit Card 12 (Automation) */}
+            <div className={`p-6 border transition-all duration-300 flex flex-col justify-between min-h-64 group relative ${isDarkMode ? "border-cyan-900/50 bg-cyan-950/20 hover:bg-cyan-950/30 hover:border-[#00f5ff]" : "border-cyan-200 bg-cyan-50/50 hover:border-cyan-500 hover:bg-cyan-50/85 shadow-sm"}`}>
               <div className={`absolute top-0 right-0 w-8 h-8 border-b border-l font-mono text-xs flex items-center justify-center transition-colors ${isDarkMode ? "border-cyan-900/50 text-cyan-700/80 group-hover:text-[#00f5ff] group-hover:border-[#00f5ff]" : "border-cyan-200 text-cyan-600 group-hover:text-cyan-700 group-hover:border-cyan-450"}`}>
                 12
               </div>
@@ -3118,10 +3118,82 @@ export default function App() {
               </div>
               <div>
                 <h3 className={`font-display font-extrabold text-lg uppercase tracking-tight transition-colors ${isDarkMode ? "text-slate-200 group-hover:text-slate-100" : "text-slate-800 group-hover:text-slate-950"}`}>
-                  TELEMETRY UTILS
+                  AUTOMATION
                 </h3>
                 <p className={`font-mono text-[10px] uppercase mt-2 tracking-widest leading-relaxed transition-colors ${isDarkMode ? "text-slate-500" : "text-slate-600 font-medium"}`}>
-                  Raw server datastore extraction suites, diagnostics capabilities matrix registers, and developer diagnostic utilities.
+                  Persistent background workflows and diagnostics in one control layer. The <span className="text-[#00f5ff] font-bold">automessage</span> lifecycle creates recurring posts with channel, interval, role, and template controls; <span className="text-[#00f5ff] font-bold">automessage list</span> exposes active sessions, while remove cleanly stops a task. Pair scheduled messaging with capabilities, guild data, and telemetry tools to keep background work visible and accountable.
+                </p>
+              </div>
+            </div>
+
+            {/* Benefit Card 13 (Events & Community) */}
+            <div className={`p-6 border transition-all duration-300 flex flex-col justify-between min-h-64 group relative ${isDarkMode ? "border-rose-900/50 bg-rose-950/20 hover:bg-rose-950/30 hover:border-[#ff3b5c]" : "border-rose-200 bg-rose-50/50 hover:border-rose-500 hover:bg-rose-50/85 shadow-sm"}`}>
+              <div className={`absolute top-0 right-0 w-8 h-8 border-b border-l font-mono text-xs flex items-center justify-center transition-colors ${isDarkMode ? "border-rose-900/50 text-rose-700/80 group-hover:text-[#ff3b5c] group-hover:border-[#ff3b5c]" : "border-rose-200 text-rose-600 group-hover:text-rose-700 group-hover:border-rose-450"}`}>
+                13
+              </div>
+              <div className={`p-3 border w-fit transition-colors ${isDarkMode ? "bg-rose-900/20 border-rose-800/40 text-[#ff3b5c]" : "bg-rose-100 border-rose-200 text-rose-700"}`}>
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className={`font-display font-extrabold text-lg uppercase tracking-tight transition-colors ${isDarkMode ? "text-slate-200 group-hover:text-slate-100" : "text-slate-800 group-hover:text-slate-950"}`}>
+                  EVENTS & COMMUNITY
+                </h3>
+                <p className={`font-mono text-[10px] uppercase mt-2 tracking-widest leading-relaxed transition-colors ${isDarkMode ? "text-slate-500" : "text-slate-600 font-medium"}`}>
+                  Keep members returning with <span className="text-[#ff3b5c] font-bold">birthdays</span> profiles, reminders, schedules, tests, and role assignments; launch timed <span className="text-[#ff3b5c] font-bold">giveaways</span> with rerolls and endings; and manage polls, suggestions, invites, and community engagement from one bot.
+                </p>
+              </div>
+            </div>
+
+            {/* Benefit Card 14 (Server Configuration) */}
+            <div className={`p-6 border transition-all duration-300 flex flex-col justify-between min-h-64 group relative ${isDarkMode ? "border-teal-900/50 bg-teal-950/20 hover:bg-teal-950/30 hover:border-[#2e7b8f]" : "border-teal-200 bg-teal-50/50 hover:border-teal-500 hover:bg-teal-50/85 shadow-sm"}`}>
+              <div className={`absolute top-0 right-0 w-8 h-8 border-b border-l font-mono text-xs flex items-center justify-center transition-colors ${isDarkMode ? "border-teal-900/50 text-teal-700/80 group-hover:text-[#2e7b8f] group-hover:border-[#2e7b8f]" : "border-teal-200 text-teal-600 group-hover:text-teal-700 group-hover:border-teal-450"}`}>
+                14
+              </div>
+              <div className={`p-3 border w-fit transition-colors ${isDarkMode ? "bg-teal-900/20 border-teal-800/40 text-[#2e7b8f]" : "bg-teal-100 border-teal-200 text-teal-700"}`}>
+                <Settings className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className={`font-display font-extrabold text-lg uppercase tracking-tight transition-colors ${isDarkMode ? "text-slate-200 group-hover:text-slate-100" : "text-slate-800 group-hover:text-slate-950"}`}>
+                  SERVER CONFIGURATION
+                </h3>
+                <p className={`font-mono text-[10px] uppercase mt-2 tracking-widest leading-relaxed transition-colors ${isDarkMode ? "text-slate-500" : "text-slate-600 font-medium"}`}>
+                  Shape the guild precisely with <span className="text-[#2e7b8f] font-bold">channels</span> create, edit, customize, and category controls; deploy <span className="text-[#2e7b8f] font-bold">rules</span>, welcome systems, stickies, starboard, slowmode, lockdown, and audit-ready setup flows without manual channel sprawl.
+                </p>
+              </div>
+            </div>
+
+            {/* Benefit Card 15 (Logging & Case Audit) */}
+            <div className={`p-6 border transition-all duration-300 flex flex-col justify-between min-h-64 group relative ${isDarkMode ? "border-orange-900/50 bg-orange-950/20 hover:bg-orange-950/30 hover:border-[#ff9f1c]" : "border-orange-200 bg-orange-50/50 hover:border-orange-500 hover:bg-orange-50/85 shadow-sm"}`}>
+              <div className={`absolute top-0 right-0 w-8 h-8 border-b border-l font-mono text-xs flex items-center justify-center transition-colors ${isDarkMode ? "border-orange-900/50 text-orange-700/80 group-hover:text-[#ff9f1c] group-hover:border-[#ff9f1c]" : "border-orange-200 text-orange-600 group-hover:text-orange-700 group-hover:border-orange-450"}`}>
+                15
+              </div>
+              <div className={`p-3 border w-fit transition-colors ${isDarkMode ? "bg-orange-900/20 border-orange-800/40 text-[#ff9f1c]" : "bg-orange-100 border-orange-200 text-orange-700"}`}>
+                <Shield className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className={`font-display font-extrabold text-lg uppercase tracking-tight transition-colors ${isDarkMode ? "text-slate-200 group-hover:text-slate-100" : "text-slate-800 group-hover:text-slate-950"}`}>
+                  LOGGING & AUDIT
+                </h3>
+                <p className={`font-mono text-[10px] uppercase mt-2 tracking-widest leading-relaxed transition-colors ${isDarkMode ? "text-slate-500" : "text-slate-600 font-medium"}`}>
+                  Make staff actions reviewable with moderation case search, notes, evidence, JSON export, setup audit trails, and <span className="text-[#ff9f1c] font-bold">mod-logs-toggle</span>. Every protection workflow stays connected to an inspectable history instead of disappearing into chat.
+                </p>
+              </div>
+            </div>
+
+            {/* Benefit Card 16 (Embeds & Templates) */}
+            <div className={`p-6 border transition-all duration-300 flex flex-col justify-between min-h-64 group relative ${isDarkMode ? "border-violet-900/50 bg-violet-950/20 hover:bg-violet-950/30 hover:border-[#8338ec]" : "border-violet-200 bg-violet-50/50 hover:border-violet-500 hover:bg-violet-50/85 shadow-sm"}`}>
+              <div className={`absolute top-0 right-0 w-8 h-8 border-b border-l font-mono text-xs flex items-center justify-center transition-colors ${isDarkMode ? "border-violet-900/50 text-violet-700/80 group-hover:text-[#8338ec] group-hover:border-[#8338ec]" : "border-violet-200 text-violet-600 group-hover:text-violet-700 group-hover:border-violet-450"}`}>
+                16
+              </div>
+              <div className={`p-3 border w-fit transition-colors ${isDarkMode ? "bg-violet-900/20 border-violet-800/40 text-[#8338ec]" : "bg-violet-100 border-violet-200 text-violet-700"}`}>
+                <FolderOpen className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className={`font-display font-extrabold text-lg uppercase tracking-tight transition-colors ${isDarkMode ? "text-slate-200 group-hover:text-slate-100" : "text-slate-800 group-hover:text-slate-950"}`}>
+                  EMBEDS & TEMPLATES
+                </h3>
+                <p className={`font-mono text-[10px] uppercase mt-2 tracking-widest leading-relaxed transition-colors ${isDarkMode ? "text-slate-500" : "text-slate-600 font-medium"}`}>
+                  Build polished server messaging with the embed field and template suite: create, edit, preview, send, set images, thumbnails, colors, footers, authors, and save reusable layouts for consistent announcements.
                 </p>
               </div>
             </div>

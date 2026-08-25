@@ -39,6 +39,19 @@ const BirthdayConfig =
 const BirthdayEntry =
   mongoose.models.BirthdayEntry || mongoose.model('BirthdayEntry', BirthdayEntrySchema);
 
+async function getGuildChannelOptions(guild) {
+  const fetchedChannels = await guild.channels.fetch().catch(() => guild.channels.cache);
+  const channels = Array.from(fetchedChannels?.values?.() ?? fetchedChannels ?? [])
+    .filter(ch => ch && (ch.type === ChannelType.GuildText || ch.type === ChannelType.GuildAnnouncement))
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  return channels.slice(0, 25).map(ch => ({
+    label: `#${ch.name}`.slice(0, 100),
+    value: ch.id,
+    description: 'Birthday announcements',
+  }));
+}
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 const MONTH_NAMES = [
@@ -498,11 +511,13 @@ async function execute(interaction) {
       .setColor('#FF69B4')
       .setDescription('Select the **announcement channel** where birthday messages will be posted.\n\nTip: use `/birthdays set-channel #channel` to set the channel directly.');
 
+    const channelOptions = await getGuildChannelOptions(guild);
+
     const row = new ActionRowBuilder().addComponents(
-      new ChannelSelectMenuBuilder()
+      new StringSelectMenuBuilder()
         .setCustomId('birthday_wizard_ch')
         .setPlaceholder('Choose an announcement channel...')
-        .addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement)
+        .addOptions(channelOptions)
     );
     return interaction.editReply({ embeds: [embed], components: [row] });
   }

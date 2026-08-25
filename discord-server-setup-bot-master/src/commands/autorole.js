@@ -125,20 +125,8 @@ module.exports = {
         .addSubcommand(sub => sub.setName('ongoing').setDescription('Inspect current active configurations'))
         .addSubcommand(sub => sub.setName('delete').setDescription('Purge all ongoing configs for everyone, bots, and humans')),
 
-    // Handles text prefix operations (|autorole <subcommand> [role])
-    async executePrefix(message, args) {
-        if (!message.member.permissions.has(PermissionFlagsBits.ManageRoles)) return;
-
-        const subCommand = args[0]?.toLowerCase();
-        const roleInput = args.slice(1).join(' ');
-
-        const viableSubCommands = ['all', 'humans', 'bots', 'ongoing', 'delete'];
-        if (!viableSubCommands.includes(subCommand)) {
-            return message.channel.send('❌ **Usage:** `|autorole <all/humans/bots/ongoing/delete> [role]`');
-        }
-
-        await runSubcommand(message, subCommand, roleInput, false);
-    },
+    // Slash command operations
+    
 
     async executeSlash(interaction) {
         await interaction.deferReply();

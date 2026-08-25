@@ -72,43 +72,5 @@ module.exports = {
     }).catch(() => null);
   },
 
-  async executePrefix(message, args, client) {
-    const settings = db.readData('settings.json') || {};
-    const currentGuildSettings = settings[message.guild?.id] || {};
-
-    if (currentGuildSettings.funModule === 'disabled' || currentGuildSettings.funModule === false) {
-      return message.reply('❌ The complete **Fun Command Suite** has been globally disabled by a server administrator.').catch(() => null);
-    }
-
-    // Resolve targeted user via mention or raw trailing ID strings
-    let target = message.mentions.users.first();
-    if (!target && args && args.length > 0) {
-      const pureId = args[0].replace(/[^0-9]/g, '');
-      if (pureId.length >= 17 && pureId.length <= 20) {
-        target = await client.users.fetch(pureId).catch(() => null);
-      }
-    }
-
-    if (!target) return message.reply('❌ Please mention a valid user to hug! Usage: `|hug @user`').catch(() => null);
-    if (target.id === message.author.id) {
-      return message.reply('🤗 You wrap your arms around yourself. Self-love is important! ❤️').catch(() => null);
-    }
-
-    const randomAction = HUG_ACTIONS[Math.floor(Math.random() * HUG_ACTIONS.length)].replace('{target}', `**${target.username}**`);
-    const randomGif = HUG_GIFS[Math.floor(Math.random() * HUG_GIFS.length)];
-    
-    let cuteStyle = 'off';
-    try { const cuteData = db.readData('cute.json') || {}; cuteStyle = cuteData[message.guild?.id] || 'off'; } catch (e) {}
-    const isCuteActive = cuteStyle !== 'off';
-
-    const embedPrefix = new EmbedBuilder()
-      .setColor(isCuteActive ? '#FF69B4' : '#FFC0CB')
-      .setTitle(isCuteActive ? '✨ 🤗 WHOLESOME EMBRACE ✨' : '🤗 Virtual Hug!')
-      .setDescription(`**${message.author.username}** ${randomAction}`)
-      .setImage(randomGif); // 🌟 Lock the GIF inside the embed frame here too
-
-    return message.reply({ 
-      embeds: [embedPrefix] 
-    }).catch(() => null);
-  }
+  
 };

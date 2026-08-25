@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
 const { logAction } = require('../utils/auditLog');
 const db = require('../utils/database'); // Restored your dynamic helper model
+const { createCase } = require('../utils/moderationCases');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -55,10 +56,10 @@ module.exports = {
 
       await guild.members.ban(user.id, { reason });
 
-      // MATCHED DATABASE OPERATIONS: Scrapes config objects using your schema maps
-      const settings = (await db.readData('settings.json')) || {};
-      const currentGuildSettings = settings[guildId] || {};
-      
+      const guildConfig = (await db.findOne({ guildId })) || {};
+      const legacySettings = (await db.readData('settings.json')) || {};
+      const currentGuildSettings = { ...(legacySettings[guildId] || {}), ...(guildConfig || {}) };
+
       if (currentGuildSettings.modLogsEnabled && currentGuildSettings.unifiedLogChannelId) {
         const modLogsChannel = guild.channels.cache.get(currentGuildSettings.unifiedLogChannelId) || await guild.channels.fetch(currentGuildSettings.unifiedLogChannelId).catch(() => null);
         if (modLogsChannel) {
@@ -76,11 +77,12 @@ module.exports = {
       }
 
       await logAction(guild, 'User Banned', author, `User: ${user.username}, Reason: ${reason}`);
+      const moderationCase = await createCase({ guildId, action: 'ban', target: user, moderator: author, reason });
 
       const embed = new EmbedBuilder()
         .setColor('#FF0000')
         .setTitle('✅ User Banned')
-        .setDescription(`${user.username} has been banned.\nReason: ${reason}`);
+        .setDescription(`${user.username} has been banned.\nReason: ${reason}\nCase: **#${moderationCase.caseNumber}**`);
 
       return isInteraction ? interaction.editReply({ embeds: [embed] }) : interaction.reply({ embeds: [embed] });
     } catch (error) {
@@ -91,39 +93,5 @@ module.exports = {
   },
 
   // ADDED: Complete prefix execution loop to translate prefix calls flawlessly
-  async executePrefix(message, argsArray, client) {
-    let targetUser = message.mentions.users.first();
-    if (!targetUser && argsArray && argsArray.length > 0) {
-      const pureId = argsArray[0].replace(/[^0-9]/g, '');
-      if (pureId.length >= 17 && pureId.length <= 20) {
-        targetUser = await client.users.fetch(pureId).catch(() => null);
-      }
-    }
-    const reasonText = argsArray && argsArray.length > 1 ? argsArray.slice(1).join(' ') : 'No reason provided';
-
-    const mockInteraction = {
-      isMock: true,
-      guild: message.guild,
-      guildId: message.guild.id,
-      member: message.member,
-      author: message.author,
-      processingMessage: null,
-      options: {
-        getUser: (name) => targetUser,
-        getString: (name) => reasonText
-      },
-      // First reply sends the initial confirmation status
-      reply: async (options) => {
-        return message.reply(options);
-      },
-      // editReply edits the initial status text to display the final embed clean summary
-      editReply: async (options) => {
-        if (mockInteraction.processingMessage) {
-          return mockInteraction.processingMessage.edit(options);
-        }
-        return message.reply(options);
-      }
-    };
-    await this.execute(mockInteraction, client).catch(() => null);
-  }
+  
 };

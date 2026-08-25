@@ -164,7 +164,7 @@ async function handleStart(interaction, minutes, prize, targetChannel, winnersCo
 
   const placeholderMessage = prefixMode 
     ? await targetChannel.send({ content: '⏳ Provisioning asset configuration data...' }) 
-    : await interaction.followUp({ content: '⏳ Deploying giveaway container...', fetchReply: true });
+    : await interaction.followUp({ content: '⏳ Deploying giveaway container...' });
 
   const config = await Giveaway.create({
     messageId: placeholderMessage.id,

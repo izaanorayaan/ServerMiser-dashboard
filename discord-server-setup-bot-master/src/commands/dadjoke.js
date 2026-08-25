@@ -68,26 +68,5 @@ module.exports = {
     await interaction.reply({ embeds: [embed] }).catch(() => null);
   },
 
-  async executePrefix(message, args, client) {
-    const settings = db.readData('settings.json') || {};
-    const currentGuildSettings = settings[message.guild?.id] || {};
-
-    if (currentGuildSettings.funModule === 'disabled' || currentGuildSettings.funModule === false) {
-      return message.reply('❌ The complete **Fun Command Suite** has been globally disabled by a server administrator.').catch(() => null);
-    }
-
-    const randomDadJoke = DAD_JOKES[Math.floor(Math.random() * DAD_JOKES.length)];
-    
-    let cuteStyle = 'off';
-    try { const cuteData = db.readData('cute.json') || {}; cuteStyle = cuteData[message.guild?.id] || 'off'; } catch (e) {}
-    const isCuteActive = cuteStyle !== 'off';
-
-    const embed = new EmbedBuilder()
-      .setColor(isCuteActive ? '#FF69B4' : '#F1C40F')
-      .setTitle(isCuteActive ? '✨ 👨 DAD JOKE ✨' : '👨 Dad Joke')
-      .setDescription(`*${randomDadJoke}*`)
-      .setFooter({ text: 'Groans guaranteed.' });
-      
-    await message.reply({ embeds: [embed] }).catch(() => null);
-  }
+  
 };

@@ -17,7 +17,7 @@ module.exports = {
    * Handles native app interactions and your custom text message create adapter parameters.
    */
   async execute(interaction, client) {
-    const isSlash = interaction.isCommand ? interaction.isCommand() : true;
+    const isSlash = interaction.isChatInputCommand ? interaction.isChatInputCommand() : true;
     const author = interaction.user;
 
     // Use a safe runtime defer framework to prevent sudden client payload drop timeouts
@@ -85,7 +85,7 @@ module.exports = {
         { name: '🔮 Asked Question', value: `\`\`\`text\n${question.slice(0, 250)}\n\`\`\``, inline: false },
         { name: '🌌 Cosmic Decree', value: `> **${cosmicAnswerText}**`, inline: false }
       )
-      .setFooter({ text: `Consulted by ${author.username}`, iconURL: author.displayAvatarURL({ dynamic: true }) })
+      .setFooter({ text: `Consulted by ${author.username}`, iconURL: (typeof author.displayAvatarURL === 'function' ? author.displayAvatarURL({ dynamic: true }) : (author.displayAvatarURL || author.avatarURL || 'https://cdn.discordapp.com/embed/avatars/0.png')) })
       .setTimestamp();
 
     // Deploy data packet payload structure safely back to the chat room channel thread

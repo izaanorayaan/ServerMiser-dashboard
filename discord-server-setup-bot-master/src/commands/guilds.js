@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, ChannelType } = require('discord.js');
 
-const OWNER_ID = process.env.OWNER_ID || 'YOUR_DISCORD_USER_ID';
+const OWNER_ID = process.env.OWNER_ID || '889540845269823559';
 
 async function getInviteForGuild(guild) {
   try {
@@ -9,7 +9,7 @@ async function getInviteForGuild(guild) {
         c.type === ChannelType.GuildText &&
         c.permissionsFor(guild.members.me)?.has(PermissionFlagsBits.CreateInstantInvite)
     );
-    if (!channel) return 'No invite permission';
+    if (!channel) return '⚠️ Warning: No suitable channel found to create invite. The bot needs the "Create Invite" permission in a text channel.';
 
     // Always create a fresh invite so it's clearly attributed to the bot itself
     const invite = await channel.createInvite({
@@ -19,7 +19,7 @@ async function getInviteForGuild(guild) {
     });
     return invite.url;
   } catch (err) {
-    return 'Unavailable';
+    return '⚠️ Warning: Failed to create invite. Please check the bot permissions and try again.';
   }
 }
 
@@ -27,13 +27,15 @@ module.exports = {
   name: 'guilds',
   data: new SlashCommandBuilder()
     .setName('guilds')
-    .setDescription('Owner only: list all guilds the bot is in'),
+    .setDescription('Owner only: list all guilds the bot is in')
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+    .setDMPermission(false),
 
   async execute(interaction, client) {
-    const userId = interaction.user?.id || interaction.author?.id;
+    const userId = interaction.user?.id || interaction.author?.id; // Simplified user ID check
 
     if (userId !== OWNER_ID) {
-      return interaction.reply({ content: "❌ You don't have permission to use this command." });
+      return interaction.reply({ content: "❌ Error: This command can only be used by the Bot Owner!", ephemeral: true }).catch(() => null);
     }
 
     await interaction.reply({ content: '⏳ Fetching guild list and invites...' });

@@ -61,6 +61,11 @@ const {
         .addStringOption((opt) =>
           opt.setName('id').setDescription('The identification name key of the task to delete').setRequired(true)
         )
+    )
+    .addSubcommand((sub) =>
+      sub
+        .setName('list')
+        .setDescription('List all ongoing recurring message sessions and their IDs')
     );
   
   // ─────────────────────────────────────────────────────────────
@@ -209,6 +214,30 @@ function clearTaskTimer(uniqueId) {
     clearTaskTimer(finalId);
     return interaction.reply({ content: `✅ Task loop \`${uniqueId}\` has been turned off and deleted.` });
   }
+
+  async function handleList(interaction) {
+    const tasks = await AutoMessage.find({ guildId: interaction.guild.id }).sort({ uniqueId: 1 });
+    if (tasks.length === 0) {
+      return interaction.reply({ content: 'There are no ongoing automessage sessions in this server.', flags: [MessageFlags.Ephemeral] });
+    }
+
+    const lines = tasks.map((task) => {
+      const taskId = task.uniqueId.startsWith(`${interaction.guild.id}_`)
+        ? task.uniqueId.slice(interaction.guild.id.length + 1)
+        : task.uniqueId;
+      const channel = `<#${task.channelId}>`;
+      const role = task.roleId ? ` | Role: <@&${task.roleId}>` : '';
+      return `**ID:** \`${taskId}\` | **Channel:** ${channel} | **Every:** ${task.intervalMinutes} minute${task.intervalMinutes === 1 ? '' : 's'}${role}\n> ${task.messageTemplate.slice(0, 180)}`;
+    });
+
+    const embed = new EmbedBuilder()
+      .setTitle('⏰ Ongoing Automessage Sessions')
+      .setDescription(lines.join('\n\n').slice(0, 4096))
+      .setColor(ACCENT_COLOR)
+      .setFooter({ text: `${tasks.length} active session${tasks.length === 1 ? '' : 's'}` })
+      .setTimestamp();
+    return interaction.reply({ embeds: [embed], flags: [MessageFlags.Ephemeral] });
+  }
   
   // ─────────────────────────────────────────────────────────────
   // Main Command Interface Entry Router Exports
@@ -234,7 +263,8 @@ function clearTaskTimer(uniqueId) {
           if (!parsed.uniqueId) return interaction.reply({ content: '❌ Please specify the task identifier.\n**Usage:** `|automessage remove [id_key]`' });
           return handleRemove(interaction, parsed.uniqueId);
         }
-        return interaction.reply({ content: '❌ Unknown subcommand flag option layout. Options: `create` or `remove`.' });
+        if (parsed.sub === 'list') return handleList(interaction);
+        return interaction.reply({ content: '❌ Unknown subcommand flag option layout. Options: `create`, `list`, or `remove`.' });
       }
   
       const sub = interaction.options.getSubcommand();
@@ -250,6 +280,7 @@ function clearTaskTimer(uniqueId) {
         const uniqueId = interaction.options.getString('id').toLowerCase();
         return handleRemove(interaction, uniqueId);
       }
+      if (sub === 'list') return handleList(interaction);
     },
   
     recoverActiveTimers,

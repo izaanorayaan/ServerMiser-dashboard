@@ -20,8 +20,7 @@ const CATEGORIES = [
       'A complete server management suite for moderation, leveling, tickets, automod, ' +
       'reaction roles, temporary voice channels, auto responders, starboard, suggestions, ' +
       'giveaways, embeds, birthdays, invite tracking, analytics, fun, and more.\n\n' +
-      'Use the dropdown below to explore each area in detail. Every command works with ' +
-      'both slash commands (`/`) and the text prefix (`|`).',
+      'Use the dropdown below to explore each area in detail. Every command is a native slash command.',
     fields: [
       { name: '🛠️ Server Setup', value: 'One-command template server builds, audit logging, and welcome or leave messages.' },
       { name: '🛡️ Moderation', value: 'Warn, mute, kick, ban, automod filters, and full moderation logs.' },
@@ -166,7 +165,7 @@ function buildEmbed(cat) {
     .setColor(cat.color)
     .setTitle(cat.title)
     .setDescription(cat.description)
-    .setFooter({ text: 'Use the menu to browse • Slash (/) and prefix (|) both work' })
+    .setFooter({ text: 'Use the menu to browse • All slash commands' })
     .setTimestamp();
   for (const f of cat.fields) embed.addFields({ name: f.name, value: f.value });
   return embed;

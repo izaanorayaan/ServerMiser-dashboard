@@ -80,12 +80,12 @@ const data = new SlashCommandBuilder()
     .addChannelOption(opt => opt
       .setName('channel')
       .setDescription('Directly set the suggestion channel (skips wizard)')
-      .addChannelTypes(ChannelType.GuildText)
+      .addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement)
       .setRequired(false))
     .addChannelOption(opt => opt
       .setName('staff-channel')
       .setDescription('Staff review channel (only used when channel is also provided)')
-      .addChannelTypes(ChannelType.GuildText)
+      .addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement)
       .setRequired(false)))
 
   .addSubcommand(sub => sub
@@ -211,6 +211,33 @@ async function nextSuggestionNumber(guildId) {
     .select('suggestionNumber')
     .lean();
   return (last?.suggestionNumber ?? 0) + 1;
+}
+
+async function getGuildChannelOptions(guild) {
+  try {
+    const fetchedChannels = await guild.channels.fetch().catch(() => null);
+    const channelCollection = fetchedChannels || guild.channels.cache;
+    
+    // Convert Collection to array properly
+    const allChannels = channelCollection instanceof Map 
+      ? Array.from(channelCollection.values())
+      : Array.isArray(channelCollection) 
+        ? channelCollection 
+        : [];
+    
+    const channels = allChannels
+      .filter(ch => ch && ch.isTextBased?.())
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    return channels.slice(0, 25).map(ch => ({
+      label: `#${ch.name}`.slice(0, 100),
+      value: ch.id,
+      description: 'Suggestion channel',
+    }));
+  } catch (error) {
+    console.error('[Suggestions] Channel fetch error:', error.message);
+    return [];
+  }
 }
 
 function buildSuggestionEmbed(entry, cfg, user) {
@@ -369,11 +396,13 @@ async function handleSetup(interaction) {
     .setColor('#5865F2')
     .setDescription('Select the **channel** where members will submit suggestions.\n\nTip: run `/suggestions setup #channel` to skip this wizard.');
 
+  const channelOptions = await getGuildChannelOptions(interaction.guild);
+
   const row = new ActionRowBuilder().addComponents(
-    new ChannelSelectMenuBuilder()
+    new StringSelectMenuBuilder()
       .setCustomId('suggestions_wizard_ch')
       .setPlaceholder('Choose the suggestions channel...')
-      .addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement)
+      .addOptions(channelOptions)
   );
 
   return interaction.reply({ embeds: [embed], components: [row], ephemeral: true });
@@ -678,11 +707,13 @@ async function handleInteraction(interaction) {
       .setColor('#5865F2')
       .setDescription(`Submission channel: <#${channelId}>\n\nSelect a **staff review channel** where approvals/denials are announced, or press **Skip**.`);
 
+    const staffOptions = await getGuildChannelOptions(interaction.guild);
+
     const selectRow = new ActionRowBuilder().addComponents(
-      new ChannelSelectMenuBuilder()
+      new StringSelectMenuBuilder()
         .setCustomId('suggestions_wizard_staff')
         .setPlaceholder('Choose a staff channel...')
-        .addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement)
+        .addOptions(staffOptions)
     );
     const skipRow = new ActionRowBuilder().addComponents(
       new ButtonBuilder()

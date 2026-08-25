@@ -1,5 +1,30 @@
-const { MessageFlags } = require('discord.js');
+const { MessageFlags, EmbedBuilder } = require('discord.js');
 const db = require('../utils/database');
+const { isAuditLogsEnabled, resolveAuditLogChannel } = require('../utils/auditLog');
+
+const SETTINGS_TTL_MS = 30_000;
+const SETTINGS_TIMEOUT_MS = 3_000;
+const guildSettingsCache = new Map();
+
+async function getGuildSettings(guildId) {
+  if (!guildId) return {};
+
+  const now = Date.now();
+  const cached = guildSettingsCache.get(guildId);
+
+  if (cached && now - cached.fetchedAt <= SETTINGS_TTL_MS) {
+    return cached.value || {};
+  }
+
+  const allSettings = await Promise.race([
+    db.readData('settings.json').catch(() => ({})) || {},
+    new Promise((_, reject) => setTimeout(() => reject(new Error('settings read timeout')), SETTINGS_TIMEOUT_MS)),
+  ]).catch(() => ({}));
+
+  const guildSettings = allSettings[guildId] || {};
+  guildSettingsCache.set(guildId, { fetchedAt: now, value: guildSettings });
+  return guildSettings;
+}
 
 module.exports = {
     name: 'interactionCreate',
@@ -26,9 +51,9 @@ module.exports = {
         }
 
         // ========================================================
-        // C. TICKET SYSTEM
+        // C. TICKET SYSTEM (all ticket wizard / panel / history IDs)
         // ========================================================
-        if (cid.startsWith('ticket_system_')) {
+        if (cid.startsWith('ticket_')) {
             const cmd = activeClient.commands.get('ticket');
             if (cmd?.handleInteraction) return await cmd.handleInteraction(interaction, activeClient);
             return;
@@ -133,11 +158,53 @@ module.exports = {
             return interaction.deferUpdate().catch(() => null);
         }
 
+        // AUTO MOD RULE WIZARD
+        if (cid.startsWith('automod_')) {
+            const cmd = activeClient.commands.get('automodrule');
+            if (cmd?.handleInteraction) return await cmd.handleInteraction(interaction, activeClient);
+            return interaction.deferUpdate?.().catch(() => null);
+        }
+
+        // HONEYPOT WIZARD
+        if (cid.startsWith('honeypot_')) {
+            const cmd = activeClient.commands.get('honeypot');
+            if (cmd?.handleInteraction) return await cmd.handleInteraction(interaction, activeClient);
+            return interaction.deferUpdate?.().catch(() => null);
+        }
+
+        // SMART WELCOME INTEREST SELECTOR
+        if (cid.startsWith('smartwelcome_')) {
+            const cmd = activeClient.commands.get('smartwelcome');
+            if (cmd?.handleInteraction) return await cmd.handleInteraction(interaction, activeClient);
+            return interaction.deferUpdate?.().catch(() => null);
+        }
+
         // ========================================================
         // K. MODAL SAFETY NET (any remaining unmatched modals)
         // ========================================================
         if (typeof interaction.isModalSubmit === 'function' && interaction.isModalSubmit()) {
             // Already handled by the prefixed sections above; silently ack anything that falls through
+            return interaction.deferUpdate?.().catch(() => null);
+        }
+
+        // ========================================================
+        // AUDIT LOG USER ID LOOKUP (ephemeral, server-side response)
+        // ========================================================
+        if (interaction.isButton() && cid.startsWith('audit_get_user_id_')) {
+            const userId = cid.replace('audit_get_user_id_', '').trim();
+            if (!userId) return interaction.reply({ content: 'No user ID was attached to this action.', ephemeral: true }).catch(() => null);
+            return interaction.reply({
+                content: `User ID for <@${userId}>: \`${userId}\``,
+                ephemeral: true,
+            }).catch(() => null);
+        }
+
+        // ========================================================
+        // LEVELS MENU + MODAL ROUTER
+        // ========================================================
+        if (cid.startsWith('level_')) {
+            const cmd = activeClient.commands.get('level');
+            if (cmd?.handleInteraction) return await cmd.handleInteraction(interaction, activeClient);
             return interaction.deferUpdate?.().catch(() => null);
         }
 
@@ -151,6 +218,29 @@ module.exports = {
         }
 
         // ========================================================
+        // L. SLASH COMMAND AUDIT LOGGING
+        // ========================================================
+        if (interaction.isChatInputCommand()) {
+            try {
+                const guild = interaction.guild;
+                if (guild && (await isAuditLogsEnabled(guild))) {
+                    const logChannel = await resolveAuditLogChannel(guild);
+                    if (logChannel) {
+                        const embed = new EmbedBuilder()
+                            .setColor('#5865F2')
+                            .setTitle('🧭 Slash Command Executed')
+                            .setDescription(`**Command:** /${interaction.commandName}\n**User:** ${interaction.user.tag} (${interaction.user.id})\n**Channel:** ${interaction.channel?.toString() || 'Unknown'}`)
+                            .setTimestamp();
+
+                        await logChannel.send({ embeds: [embed] }).catch(() => null);
+                    }
+                }
+            } catch (error) {
+                console.error('[Audit:SlashCommand]', error.message);
+            }
+        }
+
+        // ========================================================
         // L. SLASH COMMAND ENGINE
         // ========================================================
         if (!interaction.isChatInputCommand()) return;
@@ -158,18 +248,22 @@ module.exports = {
         const commandName = interaction.commandName;
         if (!commandName) return;
 
+        console.log(`[SLASH] Received /${commandName} from ${interaction.user.tag} in ${interaction.guildId}`);
+
         const command = activeClient.commands.get(commandName.toLowerCase());
         if (!command) {
             console.warn(`[WARNING] Received slash interaction for /${commandName}, but it is not registered.`);
             return;
         }
 
-        const mainSettings = (await db.readData('settings.json')) || {};
-        const currentGuildSettings = mainSettings[interaction.guildId] || {};
+        console.log(`[SLASH] Executing /${commandName}`);
+        const startTime = Date.now();
+
+        const currentGuildSettings = await getGuildSettings(interaction.guildId);
 
         const coreUtilityCommands = [
             'setup', 'cute', 'fun-module', 'help', 'setup-audit',
-            'mod-logs-toggle', 'reactionroles', 'autorole', 'automodrule',
+            'mod-logs-toggle', 'reactionroles', 'autorole', 'automodrule', 'honeypot', 'smartwelcome', 'cases', 'softban',
             'ticket', 'verification', 'leaderboard', 'rank', 'analytics',
             'selfvoice', 'autoresponder', 'capabilities', 'stickies', 'channels', 'rules',
             // new modules
@@ -189,6 +283,8 @@ module.exports = {
             }
         }
 
+        console.log(`[SLASH] Executing /${commandName}`);
+
         try {
             if (typeof command.executeSlash === 'function') {
                 await command.executeSlash(interaction, activeClient);
@@ -207,5 +303,6 @@ module.exports = {
                 await interaction.reply(errorPayload).catch(() => null);
             }
         }
+        console.log(`[SLASH] /${commandName} completed in ${Date.now() - startTime}ms`);
     },
 };

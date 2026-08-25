@@ -17,7 +17,7 @@ module.exports = {
   name: 'fun-module',
 
   async execute(interaction) {
-    const isInteraction = interaction.isCommand ? interaction.isCommand() : false;
+    const isInteraction = interaction.isChatInputCommand ? interaction.isChatInputCommand() : false;
 
     if (isInteraction) {
       await interaction.deferReply().catch(() => null);
@@ -59,33 +59,5 @@ module.exports = {
     return isInteraction ? interaction.editReply({ embeds: [embed] }) : interaction.reply({ embeds: [embed] }).catch(() => null);
   },
 
-  async executePrefix(message, argsArray, client) {
-    const guild = message.guild;
-    if (!guild) return;
-
-    const member = message.member;
-    if (!member.permissions.has(PermissionFlagsBits.Administrator) && !member.permissions.has(PermissionFlagsBits.ManageGuild)) {
-      return message.reply('❌ You require Manager or Administrator permissions to toggle modules.').catch(() => null);
-    }
-
-    const inputArg = (argsArray && argsArray[0]) ? argsArray[0].toLowerCase().trim() : null;
-    const validInputs = ['enable', 'disable', 'on', 'off'];
-
-    if (!inputArg || !validInputs.includes(inputArg)) {
-      return message.reply('❌ Usage: `|fun-module <enable|disable>` or `|fun-module <on|off>`').catch(() => null);
-    }
-
-    const slashValueCompatible = (inputArg === 'enable' || inputArg === 'on') ? 'on' : 'off';
-
-    const mockInteraction = {
-      guild: message.guild,
-      guildId: message.guild.id,
-      member: message.member,
-      user: message.author,
-      options: { getString: slashValueCompatible }, 
-      reply: async (options) => message.reply(options)
-    };
-
-    await this.execute(mockInteraction, client).catch(err => console.error('Error handling inline fun-module prefix wrapper:', err));
-  }
+  
 };

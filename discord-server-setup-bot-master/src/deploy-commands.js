@@ -47,12 +47,6 @@ if (fs.existsSync(commandsPath)) {
         const filePath = path.join(commandsPath, file);
         const command = require(filePath);
         
-        // Explicitly skip mydata.js completely
-        if (file === 'mydata.js') {
-            console.log(`[SKIPPED] Expressly bypassing registration loop for: ${file}`);
-            continue;
-        }
-    
         // Fix: Allow commands that use execute OR executeSlash (like autorole.js)
         const hasValidExecutor = typeof command?.execute === 'function' || 
                                  typeof command?.executeSlash === 'function';

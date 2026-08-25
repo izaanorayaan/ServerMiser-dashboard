@@ -67,45 +67,7 @@ module.exports = {
     await interaction.reply({ embeds: [embed] }).catch(() => null);
   },
 
-  async executePrefix(message, args, client) {
-    const settings = db.readData('settings.json') || {};
-    const currentGuildSettings = settings[message.guild?.id] || {};
-
-    if (currentGuildSettings.funModule === 'disabled' || currentGuildSettings.funModule === false) {
-      return message.reply('❌ The complete **Fun Command Suite** has been globally disabled by a server administrator.').catch(() => null);
-    }
-
-    // RESOLVE USER: Target via mention or trailing raw snowflake string IDs
-    let target = message.mentions.users.first();
-    if (!target && args && args.length > 0) {
-      const pureId = args.replace(/[^0-9]/g, '');
-      if (pureId.length >= 17 && pureId.length <= 20) {
-        target = await client.users.fetch(pureId).catch(() => null);
-      }
-    }
-
-    if (!target) {
-      return message.reply('❌ Please mention a valid user to roast! Usage: `|roast @user`').catch(() => null);
-    }
-
-    if (target.id === client.user.id) {
-      return message.reply('🤖 Nice try! You cannot roast me; my code is flawless.').catch(() => null);
-    }
-
-    const randomRoast = ROASTS[Math.floor(Math.random() * ROASTS.length)];
-    
-    let cuteStyle = 'off';
-    try { const cuteData = db.readData('cute.json') || {}; cuteStyle = cuteData[message.guild?.id] || 'off'; } catch (e) {}
-    const isCuteActive = cuteStyle !== 'off';
-
-    const embedPrefix = new EmbedBuilder()
-      .setColor(isCuteActive ? '#FF69B4' : '#D35400')
-      .setTitle(isCuteActive ? '✨ 🔥 SAVAGE ROAST 🔥 ✨' : '🔥 Roasted!')
-      .setDescription(`**${target.username}**, ${randomRoast}`)
-      .setFooter({ text: `Requested by ${message.author.username}` });
-
-    return message.reply({ embeds: [embedPrefix] }).catch(() => null);
-  }
+  
 };
 
 function activeClientUser(interaction) {

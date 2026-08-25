@@ -75,37 +75,5 @@ module.exports = {
   },
 
   // 🌟 FIXED: Fixed array selection index to block runtime crashes completely
-  async executePrefix(message, argsArray, client) {
-    let targetUser = message.mentions.users.first();
-    
-    // Fix: Access index 0 of argsArray instead of replacing string methods across arrays
-    if (!targetUser && argsArray && argsArray.length > 0) {
-      const pureId = argsArray[0].replace(/[^0-9]/g, '');
-      if (pureId.length >= 17 && pureId.length <= 20) {
-        targetUser = await client.users.fetch(pureId).catch(() => null);
-      }
-    }
-
-    if (!targetUser) {
-      return message.reply('❌ Please mention a valid user to slap! Usage: `|slap @user`').catch(() => null);
-    }
-
-    const mockInteraction = {
-      isMock: true,
-      guild: message.guild,
-      guildId: message.guild?.id,
-      member: message.member,
-      author: message.author,
-      options: {
-        getUser: (name) => targetUser
-      },
-      // Safely process nested options payload objects without crashing
-      reply: async (options) => {
-        if (options.embeds) return message.reply({ embeds: options.embeds });
-        return message.reply(options.content || options);
-      }
-    };
-
-    await this.execute(mockInteraction, client).catch(() => null);
-  }
+  
 };

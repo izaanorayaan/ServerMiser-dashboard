@@ -58,26 +58,5 @@ module.exports = {
     await interaction.reply({ embeds: [embed] }).catch(() => null);
   },
 
-  async executePrefix(message, args, client) {
-    const settings = db.readData('settings.json') || {};
-    const currentGuildSettings = settings[message.guild?.id] || {};
-
-    if (currentGuildSettings.funModule === 'disabled' || currentGuildSettings.funModule === false) {
-      return message.reply('❌ The complete **Fun Command Suite** has been globally disabled by a server administrator.').catch(() => null);
-    }
-
-    const fact = FACTS[Math.floor(Math.random() * FACTS.length)];
-    
-    let cuteStyle = 'off';
-    try { const cuteData = db.readData('cute.json') || {}; cuteStyle = cuteData[message.guild?.id] || 'off'; } catch (e) {}
-    const isCuteActive = cuteStyle !== 'off';
-
-    const embed = new EmbedBuilder()
-      .setColor(isCuteActive ? '#FF69B4' : '#111133')
-      .setTitle(isCuteActive ? '✨ 🌌 COSMIC SPACE TRIVIA ✨' : '🌌 Cosmic Space Fact')
-      .setDescription(`🚀 *"${fact}"*`)
-      .setFooter({ text: 'The universe is vast and full of wonders.' });
-      
-    await message.reply({ embeds: [embed] }).catch(() => null);
-  }
+  
 };

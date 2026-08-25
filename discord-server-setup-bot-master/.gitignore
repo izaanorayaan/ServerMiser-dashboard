@@ -16,3 +16,4 @@ config.json
 # Temporary environment text editor save state fragments
 src/events/messageCreate.js.save*
 *.save*
+.aider*

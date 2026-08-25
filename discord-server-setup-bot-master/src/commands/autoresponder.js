@@ -239,7 +239,7 @@ const {
   
       const member = interaction.member || await guild.members.fetch(interaction.user.id).catch(() => null);
   
-      // Resolve subcommand for both slash and prefix (mockInteraction).
+      // Resolve subcommand for slash commands.
       let sub;
       let args = [];
       if (isInteraction) {

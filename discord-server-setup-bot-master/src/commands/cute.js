@@ -31,7 +31,7 @@ module.exports = {
   name: 'cute',
 
   async execute(interaction) {
-    const isInteraction = interaction.isCommand ? interaction.isCommand() : false;
+    const isInteraction = interaction.isChatInputCommand ? interaction.isChatInputCommand() : false;
 
     // 🌟 FIX: Instantly extend the Discord token lifetime to 15 minutes
     if (isInteraction) {
@@ -101,32 +101,5 @@ module.exports = {
     }
   },
 
-  async executePrefix(message, argsArray, client) {
-    const guild = message.guild;
-    if (!guild) return;
-
-    const member = message.member;
-    if (!member.permissions.has(PermissionFlagsBits.Administrator) && !member.permissions.has(PermissionFlagsBits.ManageGuild)) {
-      return message.reply('❌ You require Manager or Administrator permissions to change font profiles.').catch(() => null);
-    }
-
-    let inputArg = (argsArray && argsArray) ? argsArray.toLowerCase().trim() : null;
-    if (inputArg === 'smallcaps') inputArg = 'small-caps';
-
-    const validInputs = ['wide', 'small-caps', 'bubbles', 'off'];
-    if (!inputArg || !validInputs.includes(inputArg)) {
-      return message.reply('❌ Usage: `|cute <wide|small-caps|bubbles|off>`').catch(() => null);
-    }
-
-    const mockInteraction = {
-      guild: message.guild,
-      guildId: message.guild.id,
-      member: message.member,
-      user: message.author,
-      options: { getString: inputArg }, 
-      reply: async (options) => message.reply(options)
-    };
-
-    await this.execute(mockInteraction).catch(err => console.error('Error handling inline cute font wrapper:', err));
-  }
+  
 };

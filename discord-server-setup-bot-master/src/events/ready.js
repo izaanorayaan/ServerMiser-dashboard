@@ -1,7 +1,6 @@
 const { Events, ActivityType } = require('discord.js');
 // 💥 LINK THE UTILITY: Directly reference your custom analytics file
 const { pingBotList } = require('../utils/botListPinger');
-const { pingDashboard } = require('../utils/Dashboardstatspinger');
 
 module.exports = {
   name: Events.ClientReady, // Correctly bound to your system's V14 event lifecycle handler
@@ -66,11 +65,9 @@ module.exports = {
 
     // ⚡ Strike 1: Push statistics immediately the moment the process hooks into Discord
     sendStatsUpdate();
-    pingDashboard(client).catch(() => null);
 
-    // ⏰ Routine Sync: Keep charts fresh with a faster backend push loop.
-    setInterval(sendStatsUpdate, 10 * 1000); 
-    setInterval(() => pingDashboard(client).catch(() => null), 10 * 1000);
+    // ⏰ Routine Sync: Keep charts flawless with an updated backend push every 30 minutes
+    setInterval(sendStatsUpdate, 30 * 60 * 1000); 
 
 
     // ==========================================
@@ -78,9 +75,24 @@ module.exports = {
     // ==========================================
     console.log('💻 Launching internal metrics loop for your web dashboard...');
 
-    // Full URL including the actual endpoint path — must match server.ts's POST route.
-    // Override with DASHBOARD_URL in Render if your domain ever changes.
-    const dashboardUrl = process.env.DASHBOARD_URL || 'https://discord-server-setup-bot-w22o.onrender.com/api/bot-stats';
+    // Full URL including the actual endpoint path — this must point to the dashboard backend,
+    // not the Render bot service itself. If an old Render URL is still stuck in the env, ignore it.
+    const fallbackDashboardUrl = 'https://servermiser.pntr.dev/api/bot-stats';
+    const configuredDashboardUrl = process.env.DASHBOARD_URL;
+    const dashboardUrl = (() => {
+      if (!configuredDashboardUrl) return fallbackDashboardUrl;
+      try {
+        const url = new URL(configuredDashboardUrl);
+        if (url.hostname.toLowerCase().includes('onrender.com') && url.hostname.toLowerCase().includes('discord-server-setup-bot')) {
+          console.warn('[Dashboard] Ignoring Render bot URL in DASHBOARD_URL and using the dashboard host instead.');
+          return fallbackDashboardUrl;
+        }
+        return configuredDashboardUrl;
+      } catch (error) {
+        console.warn('[Dashboard] Invalid DASHBOARD_URL configured; falling back to the dashboard host.');
+        return fallbackDashboardUrl;
+      }
+    })();
     const apiKey = process.env.STATS_API_KEY;
 
     async function pushDashboardStats() {
@@ -92,8 +104,7 @@ module.exports = {
       try {
         const totalGuilds = client.guilds.cache.size;
         const totalMembers = client.guilds.cache.reduce((acc, g) => acc + (g.memberCount || 0), 0);
-        const rawPing = client && client.ws && Number.isFinite(client.ws.ping) ? client.ws.ping : 0;
-        const wsPing = Math.max(0, Math.round(rawPing));
+        const wsPing = Math.max(0, Math.round(client.ws.ping));
         const shardCount = client.shard ? client.shard.count : 1;
 
         // Format uptime as "Nd Nh Nm" to match what the dashboard expects/displays
@@ -123,8 +134,6 @@ module.exports = {
           // dailySetups: [mon, tue, wed, thu, fri, sat, sun]
         };
 
-        console.log('[Dashboard] Sending payload:', payload);
-
         const response = await fetch(dashboardUrl, {
           method: 'POST',
           headers: {
@@ -148,8 +157,8 @@ module.exports = {
     // Push right away when the bot loads
     pushDashboardStats();
 
-    // Repeat every 10 seconds to keep charts updated in near real time
-    setInterval(pushDashboardStats, 10 * 1000);
+    // Repeat every 5 minutes to keep charts updated
+    setInterval(pushDashboardStats, 5 * 60 * 1000);
 
     // ==========================================
     // MODULE D: ANALYTICS AUTO-UPDATE EVERY MINUTE 📊
@@ -173,9 +182,15 @@ module.exports = {
             const guild = client.guilds.cache.get(doc.guildId);
             if (!guild) continue;
 
-            const totalMembers = guild.memberCount;
-            const totalBots = guild.members.cache.filter(m => m.user.bot).size || 0;
-            const totalHumans = totalMembers - totalBots;
+            const totalMembers = guild.memberCount || 0;
+            let totalBots = 0;
+            try {
+              const members = await guild.members.fetch();
+              totalBots = members.filter((m) => m.user.bot).size || 0;
+            } catch (fetchErr) {
+              totalBots = guild.members.cache.filter((m) => m.user.bot).size || 0;
+            }
+            const totalHumans = Math.max(0, totalMembers - totalBots);
 
             // Update total members channel
             if (doc.totalChannelId) {
@@ -202,6 +217,16 @@ module.exports = {
         console.error('[Analytics Auto-Update Error]:', err.message);
       }
     };
+
+    const warmMemberCache = async () => {
+      for (const guild of client.guilds.cache.values()) {
+        await guild.members.fetch().catch(() => null);
+      }
+    };
+
+    // Warm the full member cache before the first run so bot/human totals
+    // are accurate immediately on startup instead of waiting for the first timer cycle.
+    warmMemberCache().catch(() => null);
 
     // Update analytics immediately on startup
     autoUpdateAnalytics();

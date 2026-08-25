@@ -71,49 +71,5 @@ module.exports = {
     await interaction.reply({ embeds: [embed] }).catch(() => null);
   },
 
-  async executePrefix(message, argsArray, client) {
-    const settings = db.readData('settings.json') || {};
-    const currentGuildSettings = settings[message.guild?.id] || {};
-
-    if (currentGuildSettings.funModule === 'disabled' || currentGuildSettings.funModule === false) {
-      return message.reply('❌ The complete **Fun Command Suite** has been globally disabled by a server administrator.').catch(() => null);
-    }
-
-    // Custom multi-argument string parser for prefix calls splitting at a clear separator or comma
-    // Example: |predict-love PersonA, PersonB or |predict-love PersonA PersonB
-    const fullInput = argsArray ? argsArray.join(' ') : '';
-    let itemA = '';
-    let itemB = '';
-
-    if (fullInput.includes(',')) {
-      const parts = fullInput.split(',');
-      itemA = parts[0].trim();
-      itemB = parts.slice(1).join(',').trim();
-    } else {
-      const parts = fullInput.split(/ +/);
-      itemA = parts[0] || '';
-      itemB = parts.slice(1).join(' ').trim();
-    }
-
-    if (!itemA || !itemB) {
-      return message.reply('❌ Usage: `|predict-love <FirstItem>, <SecondItem>` or `|predict-love <FirstItem> <SecondItem>`').catch(() => null);
-    }
-
-    // Construct the context wrapper compatibility variables
-    const mockContextInteraction = {
-      guild: message.guild,
-      guildId: message.guild.id,
-      user: message.author,
-      member: message.member,
-      options: {
-        getString: (name) => (name === 'first' ? itemA : itemB)
-      },
-      reply: async (options) => message.reply(options)
-    };
-
-    const targetCommand = client.commands.get('predict-love');
-    if (targetCommand) {
-      await targetCommand.execute(mockContextInteraction).catch(err => console.error('Error in predict-love prefix route execution:', err));
-    }
-  }
+  
 };

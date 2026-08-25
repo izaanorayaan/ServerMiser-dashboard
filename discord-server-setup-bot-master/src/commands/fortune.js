@@ -68,26 +68,5 @@ module.exports = {
     await interaction.reply({ embeds: [embed] }).catch(() => null);
   },
 
-  async executePrefix(message, args, client) {
-    const settings = db.readData('settings.json') || {};
-    const currentGuildSettings = settings[message.guild?.id] || {};
-
-    if (currentGuildSettings.funModule === 'disabled' || currentGuildSettings.funModule === false) {
-      return message.reply('❌ The complete **Fun Command Suite** has been globally disabled by a server administrator.').catch(() => null);
-    }
-
-    const prediction = FORTUNES[Math.floor(Math.random() * FORTUNES.length)];
-    
-    let cuteStyle = 'off';
-    try { const cuteData = db.readData('cute.json') || {}; cuteStyle = cuteData[message.guild?.id] || 'off'; } catch (e) {}
-    const isCuteActive = cuteStyle !== 'off';
-
-    const embed = new EmbedBuilder()
-      .setColor(isCuteActive ? '#FF69B4' : '#A020F0')
-      .setTitle(isCuteActive ? '✨ 🔮 YOUR FORTUNE ✨' : '🔮 Your Fortune')
-      .setDescription(`💬 *"${prediction}"*`)
-      .setFooter({ text: 'The crystal ball has spoken.' });
-      
-    await message.reply({ embeds: [embed] }).catch(() => null);
-  }
+  
 };

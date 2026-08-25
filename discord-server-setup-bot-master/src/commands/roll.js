@@ -52,42 +52,5 @@ module.exports = {
     await interaction.reply({ embeds: [embed] }).catch(() => null);
   },
 
-  async executePrefix(message, argsArray, client) {
-    const settings = db.readData('settings.json') || {};
-    const currentGuildSettings = settings[message.guild?.id] || {};
-
-    if (currentGuildSettings.funModule === 'disabled' || currentGuildSettings.funModule === false) {
-      return message.reply('❌ The complete **Fun Command Suite** has been globally disabled by a server administrator.').catch(() => null);
-    }
-
-    // Parse the sides integer from prefix argument arrays safely
-    let parsedSides = 6;
-    if (argsArray && argsArray[0]) {
-      const parsedInt = parseInt(argsArray[0]);
-      if (!isNaN(parsedInt)) {
-        parsedSides = parsedInt;
-      }
-    }
-
-    if (parsedSides < 2) {
-      return message.reply('❌ A die must have at least 2 sides!').catch(() => null);
-    }
-
-    // Pass downstream structural keys accurately to prevent profile drops
-    const mockContextInteraction = {
-      guild: message.guild,
-      guildId: message.guild.id,
-      user: message.author,
-      member: message.member,
-      options: {
-        getInteger: (name) => parsedSides
-      },
-      reply: async (options) => message.reply(options)
-    };
-
-    const targetCommand = client.commands.get('roll');
-    if (targetCommand) {
-      await targetCommand.execute(mockContextInteraction).catch(err => console.error('Error in roll prefix route execution:', err));
-    }
-  }
+  
 };

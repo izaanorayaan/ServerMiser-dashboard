@@ -62,27 +62,5 @@ module.exports = {
         await interaction.reply({ embeds: [embed] }).catch(() => null);
     },
 
-    async executePrefix(message, args, client) {
-        // 1. Framework switch verification for prefix calls
-        const mainSettings = db.readData('settings.json') || {};
-        const currentGuildSettings = mainSettings[message.guild?.id] || {};
-
-        if (currentGuildSettings.funModule === 'disabled' || currentGuildSettings.funModule === false) {
-            return message.reply('❌ The complete **Fun Command Suite** has been globally disabled by a server administrator.').catch(() => null);
-        }
-
-        const chosenFlavor = FLAVORS[Math.floor(Math.random() * FLAVORS.length)];
-        
-        let cuteStyle = 'off';
-        try { const cuteData = db.readData('cute.json') || {}; cuteStyle = cuteData[message.guild?.id] || 'off'; } catch (e) {}
-        const isCuteActive = cuteStyle !== 'off';
-
-        const embed = new EmbedBuilder()
-            .setTitle(isCuteActive ? '✨ 🍦 FLAVOR PERSONALITY ✨' : '🍦 Flavor Personality')
-            .setDescription(`Analyzing your current energy levels... 🍧\n\nYour ice cream flavor personality right now is:\n**✨ ${chosenFlavor} ✨**`)
-            .setColor(isCuteActive ? '#FF69B4' : '#E91E63')
-            .setFooter({ text: 'Stay cool!' });
-
-        await message.reply({ embeds: [embed] }).catch(() => null);
-    }
+    
 };

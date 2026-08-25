@@ -64,30 +64,5 @@ module.exports = {
     }).catch(() => null);
   },
 
-  async executePrefix(message, args, client) {
-    const settings = db.readData('settings.json') || {};
-    const currentGuildSettings = settings[message.guild?.id] || {};
-
-    if (currentGuildSettings.funModule === 'disabled' || currentGuildSettings.funModule === false) {
-      return message.reply('❌ The complete **Fun Command Suite** has been globally disabled by a server administrator.').catch(() => null);
-    }
-
-    const randomFact = CAT_FACTS[Math.floor(Math.random() * CAT_FACTS.length)];
-    const randomGif = CAT_GIFS[Math.floor(Math.random() * CAT_GIFS.length)];
-    
-    let cuteStyle = 'off';
-    try { const cuteData = db.readData('cute.json') || {}; cuteStyle = cuteData[message.guild?.id] || 'off'; } catch (e) {}
-    const isCuteActive = cuteStyle !== 'off';
-
-    const embed = new EmbedBuilder()
-      .setColor(isCuteActive ? '#FF69B4' : '#E67E22')
-      .setTitle(isCuteActive ? '✨ 🐱 ANIMATED CAT VALUE ✨' : '🐱 Random Cat Fact')
-      .setDescription(`💡 **Did you know?** ${randomFact}`)
-      .setImage(randomGif); // 🌟 Lock the GIF inside the card here too!
-      
-    // Removed direct text content string parameter from prefix response layout
-    return message.reply({ 
-      embeds: [embed] 
-    }).catch(() => null);
-  }
+  
 };

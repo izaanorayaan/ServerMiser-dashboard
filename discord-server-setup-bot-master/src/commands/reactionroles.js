@@ -146,7 +146,7 @@ module.exports = {
   },
 
   async execute(interaction, client) {
-    const isInteraction = interaction.isCommand ? interaction.isCommand() : false;
+    const isInteraction = interaction.isChatInputCommand ? interaction.isChatInputCommand() : false;
     const guild = interaction.guild;
     const guildId = interaction.guildId;
     const callerUser = interaction.user;
@@ -405,31 +405,5 @@ module.exports = {
     return interaction.editReply({ content: replyText });
   },
 
-  async executePrefix(message, argsArray, client) {
-    if (!message.member.permissions.has(PermissionFlagsBits.ManageRoles)) {
-      return message.reply('❌ Permissions required!').catch(() => null);
-    }
-
-    const subArg = argsArray && argsArray[0] ? argsArray[0].toLowerCase().trim() : '';
-    if (subArg !== 'create' && subArg !== 'test' && subArg !== 'edit' && subArg !== 'delete-panel') {
-      return message.reply('❌ Usage: `|reactionroles <create|test|edit|delete-panel> [options]`\n💡 Prefer Slash commands (`/reactionroles`) for complex setups!').catch(() => null);
-    }
-
-    const mockInteraction = {
-      guild: message.guild,
-      guildId: message.guild.id,
-      member: message.member,
-      user: message.author,
-      isCommand: () => false,
-      options: {
-        getSubcommand: () => subArg,
-        getString: (name) => argsArray && argsArray.length > 1 ? argsArray.slice(1).join(' ') : '',
-        getChannel: (name) => message.mentions.channels.first() || message.channel,
-        getRole: (name) => message.mentions.roles.first()
-      },
-      reply: async (options) => message.reply(options)
-    };
-
-    await this.execute(mockInteraction, client).catch(err => console.error('Error handling interaction reaction role wrapper:', err));
-  }
+  
 };

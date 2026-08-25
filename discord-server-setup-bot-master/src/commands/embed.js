@@ -264,7 +264,7 @@ async function handleCreate(interaction) {
   if (!await requireManageMessages(interaction)) return;
   if (isPrefixMode(interaction)) {
     return interaction.reply({
-      content: '⚠️ Visual UI Modals cannot be loaded via text prefix commands. Please run this command as a native Slash Command (`/embed create`) to open the canvas designer.',
+      content: '⚠️ Visual UI Modals are only available via slash commands. Please run `/embed create` to open the canvas designer.',
     }).catch(() => null);
   }
   await interaction.showModal(buildCreateModal()).catch(() => null);
@@ -342,7 +342,7 @@ async function handleSend(interaction) {
 async function handleFieldAdd(interaction) {
   if (!await requireManageMessages(interaction)) return;
   if (isPrefixMode(interaction)) {
-    return interaction.reply({ content: '❌ Visual UI Modals cannot be loaded via text prefix commands. Please run `/embed field add`.' }).catch(() => null);
+    return interaction.reply({ content: '❌ Visual UI Modals are only available via slash commands. Please run `/embed field add`.' }).catch(() => null);
   }
   await interaction.showModal(buildFieldAddModal()).catch(() => null);
 }

@@ -54,29 +54,5 @@ module.exports = {
     }).catch(() => null);
   },
 
-  async executePrefix(message, args, client) {
-    const settings = db.readData('settings.json') || {};
-    const currentGuildSettings = settings[message.guild?.id] || {};
-
-    if (currentGuildSettings.funModule === 'disabled' || currentGuildSettings.funModule === false) {
-      return message.reply('❌ The complete **Fun Command Suite** has been globally disabled by a server administrator.').catch(() => null);
-    }
-
-    const selected = MEMES[Math.floor(Math.random() * MEMES.length)];
-    
-    let cuteStyle = 'off';
-    try { const cuteData = db.readData('cute.json') || {}; cuteStyle = cuteData[message.guild?.id] || 'off'; } catch (e) {}
-    const isCuteActive = cuteStyle !== 'off';
-
-    const embed = new EmbedBuilder()
-      .setColor(isCuteActive ? '#FF69B4' : '#95A5A6')
-      .setTitle(isCuteActive ? `✨ 😂 ${selected.title.toUpperCase()} ✨` : `😂 ${selected.title}`)
-      .setImage(selected.url) // Added back here as well
-      .setFooter({ text: 'Everyday Life Relatable Content' });
-      
-    // Removed direct text content string parameter from prefix response layout
-    return message.reply({ 
-      embeds: [embed] 
-    }).catch(() => null);
-  }
+  
 };

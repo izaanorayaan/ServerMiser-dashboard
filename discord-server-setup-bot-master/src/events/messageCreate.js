@@ -1,11 +1,81 @@
 const discord = require('discord.js');
-const audit = require('../utils/auditLog');
 const db = require('../utils/database');
 const UserLevel = require('../utils/models/UserLevel');
 const formatter = require('../utils/textFormatter.js');
 const mongoose = require('mongoose');
 
 const xpCooldowns = new Map();
+
+async function refreshStickyMessage(message, client) {
+    try {
+        if (!message?.guild || !message.channel || message.author.bot || message.webhookId) return;
+        if (client && message.author.id === client.user?.id) return;
+
+        const guildConfig = await db.findOne({ guildId: message.guild.id }).catch(() => null) || {};
+        const sticky = guildConfig.sticky || {};
+
+        if (!sticky?.channelId || sticky.channelId !== message.channel.id || !sticky.messageId) return;
+        if (sticky.messageId === message.id) return;
+
+        const targetChannel = message.guild.channels.cache.get(sticky.channelId) || await message.guild.channels.fetch(sticky.channelId).catch(() => null);
+        if (!targetChannel || !targetChannel.isTextBased?.()) return;
+
+        // Verify the old sticky message actually exists before trying to delete it
+        let previousSticky;
+        try {
+            previousSticky = await targetChannel.messages.fetch(sticky.messageId);
+        } catch (e) {
+            // Message was already deleted, continue to post new sticky
+        }
+
+        // Delete the old sticky if it still exists
+        if (previousSticky) {
+            await previousSticky.delete().catch(() => null);
+        }
+
+        // Rebuild the exact payload that was originally sent
+        let payload;
+        if (sticky.style === 'embed') {
+            payload = {
+                embeds: [
+                    new discord.EmbedBuilder()
+                        .setColor(0x5865F2)
+                        .setDescription(sticky.text || 'Sticky message')
+                        .setFooter({ text: 'This is a sticky message' })
+                ],
+                allowedMentions: { parse: [] },
+            };
+        } else {
+            // Plain message - use the exact stored content
+            payload = {
+                content: sticky.text || 'Sticky message',
+                allowedMentions: { parse: [] },
+            };
+        }
+
+        // Send the new sticky message
+        const newSticky = await targetChannel.send(payload).catch((err) => {
+            console.error('[sticky] Failed to send refresh message:', err.message);
+            return null;
+        });
+        
+        if (!newSticky) {
+            console.error('[sticky] Failed to create new sticky message for guild', message.guild.id);
+            return;
+        }
+
+        // Update the database with the new message ID
+        await db.findOneAndUpdate(
+            { guildId: message.guild.id },
+            { $set: { 'sticky.messageId': newSticky.id, 'sticky.updatedAt': new Date().toISOString() } },
+            { upsert: true }
+        ).catch((err) => {
+            console.error('[sticky] Failed to update database:', err.message);
+        });
+    } catch (error) {
+        console.error('[sticky] Refresh failed:', error.message);
+    }
+}
 
 // XP needed to go from `level` to `level + 1`. Must match level.js's
 // xpNeededForLevel() so /level rank and the live XP engine agree.
@@ -20,14 +90,43 @@ module.exports = {
         try {
             // 1. Safety Gate: Completely ignore bots, webhooks, and empty contents
             if (!message || !message.author || message.author.bot || message.webhookId) return;
-            if (!message.content) return;
+            if (message.author.id === client?.user?.id) return;
 
-            const prefix = client?.prefix || '|';
+            await refreshStickyMessage(message, client);
 
             // ==========================================
             // 🛡️ BACKGROUND AUTOMOD CRITERIA MESSAGE SCANNER
             // ==========================================
             try {
+                const HoneypotModel = mongoose.models.Honeypot;
+                const honeypot = HoneypotModel && message.guild
+                    ? await HoneypotModel.findOne({ guildId: message.guild.id, channelId: message.channel.id, enabled: true })
+                    : null;
+                if (honeypot && !message.member?.permissions.has(discord.PermissionFlagsBits.ManageMessages)) {
+                    await message.delete().catch(() => null);
+                    if (honeypot.messageType === 'embed') {
+                        const warningEmbed = new discord.EmbedBuilder()
+                            .setColor(honeypot.embedColor || '#ED4245')
+                            .setTitle(honeypot.embedTitle || 'Honeypot triggered')
+                            .setDescription(honeypot.message);
+                        if (honeypot.embedFooter) warningEmbed.setFooter({ text: honeypot.embedFooter });
+                        await message.channel.send({ embeds: [warningEmbed] }).then(sent => setTimeout(() => sent.delete().catch(() => null), 4000));
+                    } else {
+                        await message.channel.send({ content: honeypot.message }).then(sent => setTimeout(() => sent.delete().catch(() => null), 4000));
+                    }
+                    const action = honeypot.action || 'ban';
+                    if (action === 'softban' && message.member?.bannable) {
+                        await message.member.ban({ deleteMessageSeconds: honeypot.deleteMessages === false ? 0 : 604800, reason: 'Honeypot trap triggered (softban)' }).catch(() => null);
+                        await message.guild.members.unban(message.author.id, 'Honeypot softban completed').catch(() => null);
+                    } else if (action === 'ban' && message.member?.bannable) {
+                        await message.member.ban({ deleteMessageSeconds: honeypot.deleteMessages === false ? 0 : 604800, reason: 'Honeypot trap triggered' }).catch(() => null);
+                    } else if (action === 'kick' && message.member?.kickable) {
+                        await message.member.kick('Honeypot trap triggered').catch(() => null);
+                    } else if (action === 'mute' && message.member?.moderatable) {
+                        await message.member.timeout(2419200000, 'Honeypot trap triggered').catch(() => null);
+                    }
+                    return;
+                }
                 const AutoModModel = mongoose.models.AutoModRule;
                 const recentMessages = global.recentMessagesMap || (global.recentMessagesMap = new Map());
                 const linkCooldowns = global.linkCooldownsMap || (global.linkCooldownsMap = new Map());
@@ -35,16 +134,17 @@ module.exports = {
                 const stickerCooldowns = global.stickerCooldownsMap || (global.stickerCooldownsMap = new Map());
 
                 if (AutoModModel && message.guild && !message.member?.permissions.has(discord.PermissionFlagsBits.ManageMessages)) {
-                    const automodConfig = await AutoModModel.findOne({ guildId: message.guild.id });
-                    if (automodConfig && automodConfig.rules && automodConfig.rules.size > 0) {
+                    const automodRules = await AutoModModel.find({ guildId: message.guild.id, enabled: true });
+                    if (automodRules.length > 0) {
 
                         let violatesFilter = null;
-                        const content = message.content;
+                        const content = message.content || '';
                         const contentLower = content.toLowerCase();
+                        const normalizedContent = contentLower.replace(/[^a-z]/g, '');
                         const now = Date.now();
                         const userKey = `${message.guild.id}-${message.author.id}`;
 
-                        automodConfig.rules.forEach((rule) => {
+                        automodRules.forEach((rule) => {
                             if (!rule.enabled) return;
 
                             // 1. ALL CAPS
@@ -54,8 +154,18 @@ module.exports = {
                             }
                             // 2. BAD WORDS
                             if (rule.filterType === 'bad_words') {
-                                const blacklist = ['backdoor', 'exploit', 'tokengrabber'];
-                                if (blacklist.some(word => contentLower.includes(word))) violatesFilter = rule;
+                                const blacklist = [
+                                    'fuck', 'fucking', 'fucked', 'fk', 'fck', 'fuk', 'fuh', 'dih', 'dick',
+                                    'shi', 'shit', 'shitty', 'sh1t', 'sh!t', 'foid',
+                                    'bitch', 'bitches', 'b1tch', 'biatch', 'ass', 'asshole', 'bastard', 'damn',
+                                    'crap', 'hell', 'motherfucker', 'motherfukker', 'mfer', 'nigga', 'niga', 'nga', 'nigger',
+                                    'whore', 'slut', 'retard', 'cunt', 'rape', 'sexist', 'porn', 'sex'
+                                ];
+
+                                const normalizedBlacklist = blacklist.map(word => word.toLowerCase().replace(/[^a-z]/g, ''));
+                                if (normalizedBlacklist.some(word => normalizedContent.includes(word))) {
+                                    violatesFilter = rule;
+                                }
                             }
                             // 3. CHAT CLEARING NEW LINES
                             if (rule.filterType === 'new_lines' && (content.match(/\n/g) || []).length > 8) {
@@ -169,7 +279,7 @@ module.exports = {
                         } else {
                             if (violatesFilter.actions.includes('block_message')) {
                                 await message.delete().catch(() => null);
-                                await message.channel.send(`⚠️ ${message.author}, flagged by AutoMod filter: **${violatesFilter.ruleName}**!`).then(m => setTimeout(() => m.delete().catch(() => null), 4000));
+                                await message.channel.send({ content: `⚠️ ${message.author}, flagged by AutoMod filter: **${violatesFilter.ruleName}**!` }).then(m => setTimeout(() => m.delete().catch(() => null), 4000));
                             }
                             if (violatesFilter.actions.includes('timeout_user') && message.member?.moderatable) {
                                 await message.member.timeout(300000, `AutoMod Violation: ${violatesFilter.ruleName}`).catch(() => null);
@@ -197,250 +307,7 @@ module.exports = {
             }
 
             // ==========================================
-            // PART A: COMMAND PARSING & EXECUTION
-            // ==========================================
-            if (message.content.startsWith(prefix)) {
-                const args = message.content.slice(prefix.length).trim().split(/ +/);
-                const commandName = args.shift()?.toLowerCase();
-                if (!commandName) return;
-
-                const argsArray = [...args];
-                const rawArgsString = argsArray.join(' ').trim();
-
-                // --------------------------------------
-                // Fun-module gate (mirrors interactionCreate.js)
-                // --------------------------------------
-                const mainSettings = (await db.readData('settings.json')) || {};
-                const currentGuildSettings = mainSettings[message.guildId] || {};
-
-                const coreUtilityCommands = [
-                    'setup', 'cute', 'fun-module', 'fun-menu', 'help', 'setup-audit',
-                    'mod-logs-toggle', 'reactionroles', 'autorole', 'automodrule',
-                    'ticket', 'verification', 'leaderboard', 'rank', 'analytics',
-                    'selfvoice', 'autoresponder', 'capabilities', 'stickies', 'channels', 'rules',
-                    'starboard', 'suggestions', 'giveaway', 'embed', 'birthdays', 'invites', 'poll',
-                    'slowmode', 'purge', 'lockdown', 'automessage', 'autodelete', 'guilds','level'
-                ];
-                if (!coreUtilityCommands.includes(commandName)) {
-                    if (
-                        currentGuildSettings.funModule === 'disabled' ||
-                        currentGuildSettings.funModule === false ||
-                        currentGuildSettings.funModule === 'off'
-                    ) {
-                        return message.reply({
-                            content: '❌ The **Fun Command Suite** has been disabled by a server administrator.',
-                        }).catch(() => null);
-                    }
-                }
-
-                // --------------------------------------
-                // Special-case: setup command validation
-                // --------------------------------------
-                if (commandName === 'setup') {
-                    const guild = message.guild;
-                    if (!guild) return;
-                    const member = message.member || await guild.members.fetch(message.author.id).catch(() => null);
-                    if (!member) return;
-                    if (!member.permissions.has(discord.PermissionFlagsBits.Administrator) && !member.permissions.has(discord.PermissionFlagsBits.ManageGuild)) {
-                        return message.reply('❌ Permissions required! You need Administrator access to wipe or provision rooms.').catch(() => null);
-                    }
-
-                    const templateArg = argsArray[0] ? String(argsArray[0]).toLowerCase().trim() : null;
-                    const validTemplates = ['gaming', 'community', 'study', 'business', 'creative', 'development', 'finance', 'roleplay', 'minimalist', 'history', 'geography'];
-
-                    if (!templateArg || !validTemplates.includes(templateArg)) {
-                        return message.reply(`❌ **Usage:** \`${prefix}setup <${validTemplates.join('|')}> [clear]\``).catch(() => null);
-                    }
-                }
-
-                // --------------------------------------
-                // Command dispatch
-                // --------------------------------------
-                const command = client.commands.get(commandName);
-                if (command && typeof command.execute === 'function') {
-                    const resolvedTargetUser = message.mentions.users.first() || message.author;
-                    const resolvedTargetMember = message.mentions.members.first() || message.member;
-                    let activeBotResponse = null;
-
-                    // If the command has an 'xp' subcommand group (like level.js),
-                    // argsArray[0] === 'xp' and the real subcommand is argsArray[1].
-                    const usesXpGroup = argsArray[0]?.toLowerCase() === 'xp';
-
-                    const mockInteraction = {
-                        id: message.id,
-                        commandName: commandName,
-                        guild: message.guild,
-                        guildId: message.guildId,
-                        channel: message.channel,
-                        channelId: message.channelId,
-                        user: message.author,
-                        author: message.author,
-                        member: message.member,
-                        content: message.content,
-                        replied: false,
-                        deferred: false,
-                        options: {
-                            getSubcommand: () => {
-                                if (usesXpGroup) return argsArray[1] || null;
-                                return argsArray[0] || null;
-                            },
-                            getSubcommandGroup: () => {
-                                return usesXpGroup ? 'xp' : null;
-                            },
-                            getString: (name) => {
-                                if (
-                                    name === 'template' ||
-                                    name === 'subcommand' ||
-                                    name === 'status' ||
-                                    name === 'role' ||
-                                    name === 'channel' ||
-                                    name === 'keyword' ||
-                                    name === 'text' ||
-                                    name === 'id'
-                                ) {
-                                    return rawArgsString.length > 0 ? rawArgsString : null;
-                                }
-                                const idx = argsArray.indexOf(`--${name}`);
-                                if (idx !== -1) return argsArray[idx + 1] || null;
-                                return rawArgsString.length > 0 ? rawArgsString : null;
-                            },
-                            getInteger: (name) => {
-                                // Skip past leading non-numeric args like 'xp', 'add', mentions, etc.
-                                for (const token of argsArray) {
-                                    const cleaned = token.replace(/[<@!>]/g, '');
-                                    const val = parseInt(cleaned, 10);
-                                    if (!isNaN(val)) return val;
-                                }
-                                return null;
-                            },
-                            getNumber: (name) => {
-                                const val = parseFloat(rawArgsString);
-                                return isNaN(val) ? null : val;
-                            },
-                            getBoolean: (name) => {
-                                const lower = rawArgsString.toLowerCase();
-                                if (lower === 'true' || lower === 'yes' || lower === 'on' || argsArray.includes('clear')) return true;
-                                if (lower === 'false' || lower === 'no' || lower === 'off') return false;
-                                return null;
-                            },
-                            getUser: (name) => resolvedTargetUser,
-                            getMember: (name) => resolvedTargetMember,
-                            getChannel: (name) => {
-                                if (!message.guild) return null;
-                                const mentioned = message.mentions.channels.first();
-                                if (mentioned) return mentioned;
-                                const id = (argsArray[0] || '').replace(/[^0-9]/g, '');
-                                return (id && message.guild.channels.cache.get(id)) || message.channel;
-                            },
-                            getRole: (name) => {
-                                if (!message.guild) return null;
-                                const mentioned = message.mentions.roles.first();
-                                if (mentioned) return mentioned;
-                                const id = (argsArray[0] || '').replace(/[^0-9]/g, '');
-                                return (id && message.guild.roles.cache.get(id)) ||
-                                    message.guild.roles.cache.find(r => r.name.toLowerCase() === rawArgsString.toLowerCase()) ||
-                                    null;
-                            },
-                            getAttachment: (name) => {
-                                const nativeAttachment = message.attachments.first();
-                                if (nativeAttachment) return nativeAttachment;
-                                if (rawArgsString.startsWith('http://') || rawArgsString.startsWith('https://')) {
-                                    return { url: rawArgsString, proxyURL: rawArgsString };
-                                }
-                                return null;
-                            },
-                            getFocused: () => rawArgsString,
-                            get: (name) => {
-                                if (name === 'image' || name === 'file' || name === 'attachment' || name === 'url' || name === 'link') {
-                                    const nativeAttachment = message.attachments.first();
-                                    if (nativeAttachment) return { attachment: nativeAttachment, value: nativeAttachment.id };
-                                    if (rawArgsString.startsWith('http://') || rawArgsString.startsWith('https://')) {
-                                        return { value: rawArgsString, attachment: { url: rawArgsString, proxyURL: rawArgsString } };
-                                    }
-                                }
-                                return { value: rawArgsString || null };
-                            },
-                            data: {
-                                options: argsArray.map((arg, i) => ({
-                                    name: `arg${i}`,
-                                    value: arg,
-                                    type: 3,
-                                })),
-                            },
-                        },
-                        reply: async (options) => {
-                            if (mockInteraction.replied || mockInteraction.deferred) {
-                                return mockInteraction.editReply(options);
-                            }
-                            mockInteraction.replied = true;
-                            if (typeof options === 'string') {
-                                activeBotResponse = await message.reply({ content: options }).catch(() => null);
-                            } else {
-                                const { flags: _f, ephemeral: _e, fetchReply: _fr, ...rest } = options || {};
-                                activeBotResponse = await message.reply(rest).catch(() => null);
-                            }
-                            return activeBotResponse;
-                        },
-                        editReply: async (options) => {
-                            mockInteraction.replied = true;
-                            if (activeBotResponse) {
-                                if (typeof options === 'string') {
-                                    return activeBotResponse.edit({ content: options }).catch(() => null);
-                                }
-                                const { flags: _f, ephemeral: _e, fetchReply: _fr, ...rest } = options || {};
-                                return activeBotResponse.edit(rest).catch(() => null);
-                            }
-                            if (typeof options === 'string') {
-                                activeBotResponse = await message.reply({ content: options }).catch(() => null);
-                            } else {
-                                const { flags: _f, ephemeral: _e, fetchReply: _fr, ...rest } = options || {};
-                                activeBotResponse = await message.reply(rest).catch(() => null);
-                            }
-                            return activeBotResponse;
-                        },
-                        deferReply: async (options = {}) => {
-                            mockInteraction.deferred = true;
-                            activeBotResponse = await message.reply({ content: '⏳ Loading...' }).catch(() => null);
-                            return activeBotResponse;
-                        },
-                        followUp: async (options) => {
-                            if (typeof options === 'string') {
-                                return message.channel.send({ content: options }).catch(() => null);
-                            }
-                            const { flags: _f, ephemeral: _e, fetchReply: _fr, ...rest } = options || {};
-                            return message.channel.send(rest).catch(() => null);
-                        },
-                        deleteReply: async () => {
-                            if (activeBotResponse && typeof activeBotResponse.delete === 'function') {
-                                return activeBotResponse.delete().catch(() => null);
-                            }
-                            return null;
-                        },
-                        fetchReply: async () => activeBotResponse,
-                        showModal: async () => {
-                            return message.reply({
-                                content: '⚠️ This command uses a modal, which is only available as a slash command (`/`). Try again with `/`.',
-                            }).catch(() => null);
-                        },
-                        isButton: () => false,
-                        isStringSelectMenu: () => false,
-                        isModalSubmit: () => false,
-                        isChatInputCommand: () => false,
-                        isRepliable: () => true,
-                    };
-
-                    try {
-                        await command.execute(mockInteraction, client);
-                    } catch (err) {
-                        console.error(`❌ Prefix Command Error [${prefix}${commandName}]:`, err);
-                        message.reply({ content: '❌ An internal error occurred running that command.' }).catch(() => null);
-                    }
-                    return;
-                }
-            }
-
-            // ==========================================
-            // PART B: BACKGROUND XP ENGINE
+            // BACKGROUND XP ENGINE
             // Uses the same UserLevel model and the same guild_config
             // store (db.findOne/findOneAndUpdate) that /level settings
             // actually reads and writes, so toggling leveling on/off,

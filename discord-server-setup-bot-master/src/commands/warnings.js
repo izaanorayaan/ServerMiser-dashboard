@@ -70,38 +70,5 @@ module.exports = {
   },
 
   // 🌟 FIXED: Target index 0 of the string array and map tracking status overrides cleanly
-  async executePrefix(message, argsArray, client) {
-    let targetUser = message.mentions.users.first();
-    
-    // Correct index selection mapping implemented to handle text searches safely
-    if (!targetUser && argsArray && argsArray.length > 0) {
-      const pureId = argsArray[0].replace(/[^0-9]/g, '');
-      if (pureId.length >= 17 && pureId.length <= 20) {
-        targetUser = await client.users.fetch(pureId).catch(() => null);
-      }
-    }
-
-    const mockInteraction = {
-      isMock: true,
-      guild: message.guild,
-      guildId: message.guild?.id,
-      member: message.member,
-      author: message.author,
-      processingMessage: null,
-      options: {
-        getUser: (name) => targetUser || message.author
-      },
-      reply: async (options) => {
-        return message.reply(options);
-      },
-      // Redirect state updates back onto the processing message instance
-      editReply: async (options) => {
-        if (mockInteraction.processingMessage) {
-          return mockInteraction.processingMessage.edit(options);
-        }
-        return message.reply(options);
-      }
-    };
-    await this.execute(mockInteraction, client).catch(() => null);
-  }
+  
 };

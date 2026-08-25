@@ -97,17 +97,32 @@ async function executeLockdown(interaction, actionType, targetChannel) {
     const prefixMode = isPrefixMode(interaction);
   
     try {
-      const everyoneRole = interaction.guild.roles.everyone;
-  
       if (actionType === 'on') {
-        // Edit the channel overwrites to explicitly deny SendMessages for @everyone
+        // Lock down: deny SendMessages for ALL roles (ensures no one can bypass via higher role)
+        const everyoneRole = interaction.guild.roles.everyone;
         await targetChannel.permissionOverwrites.edit(everyoneRole, {
-          SendMessages: false
+          SendMessages: false,
+          AddReactions: false
         }, { reason: `Emergency lockdown initiated by Admin: ${interaction.user.tag}` });
+
+        // Also explicitly deny for each existing role in the guild to prevent bypass
+        for (const role of interaction.guild.roles.cache.values()) {
+          if (role.id === everyoneRole.id) continue; // Skip @everyone (already handled)
+          
+          const currentOverwrite = targetChannel.permissionOverwrites.cache.get(role.id);
+          
+          // Only modify if the role has some existing permission (avoid cluttering overwrites)
+          if (currentOverwrite) {
+            await targetChannel.permissionOverwrites.edit(role, {
+              SendMessages: false,
+              AddReactions: false
+            }, { reason: `Emergency lockdown initiated by Admin: ${interaction.user.tag}` }).catch(() => null);
+          }
+        }
   
         const embed = new EmbedBuilder()
           .setTitle('🔒 Channel Locked Down')
-          .setDescription(`This channel has been placed under administrative quarantine. Standard members cannot send messages until further notice.`)
+          .setDescription(`This channel has been placed under administrative lockdown. No members can send messages until the lockdown is lifted.`)
           .addFields(
             { name: 'Target Channel', value: `${targetChannel}`, inline: true },
             { name: 'Enforced By', value: `${interaction.user}`, inline: true }
@@ -118,14 +133,29 @@ async function executeLockdown(interaction, actionType, targetChannel) {
         return interaction.reply({ embeds: [embed] });
   
       } else if (actionType === 'off') {
-        // Restore default behavior by nullifying the explicit denial flag for @everyone
+        // Unlock: restore default behavior by removing SendMessages deny
+        const everyoneRole = interaction.guild.roles.everyone;
         await targetChannel.permissionOverwrites.edit(everyoneRole, {
-          SendMessages: null
+          SendMessages: null,
+          AddReactions: null
         }, { reason: `Lockdown lifted by Admin: ${interaction.user.tag}` });
+
+        // Remove denies from all other roles
+        for (const role of interaction.guild.roles.cache.values()) {
+          if (role.id === everyoneRole.id) continue;
+          
+          const currentOverwrite = targetChannel.permissionOverwrites.cache.get(role.id);
+          if (currentOverwrite && (currentOverwrite.deny.has('SendMessages') || currentOverwrite.deny.has('AddReactions'))) {
+            await targetChannel.permissionOverwrites.edit(role, {
+              SendMessages: null,
+              AddReactions: null
+            }, { reason: `Lockdown lifted by Admin: ${interaction.user.tag}` }).catch(() => null);
+          }
+        }
   
         const embed = new EmbedBuilder()
           .setTitle('🔓 Lockdown Lifted')
-          .setDescription(`The administrative lockdown profile has been removed. Text channels are open for global public communication loops again.`)
+          .setDescription(`The administrative lockdown has been removed. Members can now send messages again.`)
           .addFields(
             { name: 'Target Channel', value: `${targetChannel}`, inline: true },
             { name: 'Authorized By', value: `${interaction.user}`, inline: true }
@@ -138,7 +168,7 @@ async function executeLockdown(interaction, actionType, targetChannel) {
   
     } catch (err) {
       console.error('Lockdown overwrite processing hit an internal error:', err);
-      const errorContent = '❌ An operational error occurred while shifting permission overwrites down the gateway pipeline.';
+      const errorContent = '❌ An operational error occurred while modifying channel permissions.';
       return interaction.reply({ content: errorContent, flags: [MessageFlags.Ephemeral] });
     }
   }

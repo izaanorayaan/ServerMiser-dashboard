@@ -15,14 +15,14 @@ export const COMMANDS: Command[] = [
   {
     "name": "8ball",
     "description": "\udfb1 Ask the magic 8-ball a question and receive a mystical fortune.",
-    "usage": "|8ball",
+    "usage": "8ball",
     "category": "fun",
     "exampleOutput": "✓ 8ball  executed successfully."
   },
   {
     "name": "analytics setup",
     "description": "Deploy statistics channel grids (auto-refreshes every 1 min)",
-    "usage": "|analytics setup",
+    "usage": "analytics setup",
     "category": "analytics",
     "exampleOutput": "📊 Analytics tracking deployed.",
     "permission": "Manage Server"
@@ -30,7 +30,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "analytics edit",
     "description": "✏️ Modify your existing statistics channel layout settings",
-    "usage": "|analytics edit",
+    "usage": "analytics edit",
     "category": "analytics",
     "exampleOutput": "📊 Analytics tracking deployed.",
     "permission": "Manage Server"
@@ -38,7 +38,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "analytics delete",
     "description": "\uddd1️ Wipe current statistic channels and clear database traces",
-    "usage": "|analytics delete",
+    "usage": "analytics delete",
     "category": "analytics",
     "exampleOutput": "📊 Analytics tracking deployed.",
     "permission": "Manage Server"
@@ -46,7 +46,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "analytics update",
     "description": "\udd04 Force an instant refresh (counters already auto-refresh every 1 min)",
-    "usage": "|analytics update",
+    "usage": "analytics update",
     "category": "analytics",
     "exampleOutput": "📊 Analytics tracking deployed.",
     "permission": "Manage Server"
@@ -54,7 +54,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "autodelete",
     "description": "Set an automated delete rule with blacklist words, triggers, and blocked content categories.",
-    "usage": "|autodelete",
+    "usage": "autodelete",
     "category": "utility",
     "exampleOutput": "✓ autodelete  executed successfully.",
     "permission": "Administrator"
@@ -62,126 +62,133 @@ export const COMMANDS: Command[] = [
   {
     "name": "automessage create",
     "description": "Establish a fresh scheduled repeating message loop",
-    "usage": "|automessage create",
+    "usage": "automessage create",
     "category": "utility",
     "exampleOutput": "✓ automessage create executed successfully."
   },
   {
     "name": "automessage remove",
     "description": "Cancel an active scheduled loop and take it offline",
-    "usage": "|automessage remove",
+    "usage": "automessage remove",
     "category": "utility",
     "exampleOutput": "✓ automessage remove executed successfully."
   },
   {
+    "name": "automessage list",
+    "description": "List all ongoing recurring message sessions and their IDs",
+    "usage": "automessage list",
+    "category": "utility",
+    "exampleOutput": "✓ automessage list executed successfully."
+  },
+  {
     "name": "automodrule setup",
     "description": "Launch the interactive configuration setup wizard node",
-    "usage": "|automodrule setup",
+    "usage": "automodrule setup",
     "category": "automod",
     "exampleOutput": "✓ automodrule setup executed successfully."
   },
   {
     "name": "automodrule edit",
     "description": "✏️ Modify your existing background filter parameter fields",
-    "usage": "|automodrule edit",
+    "usage": "automodrule edit",
     "category": "automod",
     "exampleOutput": "✓ automodrule edit executed successfully."
   },
   {
     "name": "automodrule delete",
     "description": "\uddd1️ Wipe current filter metrics cleanly out of memory rows",
-    "usage": "|automodrule delete",
+    "usage": "automodrule delete",
     "category": "automod",
     "exampleOutput": "✓ automodrule delete executed successfully."
   },
   {
     "name": "autoresponder setup",
     "description": "Open the step-by-step wizard to build a responder",
-    "usage": "|autoresponder setup",
+    "usage": "autoresponder setup",
     "category": "automod",
     "exampleOutput": "✓ autoresponder setup executed successfully."
   },
   {
     "name": "autoresponder add",
     "description": "Quickly add a responder",
-    "usage": "|autoresponder add",
+    "usage": "autoresponder add",
     "category": "automod",
     "exampleOutput": "✓ autoresponder add executed successfully."
   },
   {
     "name": "autoresponder list",
     "description": "List all auto responders",
-    "usage": "|autoresponder list",
+    "usage": "autoresponder list",
     "category": "automod",
     "exampleOutput": "✓ autoresponder list executed successfully."
   },
   {
     "name": "autoresponder info",
     "description": "View one responder in detail",
-    "usage": "|autoresponder info",
+    "usage": "autoresponder info",
     "category": "automod",
     "exampleOutput": "✓ autoresponder info executed successfully."
   },
   {
     "name": "autoresponder edit",
     "description": "Edit an existing responder in the wizard",
-    "usage": "|autoresponder edit",
+    "usage": "autoresponder edit",
     "category": "automod",
     "exampleOutput": "✓ autoresponder edit executed successfully."
   },
   {
     "name": "autoresponder remove",
     "description": "Delete a responder",
-    "usage": "|autoresponder remove",
+    "usage": "autoresponder remove",
     "category": "automod",
     "exampleOutput": "✓ autoresponder remove executed successfully."
   },
   {
     "name": "autoresponder toggle",
     "description": "Enable/disable a single responder",
-    "usage": "|autoresponder toggle",
+    "usage": "autoresponder toggle",
     "category": "automod",
     "exampleOutput": "✓ autoresponder toggle executed successfully."
   },
   {
     "name": "autoresponder test",
     "description": "Preview how a responder renders",
-    "usage": "|autoresponder test",
+    "usage": "autoresponder test",
     "category": "automod",
     "exampleOutput": "✓ autoresponder test executed successfully."
   },
   {
     "name": "autoresponder variables",
     "description": "See every placeholder variable you can use",
-    "usage": "|autoresponder variables",
+    "usage": "autoresponder variables",
     "category": "automod",
     "exampleOutput": "✓ autoresponder variables executed successfully."
   },
   {
     "name": "autoresponder config",
     "description": "View the module overview",
-    "usage": "|autoresponder config",
+    "usage": "autoresponder config",
     "category": "automod",
     "exampleOutput": "✓ autoresponder config executed successfully."
   },
   {
     "name": "autoresponder enable",
     "description": "Enable the auto responder module (Manage Server)",
-    "usage": "|autoresponder enable",
+    "usage": "autoresponder enable",
     "category": "automod",
     "exampleOutput": "✓ autoresponder enable executed successfully."
   },
   {
     "name": "autoresponder disable",
     "description": "Disable the auto responder module (Manage Server)",
-    "usage": "|autoresponder disable",
+    "usage": "autoresponder disable",
     "category": "automod",
     "exampleOutput": "✓ autoresponder disable executed successfully."
   },
   {
     "name": "autorole all",
     "description": "Apply role to everyone",
-    "usage": "|autorole all",
+    "usage": "autorole all",
     "category": "roles",
     "exampleOutput": "✓ Autorole configured successfully.",
     "permission": "Manage Roles"
@@ -189,7 +196,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "autorole humans",
     "description": "Apply role to humans only",
-    "usage": "|autorole humans",
+    "usage": "autorole humans",
     "category": "roles",
     "exampleOutput": "✓ Autorole configured successfully.",
     "permission": "Manage Roles"
@@ -197,7 +204,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "autorole bots",
     "description": "Apply role to bots only",
-    "usage": "|autorole bots",
+    "usage": "autorole bots",
     "category": "roles",
     "exampleOutput": "✓ Autorole configured successfully.",
     "permission": "Manage Roles"
@@ -205,7 +212,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "autorole ongoing",
     "description": "Inspect current active configurations",
-    "usage": "|autorole ongoing",
+    "usage": "autorole ongoing",
     "category": "roles",
     "exampleOutput": "✓ Autorole configured successfully.",
     "permission": "Manage Roles"
@@ -213,7 +220,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "autorole delete",
     "description": "Purge all ongoing configs for everyone, bots, and humans",
-    "usage": "|autorole delete",
+    "usage": "autorole delete",
     "category": "roles",
     "exampleOutput": "✓ Autorole configured successfully.",
     "permission": "Manage Roles"
@@ -221,7 +228,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "ban",
     "description": "Ban a user from the server",
-    "usage": "|ban",
+    "usage": "ban",
     "category": "moderation",
     "exampleOutput": "✓ Banned member @user (Reason: Malicious activity)",
     "permission": "BanMembers"
@@ -229,154 +236,175 @@ export const COMMANDS: Command[] = [
   {
     "name": "birthdays set",
     "description": "Set your birthday",
-    "usage": "|birthdays set",
+    "usage": "birthdays set",
     "category": "social",
     "exampleOutput": "✓ birthdays set executed successfully."
   },
   {
     "name": "birthdays remove",
     "description": "Remove your birthday",
-    "usage": "|birthdays remove",
+    "usage": "birthdays remove",
     "category": "social",
     "exampleOutput": "✓ birthdays remove executed successfully."
   },
   {
     "name": "birthdays check",
     "description": "Check a birthday",
-    "usage": "|birthdays check",
+    "usage": "birthdays check",
     "category": "social",
     "exampleOutput": "✓ birthdays check executed successfully."
   },
   {
     "name": "birthdays today",
     "description": "Show all birthdays today in this server",
-    "usage": "|birthdays today",
+    "usage": "birthdays today",
     "category": "social",
     "exampleOutput": "✓ birthdays today executed successfully."
   },
   {
     "name": "birthdays upcoming",
     "description": "Show upcoming birthdays",
-    "usage": "|birthdays upcoming",
+    "usage": "birthdays upcoming",
     "category": "social",
     "exampleOutput": "✓ birthdays upcoming executed successfully."
   },
   {
     "name": "birthdays list",
     "description": "List all members with a birthday set",
-    "usage": "|birthdays list",
+    "usage": "birthdays list",
     "category": "social",
     "exampleOutput": "✓ birthdays list executed successfully."
   },
   {
     "name": "birthdays config",
     "description": "Show current birthday module configuration (staff only)",
-    "usage": "|birthdays config",
+    "usage": "birthdays config",
     "category": "social",
     "exampleOutput": "✓ birthdays config executed successfully."
   },
   {
     "name": "birthdays set-channel",
     "description": "Set the birthday announcement channel (staff only)",
-    "usage": "|birthdays set-channel",
+    "usage": "birthdays set-channel",
     "category": "social",
     "exampleOutput": "✓ birthdays set-channel executed successfully."
   },
   {
     "name": "birthdays set-role",
     "description": "Set the birthday role (staff only)",
-    "usage": "|birthdays set-role",
+    "usage": "birthdays set-role",
     "category": "social",
     "exampleOutput": "✓ birthdays set-role executed successfully."
   },
   {
     "name": "birthdays set-time",
     "description": "Time in HH:MM UTC format",
-    "usage": "|birthdays set-time",
+    "usage": "birthdays set-time",
     "category": "social",
     "exampleOutput": "✓ birthdays set-time executed successfully."
   },
   {
     "name": "birthdays toggle",
     "description": "Enable or disable the birthday module (staff only)",
-    "usage": "|birthdays toggle",
+    "usage": "birthdays toggle",
     "category": "social",
     "exampleOutput": "✓ birthdays toggle executed successfully."
   },
   {
     "name": "birthdays test",
     "description": "Test the birthday announcement for yourself right now (staff only)",
-    "usage": "|birthdays test",
+    "usage": "birthdays test",
     "category": "social",
     "exampleOutput": "✓ birthdays test executed successfully."
   },
   {
     "name": "capabilities",
     "description": "A full, detailed tour of everything the bot can do.",
-    "usage": "|capabilities",
+    "usage": "capabilities",
     "category": "utility",
     "exampleOutput": "✓ capabilities  executed successfully."
   },
   {
     "name": "capital-quiz",
     "description": "Tests your geographic knowledge of world capitals.",
-    "usage": "|capital-quiz",
+    "usage": "capital-quiz",
     "category": "fun",
     "exampleOutput": "✓ capital-quiz  executed successfully."
   },
   {
+    "name": "cases search",
+    "description": "Search cases by user ID or case number",
+    "usage": "cases search",
+    "category": "utility",
+    "exampleOutput": "✓ cases search executed successfully."
+  },
+  {
+    "name": "cases note",
+    "description": "Add notes or evidence to a case",
+    "usage": "cases note",
+    "category": "utility",
+    "exampleOutput": "✓ cases note executed successfully."
+  },
+  {
+    "name": "cases export",
+    "description": "Export moderation history as a JSON file",
+    "usage": "cases export",
+    "category": "utility",
+    "exampleOutput": "✓ cases export executed successfully."
+  },
+  {
     "name": "cat",
     "description": "Spits out a fully animated cat GIF and a random feline fact.",
-    "usage": "|cat",
+    "usage": "cat",
     "category": "fun",
     "exampleOutput": "✓ cat  executed successfully."
   },
   {
     "name": "channels create",
     "description": "Create a new channel or category.",
-    "usage": "|channels create",
+    "usage": "channels create",
     "category": "utility",
     "exampleOutput": "✓ channels create executed successfully."
   },
   {
     "name": "channels delete",
     "description": "Delete an existing channel or category.",
-    "usage": "|channels delete",
+    "usage": "channels delete",
     "category": "utility",
     "exampleOutput": "✓ channels delete executed successfully."
   },
   {
     "name": "channels edit",
     "description": "Edit a channel name, topic, slowmode, and NSFW status.",
-    "usage": "|channels edit",
+    "usage": "channels edit",
     "category": "utility",
     "exampleOutput": "✓ channels edit executed successfully."
   },
   {
     "name": "channels customize",
     "description": "Customize permissions, locks, and access for a channel.",
-    "usage": "|channels customize",
+    "usage": "channels customize",
     "category": "utility",
     "exampleOutput": "✓ channels customize executed successfully."
   },
   {
     "name": "channels category",
     "description": "Create, delete, or customize a category.",
-    "usage": "|channels category",
+    "usage": "channels category",
     "category": "utility",
     "exampleOutput": "✓ channels category executed successfully."
   },
   {
     "name": "coinflip",
     "description": "Flip an animated coin and see what it lands on.",
-    "usage": "|coinflip",
+    "usage": "coinflip",
     "category": "fun",
     "exampleOutput": "✓ coinflip  executed successfully."
   },
   {
     "name": "cute",
     "description": "Configure cute text layouts for server setup templates",
-    "usage": "|cute",
+    "usage": "cute",
     "category": "setup",
     "exampleOutput": "✨ Cute Mode Configured! Layouts will now use Small Caps (sᴍᴀʟʟ ᴄᴀᴘs)!",
     "permission": "ManageGuild"
@@ -384,161 +412,161 @@ export const COMMANDS: Command[] = [
   {
     "name": "dadjoke",
     "description": "Get a classic, groans-guaranteed dad joke.",
-    "usage": "|dadjoke",
+    "usage": "dadjoke",
     "category": "fun",
     "exampleOutput": "✓ dadjoke  executed successfully."
   },
   {
     "name": "dice-duel",
     "description": "Challenge another user to an instant dice rolling duel.",
-    "usage": "|dice-duel",
+    "usage": "dice-duel",
     "category": "fun",
     "exampleOutput": "✓ dice-duel  executed successfully."
   },
   {
     "name": "dog",
     "description": "Spits out a cute puppy picture and a random canine fact.",
-    "usage": "|dog",
+    "usage": "dog",
     "category": "fun",
     "exampleOutput": "✓ dog  executed successfully."
   },
   {
     "name": "embed field add",
     "description": "Open a modal to add a field to your embed",
-    "usage": "|embed field add",
+    "usage": "embed field add",
     "category": "utility",
     "exampleOutput": "✓ embed add executed successfully."
   },
   {
     "name": "embed field remove",
     "description": "Remove a field from your embed by index",
-    "usage": "|embed field remove",
+    "usage": "embed field remove",
     "category": "utility",
     "exampleOutput": "✓ embed remove executed successfully."
   },
   {
     "name": "embed template save",
     "description": "Save current embed as a named template",
-    "usage": "|embed template save",
+    "usage": "embed template save",
     "category": "utility",
     "exampleOutput": "✓ embed save executed successfully."
   },
   {
     "name": "embed template load",
     "description": "Load a saved template into your session",
-    "usage": "|embed template load",
+    "usage": "embed template load",
     "category": "utility",
     "exampleOutput": "✓ embed load executed successfully."
   },
   {
     "name": "embed template list",
     "description": "List all saved templates for this server",
-    "usage": "|embed template list",
+    "usage": "embed template list",
     "category": "utility",
     "exampleOutput": "✓ embed list executed successfully."
   },
   {
     "name": "embed template delete",
     "description": "Delete a saved template",
-    "usage": "|embed template delete",
+    "usage": "embed template delete",
     "category": "utility",
     "exampleOutput": "✓ embed delete executed successfully."
   },
   {
     "name": "embed create",
     "description": "Open a modal to build a new embed",
-    "usage": "|embed create",
+    "usage": "embed create",
     "category": "utility",
     "exampleOutput": "✓ embed create executed successfully."
   },
   {
     "name": "embed edit",
     "description": "Load an existing bot embed into your session for editing",
-    "usage": "|embed edit",
+    "usage": "embed edit",
     "category": "utility",
     "exampleOutput": "✓ embed edit executed successfully."
   },
   {
     "name": "embed send",
     "description": "Send your in-progress embed to a channel",
-    "usage": "|embed send",
+    "usage": "embed send",
     "category": "utility",
     "exampleOutput": "✓ embed send executed successfully."
   },
   {
     "name": "embed image",
     "description": "Set the large image URL on your embed",
-    "usage": "|embed image",
+    "usage": "embed image",
     "category": "utility",
     "exampleOutput": "✓ embed image executed successfully."
   },
   {
     "name": "embed thumbnail",
     "description": "Set the thumbnail URL on your embed",
-    "usage": "|embed thumbnail",
+    "usage": "embed thumbnail",
     "category": "utility",
     "exampleOutput": "✓ embed thumbnail executed successfully."
   },
   {
     "name": "embed color",
     "description": "Set the embed color",
-    "usage": "|embed color",
+    "usage": "embed color",
     "category": "utility",
     "exampleOutput": "✓ embed color executed successfully."
   },
   {
     "name": "embed footer",
     "description": "Set the embed footer",
-    "usage": "|embed footer",
+    "usage": "embed footer",
     "category": "utility",
     "exampleOutput": "✓ embed footer executed successfully."
   },
   {
     "name": "embed author",
     "description": "Set the embed author",
-    "usage": "|embed author",
+    "usage": "embed author",
     "category": "utility",
     "exampleOutput": "✓ embed author executed successfully."
   },
   {
     "name": "embed preview",
     "description": "Preview your current in-progress embed",
-    "usage": "|embed preview",
+    "usage": "embed preview",
     "category": "utility",
     "exampleOutput": "✓ embed preview executed successfully."
   },
   {
     "name": "embed clear",
     "description": "Clear your in-progress embed session",
-    "usage": "|embed clear",
+    "usage": "embed clear",
     "category": "utility",
     "exampleOutput": "✓ embed clear executed successfully."
   },
   {
     "name": "flavor",
     "description": "Discover your current ice cream flavor personality.",
-    "usage": "|flavor",
+    "usage": "flavor",
     "category": "utility",
     "exampleOutput": "✓ flavor  executed successfully."
   },
   {
     "name": "fortune",
     "description": "Reveals a prediction about your future.",
-    "usage": "|fortune",
+    "usage": "fortune",
     "category": "fun",
     "exampleOutput": "✓ fortune  executed successfully."
   },
   {
     "name": "fun-menu",
     "description": "Explore what the Fun Module offers in a clean single-column directory.",
-    "usage": "|fun-menu",
+    "usage": "fun-menu",
     "category": "fun",
     "exampleOutput": "✓ fun-menu  executed successfully."
   },
   {
     "name": "fun-module",
     "description": "Enable or disable the fun commands module.",
-    "usage": "|fun-module",
+    "usage": "fun-module",
     "category": "setup",
     "exampleOutput": "✓ fun-module  executed successfully.",
     "permission": "ManageGuild"
@@ -546,28 +574,28 @@ export const COMMANDS: Command[] = [
   {
     "name": "giveaway start",
     "description": "Launch a fresh background scheduled giveaway pool",
-    "usage": "|giveaway start",
+    "usage": "giveaway start",
     "category": "social",
     "exampleOutput": "✓ giveaway start executed successfully."
   },
   {
     "name": "giveaway reroll",
     "description": "Pick new winners from an existing ended giveaway database profile",
-    "usage": "|giveaway reroll",
+    "usage": "giveaway reroll",
     "category": "social",
     "exampleOutput": "✓ giveaway reroll executed successfully."
   },
   {
     "name": "giveaway end",
     "description": "Forcefully end an active giveaway pool and draw winners immediately",
-    "usage": "|giveaway end",
+    "usage": "giveaway end",
     "category": "social",
     "exampleOutput": "✓ giveaway end executed successfully."
   },
   {
     "name": "guilds",
     "description": "Owner only: list all guilds the bot is in",
-    "usage": "|guilds",
+    "usage": "guilds",
     "category": "utility",
     "exampleOutput": "✓ guilds  executed successfully.",
     "permission": "CreateInstantInvite"
@@ -575,98 +603,119 @@ export const COMMANDS: Command[] = [
   {
     "name": "help",
     "description": "View the full list of available bot commands by category.",
-    "usage": "|help",
+    "usage": "help",
     "category": "utility",
     "exampleOutput": "✓ help  executed successfully."
   },
   {
+    "name": "honeypot setup",
+    "description": "Configure the honeypot trap channel and warning message.",
+    "usage": "honeypot setup",
+    "category": "utility",
+    "exampleOutput": "✓ honeypot setup executed successfully."
+  },
+  {
+    "name": "honeypot disable",
+    "description": "Disable the configured honeypot.",
+    "usage": "honeypot disable",
+    "category": "utility",
+    "exampleOutput": "✓ honeypot disable executed successfully."
+  },
+  {
+    "name": "honeypot delete",
+    "description": "Delete the configured honeypot.",
+    "usage": "honeypot delete",
+    "category": "utility",
+    "exampleOutput": "✓ honeypot delete executed successfully."
+  },
+  {
     "name": "hug",
     "description": "Give a member a warm, fuzzy virtual hug.",
-    "usage": "|hug",
+    "usage": "hug",
     "category": "fun",
     "exampleOutput": "✓ hug  executed successfully."
   },
   {
     "name": "invites check",
     "description": "Check invite stats for a user",
-    "usage": "|invites check",
+    "usage": "invites check",
     "category": "utility",
     "exampleOutput": "✓ invites check executed successfully."
   },
   {
     "name": "invites leaderboard",
     "description": "Top 10 inviters by net invites",
-    "usage": "|invites leaderboard",
+    "usage": "invites leaderboard",
     "category": "utility",
     "exampleOutput": "✓ invites leaderboard executed successfully."
   },
   {
     "name": "invites reset",
     "description": "Reset invite counts (staff only)",
-    "usage": "|invites reset",
+    "usage": "invites reset",
     "category": "utility",
     "exampleOutput": "✓ invites reset executed successfully."
   },
   {
     "name": "invites config",
     "description": "Set the invite log channel (staff only)",
-    "usage": "|invites config",
+    "usage": "invites config",
     "category": "utility",
     "exampleOutput": "✓ invites config executed successfully."
   },
   {
     "name": "invites add",
     "description": "Add bonus invites to a user (staff only)",
-    "usage": "|invites add",
+    "usage": "invites add",
     "category": "utility",
     "exampleOutput": "✓ invites add executed successfully."
   },
   {
     "name": "invites remove",
     "description": "Remove invites from a user (staff only)",
-    "usage": "|invites remove",
+    "usage": "invites remove",
     "category": "utility",
     "exampleOutput": "✓ invites remove executed successfully."
   },
   {
     "name": "invites toggle",
     "description": "Enable or disable invite tracking (staff only)",
-    "usage": "|invites toggle",
+    "usage": "invites toggle",
     "category": "utility",
     "exampleOutput": "✓ invites toggle executed successfully."
   },
   {
     "name": "invites stats",
     "description": "Server-wide invite statistics (staff only)",
-    "usage": "|invites stats",
+    "usage": "invites stats",
     "category": "utility",
     "exampleOutput": "✓ invites stats executed successfully."
   },
   {
     "name": "invites code",
     "description": "Look up a specific invite code (staff only)",
-    "usage": "|invites code",
+    "usage": "invites code",
     "category": "utility",
     "exampleOutput": "✓ invites code executed successfully."
   },
   {
     "name": "invites fake-threshold",
     "description": "Minimum account age in days (default 7)",
-    "usage": "|invites fake-threshold",
+    "usage": "invites fake-threshold",
     "category": "utility",
     "exampleOutput": "✓ invites fake-threshold executed successfully."
   },
   {
     "name": "joke",
     "description": "Get a hilariously relatable, funny everyday joke.",
-    "usage": "|joke",
+    "usage": "joke",
     "category": "fun",
     "exampleOutput": "✓ joke  executed successfully."
   },
   {
     "name": "kick",
     "description": "Kick a user from the server",
-    "usage": "|kick",
+    "usage": "kick",
     "category": "moderation",
     "exampleOutput": "✓ Kicked member @user",
     "permission": "KickMembers"
@@ -674,84 +723,84 @@ export const COMMANDS: Command[] = [
   {
     "name": "level xp add",
     "description": "Add XP to a user",
-    "usage": "|level xp add",
+    "usage": "level xp add",
     "category": "leveling",
     "exampleOutput": "📈 Leveling system updated."
   },
   {
     "name": "level xp remove",
     "description": "Remove XP from a user",
-    "usage": "|level xp remove",
+    "usage": "level xp remove",
     "category": "leveling",
     "exampleOutput": "📈 Leveling system updated."
   },
   {
     "name": "level xp set",
     "description": "Target user",
-    "usage": "|level xp set",
+    "usage": "level xp set",
     "category": "leveling",
     "exampleOutput": "📈 Leveling system updated."
   },
   {
     "name": "level xp reset",
     "description": "Target user",
-    "usage": "|level xp reset",
+    "usage": "level xp reset",
     "category": "leveling",
     "exampleOutput": "📈 Leveling system updated."
   },
   {
     "name": "level rank",
     "description": "User to check (defaults to you)",
-    "usage": "|level rank",
+    "usage": "level rank",
     "category": "leveling",
     "exampleOutput": "📈 Leveling system updated."
   },
   {
     "name": "level leaderboard",
     "description": "Show the top 10 users by XP",
-    "usage": "|level leaderboard",
+    "usage": "level leaderboard",
     "category": "leveling",
     "exampleOutput": "📈 Leveling system updated."
   },
   {
     "name": "level settings",
     "description": "Configure leveling settings",
-    "usage": "|level settings",
+    "usage": "level settings",
     "category": "leveling",
     "exampleOutput": "📈 Leveling system updated."
   },
   {
     "name": "level multiplier",
     "description": "Set a server-wide XP multiplier (e.g., 2 for Double XP)",
-    "usage": "|level multiplier",
+    "usage": "level multiplier",
     "category": "leveling",
     "exampleOutput": "📈 Leveling system updated."
   },
   {
     "name": "lockdown on",
     "description": "Lock down a channel to prevent standard users from messaging",
-    "usage": "|lockdown on",
+    "usage": "lockdown on",
     "category": "moderation",
     "exampleOutput": "✓ lockdown on executed successfully."
   },
   {
     "name": "lockdown off",
     "description": "Lift a lockdown and allow standard text activity again",
-    "usage": "|lockdown off",
+    "usage": "lockdown off",
     "category": "moderation",
     "exampleOutput": "✓ lockdown off executed successfully."
   },
   {
     "name": "meme",
     "description": "Spits out a random funny, relatable lifestyle meme.",
-    "usage": "|meme",
+    "usage": "meme",
     "category": "fun",
     "exampleOutput": "✓ meme  executed successfully."
   },
   {
     "name": "mod-logs-toggle",
     "description": "Log all moderator actions into one channel.",
-    "usage": "|mod-logs-toggle",
+    "usage": "mod-logs-toggle",
     "category": "utility",
     "exampleOutput": "✓ mod-logs-toggle  executed successfully.",
     "permission": "ManageGuild"
@@ -759,99 +808,86 @@ export const COMMANDS: Command[] = [
   {
     "name": "mute",
     "description": "Mute a user for a custom duration (1m to 28d)",
-    "usage": "|mute",
+    "usage": "mute",
     "category": "moderation",
     "exampleOutput": "✓ Timed out @user for 10m",
     "permission": "ModerateMembers"
   },
   {
     "name": "mydata",
-    "description": "No description",
-    "usage": "|mydata",
+    "description": "Owner only: export live MongoDB data",
+    "usage": "mydata",
     "category": "utility",
-    "exampleOutput": "✓ mydata  executed successfully."
+    "exampleOutput": "✓ mydata  executed successfully.",
+    "permission": "Administrator"
   },
   {
     "name": "poll create",
     "description": "Create a poll with vote buttons",
-    "usage": "|poll create",
+    "usage": "poll create",
     "category": "social",
     "exampleOutput": "✓ poll create executed successfully."
   },
   {
     "name": "poll setup",
     "description": "Configure who can create polls in this server (admin only)",
-    "usage": "|poll setup",
+    "usage": "poll setup",
     "category": "social",
     "exampleOutput": "✓ poll setup executed successfully."
   },
   {
     "name": "predict-love",
     "description": "Calculate the ultimate romantic compatibility percentage.",
-    "usage": "|predict-love",
+    "usage": "predict-love",
     "category": "fun",
     "exampleOutput": "✓ predict-love  executed successfully."
   },
   {
-    "name": "premium about",
-    "description": "See what ServerMiser Premium is and how to get it",
-    "usage": "|premium about",
-    "category": "utility",
-    "exampleOutput": "✓ premium about executed successfully."
-  },
-  {
-    "name": "premium info",
-    "description": "Compare Free and Premium side by side",
-    "usage": "|premium info",
-    "category": "utility",
-    "exampleOutput": "✓ premium info executed successfully."
-  },
-  {
     "name": "purge any",
     "description": "Delete any recent messages matching no specific filter",
-    "usage": "|purge any",
+    "usage": "purge any",
     "category": "moderation",
     "exampleOutput": "✓ purge any executed successfully."
   },
   {
     "name": "purge user",
     "description": "Purge messages sent exclusively by a specific member",
-    "usage": "|purge user",
+    "usage": "purge user",
     "category": "moderation",
     "exampleOutput": "✓ purge user executed successfully."
   },
   {
     "name": "purge bot",
     "description": "Purge messages sent exclusively by automated bots",
-    "usage": "|purge bot",
+    "usage": "purge bot",
     "category": "moderation",
     "exampleOutput": "✓ purge bot executed successfully."
   },
   {
     "name": "purge links",
     "description": "Purge recent messages containing HTTP/HTTPS links",
-    "usage": "|purge links",
+    "usage": "purge links",
     "category": "moderation",
     "exampleOutput": "✓ purge links executed successfully."
   },
   {
     "name": "purpose",
     "description": "Learn about the bot and see its profile picture",
-    "usage": "|purpose",
+    "usage": "purpose",
     "category": "utility",
     "exampleOutput": "✓ purpose  executed successfully."
   },
   {
     "name": "rate",
     "description": "Have the bot rate anything out of 10.",
-    "usage": "|rate",
+    "usage": "rate",
     "category": "fun",
     "exampleOutput": "✓ rate  executed successfully."
   },
   {
     "name": "reactionroles create",
     "description": "Build and deploy a custom role assignment panel",
-    "usage": "|reactionroles create",
+    "usage": "reactionroles create",
     "category": "roles",
     "exampleOutput": "✅ Role panel deployed successfully.",
     "permission": "Manage Roles"
@@ -859,7 +895,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "reactionroles edit",
     "description": "✏️ Update the title or description text fields of an existing deployed panel",
-    "usage": "|reactionroles edit",
+    "usage": "reactionroles edit",
     "category": "roles",
     "exampleOutput": "✅ Role panel deployed successfully.",
     "permission": "Manage Roles"
@@ -867,7 +903,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "reactionroles add-role",
     "description": "➕ Add a new assignment choice node directly into an existing active panel",
-    "usage": "|reactionroles add-role",
+    "usage": "reactionroles add-role",
     "category": "roles",
     "exampleOutput": "✅ Role panel deployed successfully.",
     "permission": "Manage Roles"
@@ -875,7 +911,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "reactionroles remove-role",
     "description": "➖ Remove a specific role assignment node out of an active panel framework",
-    "usage": "|reactionroles remove-role",
+    "usage": "reactionroles remove-role",
     "category": "roles",
     "exampleOutput": "✅ Role panel deployed successfully.",
     "permission": "Manage Roles"
@@ -883,7 +919,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "reactionroles delete-panel",
     "description": "\uddd1️ Wipe a role panel entirely out of active channel registries and database nodes",
-    "usage": "|reactionroles delete-panel",
+    "usage": "reactionroles delete-panel",
     "category": "roles",
     "exampleOutput": "✅ Role panel deployed successfully.",
     "permission": "Manage Roles"
@@ -891,7 +927,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "reactionroles test",
     "description": "🧪 Diagnostic Simulator: Test component menus safely in a private sandbox view",
-    "usage": "|reactionroles test",
+    "usage": "reactionroles test",
     "category": "roles",
     "exampleOutput": "✅ Role panel deployed successfully.",
     "permission": "Manage Roles"
@@ -899,14 +935,14 @@ export const COMMANDS: Command[] = [
   {
     "name": "roast",
     "description": "Deliver a savage, good-natured roast to a user.",
-    "usage": "|roast",
+    "usage": "roast",
     "category": "fun",
     "exampleOutput": "✓ roast  executed successfully."
   },
   {
     "name": "role user",
     "description": "The target member",
-    "usage": "|role user",
+    "usage": "role user",
     "category": "roles",
     "exampleOutput": "✓ Role management command executed successfully.",
     "permission": "Manage Roles"
@@ -914,7 +950,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "role remove",
     "description": "The target member",
-    "usage": "|role remove",
+    "usage": "role remove",
     "category": "roles",
     "exampleOutput": "✓ Role management command executed successfully.",
     "permission": "Manage Roles"
@@ -922,7 +958,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "role create",
     "description": "The name of the new role",
-    "usage": "|role create",
+    "usage": "role create",
     "category": "roles",
     "exampleOutput": "✓ Role management command executed successfully.",
     "permission": "Manage Roles"
@@ -930,7 +966,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "role delete",
     "description": "The role to delete",
-    "usage": "|role delete",
+    "usage": "role delete",
     "category": "roles",
     "exampleOutput": "✓ Role management command executed successfully.",
     "permission": "Manage Roles"
@@ -938,7 +974,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "role everyone",
     "description": "The role to give to everyone",
-    "usage": "|role everyone",
+    "usage": "role everyone",
     "category": "roles",
     "exampleOutput": "✓ Role management command executed successfully.",
     "permission": "Manage Roles"
@@ -946,7 +982,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "role bots",
     "description": "The role to give to all bots",
-    "usage": "|role bots",
+    "usage": "role bots",
     "category": "roles",
     "exampleOutput": "✓ Role management command executed successfully.",
     "permission": "Manage Roles"
@@ -954,7 +990,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "role humans",
     "description": "The role to give to all humans",
-    "usage": "|role humans",
+    "usage": "role humans",
     "category": "roles",
     "exampleOutput": "✓ Role management command executed successfully.",
     "permission": "Manage Roles"
@@ -962,7 +998,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "role info",
     "description": "The target role",
-    "usage": "|role info",
+    "usage": "role info",
     "category": "roles",
     "exampleOutput": "✓ Role management command executed successfully.",
     "permission": "Manage Roles"
@@ -970,7 +1006,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "role color",
     "description": "The role to modify",
-    "usage": "|role color",
+    "usage": "role color",
     "category": "roles",
     "exampleOutput": "✓ Role management command executed successfully.",
     "permission": "Manage Roles"
@@ -978,7 +1014,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "role rename",
     "description": "The role to rename",
-    "usage": "|role rename",
+    "usage": "role rename",
     "category": "roles",
     "exampleOutput": "✓ Role management command executed successfully.",
     "permission": "Manage Roles"
@@ -986,7 +1022,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "role hoist",
     "description": "The role to toggle hoist status",
-    "usage": "|role hoist",
+    "usage": "role hoist",
     "category": "roles",
     "exampleOutput": "✓ Role management command executed successfully.",
     "permission": "Manage Roles"
@@ -994,7 +1030,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "role mentionable",
     "description": "The role to toggle mention status",
-    "usage": "|role mentionable",
+    "usage": "role mentionable",
     "category": "roles",
     "exampleOutput": "✓ Role management command executed successfully.",
     "permission": "Manage Roles"
@@ -1002,14 +1038,14 @@ export const COMMANDS: Command[] = [
   {
     "name": "roll",
     "description": "Roll a random number or a multi-sided die.",
-    "usage": "|roll",
+    "usage": "roll",
     "category": "fun",
     "exampleOutput": "✓ roll  executed successfully."
   },
   {
     "name": "rules",
     "description": "Generate and customize server rules.",
-    "usage": "|rules",
+    "usage": "rules",
     "category": "utility",
     "exampleOutput": "✓ rules  executed successfully.",
     "permission": "Administrator"
@@ -1017,7 +1053,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "selfvoice create",
     "description": "Create your own temporary voice channel (must be enabled by staff).",
-    "usage": "|selfvoice create",
+    "usage": "selfvoice create",
     "category": "voice",
     "exampleOutput": "🔊 Voice room created successfully.",
     "permission": "Manage Server"
@@ -1025,7 +1061,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "selfvoice setup",
     "description": "[Staff] Launch the guided Self Voice setup wizard.",
-    "usage": "|selfvoice setup",
+    "usage": "selfvoice setup",
     "category": "voice",
     "exampleOutput": "🔊 Voice room created successfully.",
     "permission": "Manage Server"
@@ -1033,7 +1069,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "selfvoice enable",
     "description": "[Staff] Enable the Self Voice module for this server.",
-    "usage": "|selfvoice enable",
+    "usage": "selfvoice enable",
     "category": "voice",
     "exampleOutput": "🔊 Voice room created successfully.",
     "permission": "Manage Server"
@@ -1041,7 +1077,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "selfvoice disable",
     "description": "[Staff] Disable the Self Voice module for this server.",
-    "usage": "|selfvoice disable",
+    "usage": "selfvoice disable",
     "category": "voice",
     "exampleOutput": "🔊 Voice room created successfully.",
     "permission": "Manage Server"
@@ -1049,7 +1085,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "selfvoice config",
     "description": "View the current Self Voice configuration.",
-    "usage": "|selfvoice config",
+    "usage": "selfvoice config",
     "category": "voice",
     "exampleOutput": "🔊 Voice room created successfully.",
     "permission": "Manage Server"
@@ -1057,7 +1093,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "selfvoice panel",
     "description": "Resend the control panel for your active room.",
-    "usage": "|selfvoice panel",
+    "usage": "selfvoice panel",
     "category": "voice",
     "exampleOutput": "🔊 Voice room created successfully.",
     "permission": "Manage Server"
@@ -1065,7 +1101,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "selfvoice set",
     "description": "[Staff] Tweak a single Self Voice setting.",
-    "usage": "|selfvoice set",
+    "usage": "selfvoice set",
     "category": "voice",
     "exampleOutput": "🔊 Voice room created successfully.",
     "permission": "Manage Server"
@@ -1073,233 +1109,271 @@ export const COMMANDS: Command[] = [
   {
     "name": "setup-audit",
     "description": "Configure, enable, or disable the server audit log channel.",
-    "usage": "|setup-audit",
+    "usage": "setup-audit",
     "category": "setup",
     "exampleOutput": "✓ setup-audit  executed successfully.",
     "permission": "Administrator"
   },
   {
-    "name": "setup",
-    "description": "️ Provision specialized, high-density server configurations from blueprint templates.",
-    "usage": "|setup",
+    "name": "setup provision",
+    "description": "Build the server from a blueprint template",
+    "usage": "setup provision",
     "category": "setup",
     "exampleOutput": "✓ Setup complete! Deployed: 📁 Welcome, 📁 Chats, 7 channels, and Admin/Mod/Member roles.",
-    "permission": "ManageGuild"
+    "permission": "Manage Server"
+  },
+  {
+    "name": "setup backup",
+    "description": "Save the current server as a setup template",
+    "usage": "setup backup",
+    "category": "setup",
+    "exampleOutput": "✓ Setup complete! Deployed: 📁 Welcome, 📁 Chats, 7 channels, and Admin/Mod/Member roles.",
+    "permission": "Manage Server"
+  },
+  {
+    "name": "setup restore",
+    "description": "Restore selected data from a setup template",
+    "usage": "setup restore",
+    "category": "setup",
+    "exampleOutput": "✓ Setup complete! Deployed: 📁 Welcome, 📁 Chats, 7 channels, and Admin/Mod/Member roles.",
+    "permission": "Manage Server"
   },
   {
     "name": "slap",
     "description": "Slap another user with a hilarious item.",
-    "usage": "|slap",
+    "usage": "slap",
     "category": "fun",
     "exampleOutput": "✓ slap  executed successfully."
   },
   {
     "name": "slowmode create",
     "description": "Establish a slowmode restriction on a channel",
-    "usage": "|slowmode create",
+    "usage": "slowmode create",
     "category": "moderation",
     "exampleOutput": "✓ slowmode create executed successfully."
   },
   {
     "name": "slowmode edit",
     "description": "Modify an existing channel slowmode interval",
-    "usage": "|slowmode edit",
+    "usage": "slowmode edit",
     "category": "moderation",
     "exampleOutput": "✓ slowmode edit executed successfully."
   },
   {
     "name": "slowmode remove",
     "description": "Completely remove slowmode restrictions from a channel",
-    "usage": "|slowmode remove",
+    "usage": "slowmode remove",
     "category": "moderation",
     "exampleOutput": "✓ slowmode remove executed successfully."
   },
   {
     "name": "slowmode exempt",
     "description": "Audit who bypasses the slowmode rule inside a channel",
-    "usage": "|slowmode exempt",
+    "usage": "slowmode exempt",
     "category": "moderation",
     "exampleOutput": "✓ slowmode exempt executed successfully."
   },
   {
+    "name": "smartwelcome setup",
+    "description": "Configure smart welcome profiles",
+    "usage": "smartwelcome setup",
+    "category": "utility",
+    "exampleOutput": "✓ smartwelcome setup executed successfully."
+  },
+  {
+    "name": "smartwelcome disable",
+    "description": "Disable smart welcome profiles",
+    "usage": "smartwelcome disable",
+    "category": "utility",
+    "exampleOutput": "✓ smartwelcome disable executed successfully."
+  },
+  {
+    "name": "softban",
+    "description": "Ban a member, remove recent messages, then immediately unban them",
+    "usage": "softban",
+    "category": "utility",
+    "exampleOutput": "✓ softban  executed successfully.",
+    "permission": "BanMembers"
+  },
+  {
     "name": "spacefact",
     "description": "Get a mind-blowing cosmic space fact.",
-    "usage": "|spacefact",
+    "usage": "spacefact",
     "category": "fun",
     "exampleOutput": "✓ spacefact  executed successfully."
   },
   {
     "name": "starboard setup",
     "description": "Launch the setup wizard (or pass a channel to skip it)",
-    "usage": "|starboard setup",
+    "usage": "starboard setup",
     "category": "utility",
     "exampleOutput": "✓ starboard setup executed successfully."
   },
   {
     "name": "starboard config",
     "description": "Configure a starboard setting",
-    "usage": "|starboard config",
+    "usage": "starboard config",
     "category": "utility",
     "exampleOutput": "✓ starboard config executed successfully."
   },
   {
     "name": "starboard ignore",
     "description": "Add a channel to the ignore list",
-    "usage": "|starboard ignore",
+    "usage": "starboard ignore",
     "category": "utility",
     "exampleOutput": "✓ starboard ignore executed successfully."
   },
   {
     "name": "starboard unignore",
     "description": "Remove a channel from the ignore list",
-    "usage": "|starboard unignore",
+    "usage": "starboard unignore",
     "category": "utility",
     "exampleOutput": "✓ starboard unignore executed successfully."
   },
   {
     "name": "starboard toggle",
     "description": "Enable or disable the starboard module",
-    "usage": "|starboard toggle",
+    "usage": "starboard toggle",
     "category": "utility",
     "exampleOutput": "✓ starboard toggle executed successfully."
   },
   {
     "name": "starboard force",
     "description": "Force-star a message by its ID",
-    "usage": "|starboard force",
+    "usage": "starboard force",
     "category": "utility",
     "exampleOutput": "✓ starboard force executed successfully."
   },
   {
     "name": "starboard stats",
     "description": "View starboard statistics for this server",
-    "usage": "|starboard stats",
+    "usage": "starboard stats",
     "category": "utility",
     "exampleOutput": "✓ starboard stats executed successfully."
   },
   {
     "name": "stickies deploy",
     "description": "Deploy a sticky in the selected channel and delete the previous sticky",
-    "usage": "|stickies deploy",
+    "usage": "stickies deploy",
     "category": "utility",
     "exampleOutput": "✓ stickies deploy executed successfully."
   },
   {
     "name": "stickies clear",
     "description": "Remove the active sticky in the selected channel",
-    "usage": "|stickies clear",
+    "usage": "stickies clear",
     "category": "utility",
     "exampleOutput": "✓ stickies clear executed successfully."
   },
   {
     "name": "suggestions setup",
     "description": "Launch the guided setup wizard (or provide a channel directly)",
-    "usage": "|suggestions setup",
+    "usage": "suggestions setup",
     "category": "social",
     "exampleOutput": "✓ suggestions setup executed successfully."
   },
   {
     "name": "suggestions config",
     "description": "Configure suggestion settings",
-    "usage": "|suggestions config",
+    "usage": "suggestions config",
     "category": "social",
     "exampleOutput": "✓ suggestions config executed successfully."
   },
   {
     "name": "suggestions toggle",
     "description": "Enable or disable the suggestions module",
-    "usage": "|suggestions toggle",
+    "usage": "suggestions toggle",
     "category": "social",
     "exampleOutput": "✓ suggestions toggle executed successfully."
   },
   {
     "name": "suggestions submit",
     "description": "Submit a suggestion",
-    "usage": "|suggestions submit",
+    "usage": "suggestions submit",
     "category": "social",
     "exampleOutput": "✓ suggestions submit executed successfully."
   },
   {
     "name": "suggestions approve",
     "description": "Approve a suggestion",
-    "usage": "|suggestions approve",
+    "usage": "suggestions approve",
     "category": "social",
     "exampleOutput": "✓ suggestions approve executed successfully."
   },
   {
     "name": "suggestions deny",
     "description": "Deny a suggestion",
-    "usage": "|suggestions deny",
+    "usage": "suggestions deny",
     "category": "social",
     "exampleOutput": "✓ suggestions deny executed successfully."
   },
   {
     "name": "suggestions implement",
     "description": "Mark a suggestion as implemented",
-    "usage": "|suggestions implement",
+    "usage": "suggestions implement",
     "category": "social",
     "exampleOutput": "✓ suggestions implement executed successfully."
   },
   {
     "name": "suggestions delete",
     "description": "Delete a suggestion entirely",
-    "usage": "|suggestions delete",
+    "usage": "suggestions delete",
     "category": "social",
     "exampleOutput": "✓ suggestions delete executed successfully."
   },
   {
     "name": "suggestions list",
     "description": "List suggestions",
-    "usage": "|suggestions list",
+    "usage": "suggestions list",
     "category": "social",
     "exampleOutput": "✓ suggestions list executed successfully."
   },
   {
     "name": "suggestions my",
     "description": "View your own suggestions",
-    "usage": "|suggestions my",
+    "usage": "suggestions my",
     "category": "social",
     "exampleOutput": "✓ suggestions my executed successfully."
   },
   {
     "name": "ticket setup",
     "description": "Launch the interactive ticket panel deployment wizard",
-    "usage": "|ticket setup",
+    "usage": "ticket setup",
     "category": "tickets",
     "exampleOutput": "🎫 Ticket system configured."
   },
   {
     "name": "ticket ongoing",
     "description": "\udccb View all live, active support ticket sessions",
-    "usage": "|ticket ongoing",
+    "usage": "ticket ongoing",
     "category": "tickets",
     "exampleOutput": "🎫 Ticket system configured."
   },
   {
     "name": "ticket history",
     "description": "\udcdc View all ticket history with pagination and transcript search",
-    "usage": "|ticket history",
+    "usage": "ticket history",
     "category": "tickets",
     "exampleOutput": "🎫 Ticket system configured."
   },
   {
     "name": "ticket purge",
     "description": "⚠️ Instantly delete all active tickets from the datastore",
-    "usage": "|ticket purge",
+    "usage": "ticket purge",
     "category": "tickets",
     "exampleOutput": "🎫 Ticket system configured."
   },
   {
     "name": "trivia",
     "description": "Spits out a random brain-teaser trivia question.",
-    "usage": "|trivia",
+    "usage": "trivia",
     "category": "fun",
     "exampleOutput": "✓ trivia  executed successfully."
   },
   {
     "name": "unban",
     "description": "Unban a user from the server using their username",
-    "usage": "|unban",
+    "usage": "unban",
     "category": "moderation",
     "exampleOutput": "✅ User Unbanned\n**john_doe** has been successfully unbanned.",
     "permission": "BanMembers"
@@ -1307,7 +1381,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "unmute",
     "description": "Unmute a user",
-    "usage": "|unmute",
+    "usage": "unmute",
     "category": "moderation",
     "exampleOutput": "✓ Removed timeout from @user",
     "permission": "ModerateMembers"
@@ -1315,7 +1389,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "unwarn",
     "description": "Remove a warning from a server member",
-    "usage": "|unwarn",
+    "usage": "unwarn",
     "category": "utility",
     "exampleOutput": "✓ unwarn  executed successfully.",
     "permission": "ModerateMembers"
@@ -1323,7 +1397,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "verification setup",
     "description": "Launch the interactive wizard configuration questionnaire drops",
-    "usage": "|verification setup",
+    "usage": "verification setup",
     "category": "verification",
     "exampleOutput": "✓ Verification system activated.",
     "permission": "Administrator"
@@ -1331,7 +1405,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "verification edit",
     "description": "✏️ Modify an existing verification configuration with a skippable wizard",
-    "usage": "|verification edit",
+    "usage": "verification edit",
     "category": "verification",
     "exampleOutput": "✓ Verification system activated.",
     "permission": "Administrator"
@@ -1339,7 +1413,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "verification delete",
     "description": "\uddd1️ Safely purge verification records with an absolute safety screen",
-    "usage": "|verification delete",
+    "usage": "verification delete",
     "category": "verification",
     "exampleOutput": "✓ Verification system activated.",
     "permission": "Administrator"
@@ -1347,7 +1421,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "verification disable",
     "description": "\udd34 Instantly shut down the lock validation gatekeeper layer",
-    "usage": "|verification disable",
+    "usage": "verification disable",
     "category": "verification",
     "exampleOutput": "✓ Verification system activated.",
     "permission": "Administrator"
@@ -1355,7 +1429,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "warn",
     "description": "Warn a server member",
-    "usage": "|warn",
+    "usage": "warn",
     "category": "moderation",
     "exampleOutput": "⚠ Official warning registered for @user (1st warning point)",
     "permission": "ModerateMembers"
@@ -1363,7 +1437,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "warnings",
     "description": "View warnings for a user",
-    "usage": "|warnings",
+    "usage": "warnings",
     "category": "moderation",
     "exampleOutput": "Warnings profile for @user:\n- 1st Warn: Spam (Logged by @staff)\n- Total: 1",
     "permission": "ModerateMembers"
@@ -1371,7 +1445,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "welcome",
     "description": "Configure or toggle the welcome/leave system",
-    "usage": "|welcome",
+    "usage": "welcome",
     "category": "setup",
     "exampleOutput": "✓ welcome  executed successfully.",
     "permission": "ManageGuild"
@@ -1379,7 +1453,7 @@ export const COMMANDS: Command[] = [
   {
     "name": "wouldyourather",
     "description": "Presents an impossible split decision with interactive voting buttons.",
-    "usage": "|wouldyourather",
+    "usage": "wouldyourather",
     "category": "fun",
     "exampleOutput": "✓ wouldyourather  executed successfully."
   }
@@ -1405,140 +1479,140 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "8ball",
       "description": "\udfb1 Ask the magic 8-ball a question and receive a mystical fortune.",
-      "usage": "|8ball",
+      "usage": "8ball",
       "category": "fun",
       "exampleOutput": "✓ 8ball  executed successfully."
     },
     {
       "name": "capital-quiz",
       "description": "Tests your geographic knowledge of world capitals.",
-      "usage": "|capital-quiz",
+      "usage": "capital-quiz",
       "category": "fun",
       "exampleOutput": "✓ capital-quiz  executed successfully."
     },
     {
       "name": "cat",
       "description": "Spits out a fully animated cat GIF and a random feline fact.",
-      "usage": "|cat",
+      "usage": "cat",
       "category": "fun",
       "exampleOutput": "✓ cat  executed successfully."
     },
     {
       "name": "coinflip",
       "description": "Flip an animated coin and see what it lands on.",
-      "usage": "|coinflip",
+      "usage": "coinflip",
       "category": "fun",
       "exampleOutput": "✓ coinflip  executed successfully."
     },
     {
       "name": "dadjoke",
       "description": "Get a classic, groans-guaranteed dad joke.",
-      "usage": "|dadjoke",
+      "usage": "dadjoke",
       "category": "fun",
       "exampleOutput": "✓ dadjoke  executed successfully."
     },
     {
       "name": "dice-duel",
       "description": "Challenge another user to an instant dice rolling duel.",
-      "usage": "|dice-duel",
+      "usage": "dice-duel",
       "category": "fun",
       "exampleOutput": "✓ dice-duel  executed successfully."
     },
     {
       "name": "dog",
       "description": "Spits out a cute puppy picture and a random canine fact.",
-      "usage": "|dog",
+      "usage": "dog",
       "category": "fun",
       "exampleOutput": "✓ dog  executed successfully."
     },
     {
       "name": "fortune",
       "description": "Reveals a prediction about your future.",
-      "usage": "|fortune",
+      "usage": "fortune",
       "category": "fun",
       "exampleOutput": "✓ fortune  executed successfully."
     },
     {
       "name": "fun-menu",
       "description": "Explore what the Fun Module offers in a clean single-column directory.",
-      "usage": "|fun-menu",
+      "usage": "fun-menu",
       "category": "fun",
       "exampleOutput": "✓ fun-menu  executed successfully."
     },
     {
       "name": "hug",
       "description": "Give a member a warm, fuzzy virtual hug.",
-      "usage": "|hug",
+      "usage": "hug",
       "category": "fun",
       "exampleOutput": "✓ hug  executed successfully."
     },
     {
       "name": "joke",
       "description": "Get a hilariously relatable, funny everyday joke.",
-      "usage": "|joke",
+      "usage": "joke",
       "category": "fun",
       "exampleOutput": "✓ joke  executed successfully."
     },
     {
       "name": "meme",
       "description": "Spits out a random funny, relatable lifestyle meme.",
-      "usage": "|meme",
+      "usage": "meme",
       "category": "fun",
       "exampleOutput": "✓ meme  executed successfully."
     },
     {
       "name": "predict-love",
       "description": "Calculate the ultimate romantic compatibility percentage.",
-      "usage": "|predict-love",
+      "usage": "predict-love",
       "category": "fun",
       "exampleOutput": "✓ predict-love  executed successfully."
     },
     {
       "name": "rate",
       "description": "Have the bot rate anything out of 10.",
-      "usage": "|rate",
+      "usage": "rate",
       "category": "fun",
       "exampleOutput": "✓ rate  executed successfully."
     },
     {
       "name": "roast",
       "description": "Deliver a savage, good-natured roast to a user.",
-      "usage": "|roast",
+      "usage": "roast",
       "category": "fun",
       "exampleOutput": "✓ roast  executed successfully."
     },
     {
       "name": "roll",
       "description": "Roll a random number or a multi-sided die.",
-      "usage": "|roll",
+      "usage": "roll",
       "category": "fun",
       "exampleOutput": "✓ roll  executed successfully."
     },
     {
       "name": "slap",
       "description": "Slap another user with a hilarious item.",
-      "usage": "|slap",
+      "usage": "slap",
       "category": "fun",
       "exampleOutput": "✓ slap  executed successfully."
     },
     {
       "name": "spacefact",
       "description": "Get a mind-blowing cosmic space fact.",
-      "usage": "|spacefact",
+      "usage": "spacefact",
       "category": "fun",
       "exampleOutput": "✓ spacefact  executed successfully."
     },
     {
       "name": "trivia",
       "description": "Spits out a random brain-teaser trivia question.",
-      "usage": "|trivia",
+      "usage": "trivia",
       "category": "fun",
       "exampleOutput": "✓ trivia  executed successfully."
     },
     {
       "name": "wouldyourather",
       "description": "Presents an impossible split decision with interactive voting buttons.",
-      "usage": "|wouldyourather",
+      "usage": "wouldyourather",
       "category": "fun",
       "exampleOutput": "✓ wouldyourather  executed successfully."
     }
@@ -1547,7 +1621,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "analytics setup",
       "description": "Deploy statistics channel grids (auto-refreshes every 1 min)",
-      "usage": "|analytics setup",
+      "usage": "analytics setup",
       "category": "analytics",
       "exampleOutput": "📊 Analytics tracking deployed.",
       "permission": "Manage Server"
@@ -1555,7 +1629,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "analytics edit",
       "description": "✏️ Modify your existing statistics channel layout settings",
-      "usage": "|analytics edit",
+      "usage": "analytics edit",
       "category": "analytics",
       "exampleOutput": "📊 Analytics tracking deployed.",
       "permission": "Manage Server"
@@ -1563,7 +1637,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "analytics delete",
       "description": "\uddd1️ Wipe current statistic channels and clear database traces",
-      "usage": "|analytics delete",
+      "usage": "analytics delete",
       "category": "analytics",
       "exampleOutput": "📊 Analytics tracking deployed.",
       "permission": "Manage Server"
@@ -1571,7 +1645,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "analytics update",
       "description": "\udd04 Force an instant refresh (counters already auto-refresh every 1 min)",
-      "usage": "|analytics update",
+      "usage": "analytics update",
       "category": "analytics",
       "exampleOutput": "📊 Analytics tracking deployed.",
       "permission": "Manage Server"
@@ -1581,7 +1655,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "autodelete",
       "description": "Set an automated delete rule with blacklist words, triggers, and blocked content categories.",
-      "usage": "|autodelete",
+      "usage": "autodelete",
       "category": "utility",
       "exampleOutput": "✓ autodelete  executed successfully.",
       "permission": "Administrator"
@@ -1589,182 +1663,210 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "automessage create",
       "description": "Establish a fresh scheduled repeating message loop",
-      "usage": "|automessage create",
+      "usage": "automessage create",
       "category": "utility",
       "exampleOutput": "✓ automessage create executed successfully."
     },
     {
       "name": "automessage remove",
       "description": "Cancel an active scheduled loop and take it offline",
-      "usage": "|automessage remove",
+      "usage": "automessage remove",
       "category": "utility",
       "exampleOutput": "✓ automessage remove executed successfully."
     },
     {
+      "name": "automessage list",
+      "description": "List all ongoing recurring message sessions and their IDs",
+      "usage": "automessage list",
+      "category": "utility",
+      "exampleOutput": "✓ automessage list executed successfully."
+    },
+    {
       "name": "capabilities",
       "description": "A full, detailed tour of everything the bot can do.",
-      "usage": "|capabilities",
+      "usage": "capabilities",
       "category": "utility",
       "exampleOutput": "✓ capabilities  executed successfully."
     },
     {
+      "name": "cases search",
+      "description": "Search cases by user ID or case number",
+      "usage": "cases search",
+      "category": "utility",
+      "exampleOutput": "✓ cases search executed successfully."
+    },
+    {
+      "name": "cases note",
+      "description": "Add notes or evidence to a case",
+      "usage": "cases note",
+      "category": "utility",
+      "exampleOutput": "✓ cases note executed successfully."
+    },
+    {
+      "name": "cases export",
+      "description": "Export moderation history as a JSON file",
+      "usage": "cases export",
+      "category": "utility",
+      "exampleOutput": "✓ cases export executed successfully."
+    },
+    {
       "name": "channels create",
       "description": "Create a new channel or category.",
-      "usage": "|channels create",
+      "usage": "channels create",
       "category": "utility",
       "exampleOutput": "✓ channels create executed successfully."
     },
     {
       "name": "channels delete",
       "description": "Delete an existing channel or category.",
-      "usage": "|channels delete",
+      "usage": "channels delete",
       "category": "utility",
       "exampleOutput": "✓ channels delete executed successfully."
     },
     {
       "name": "channels edit",
       "description": "Edit a channel name, topic, slowmode, and NSFW status.",
-      "usage": "|channels edit",
+      "usage": "channels edit",
       "category": "utility",
       "exampleOutput": "✓ channels edit executed successfully."
     },
     {
       "name": "channels customize",
       "description": "Customize permissions, locks, and access for a channel.",
-      "usage": "|channels customize",
+      "usage": "channels customize",
       "category": "utility",
       "exampleOutput": "✓ channels customize executed successfully."
     },
     {
       "name": "channels category",
       "description": "Create, delete, or customize a category.",
-      "usage": "|channels category",
+      "usage": "channels category",
       "category": "utility",
       "exampleOutput": "✓ channels category executed successfully."
     },
     {
       "name": "embed field add",
       "description": "Open a modal to add a field to your embed",
-      "usage": "|embed field add",
+      "usage": "embed field add",
       "category": "utility",
       "exampleOutput": "✓ embed add executed successfully."
     },
     {
       "name": "embed field remove",
       "description": "Remove a field from your embed by index",
-      "usage": "|embed field remove",
+      "usage": "embed field remove",
       "category": "utility",
       "exampleOutput": "✓ embed remove executed successfully."
     },
     {
       "name": "embed template save",
       "description": "Save current embed as a named template",
-      "usage": "|embed template save",
+      "usage": "embed template save",
       "category": "utility",
       "exampleOutput": "✓ embed save executed successfully."
     },
     {
       "name": "embed template load",
       "description": "Load a saved template into your session",
-      "usage": "|embed template load",
+      "usage": "embed template load",
       "category": "utility",
       "exampleOutput": "✓ embed load executed successfully."
     },
     {
       "name": "embed template list",
       "description": "List all saved templates for this server",
-      "usage": "|embed template list",
+      "usage": "embed template list",
       "category": "utility",
       "exampleOutput": "✓ embed list executed successfully."
     },
     {
       "name": "embed template delete",
       "description": "Delete a saved template",
-      "usage": "|embed template delete",
+      "usage": "embed template delete",
       "category": "utility",
       "exampleOutput": "✓ embed delete executed successfully."
     },
     {
       "name": "embed create",
       "description": "Open a modal to build a new embed",
-      "usage": "|embed create",
+      "usage": "embed create",
       "category": "utility",
       "exampleOutput": "✓ embed create executed successfully."
     },
     {
       "name": "embed edit",
       "description": "Load an existing bot embed into your session for editing",
-      "usage": "|embed edit",
+      "usage": "embed edit",
       "category": "utility",
       "exampleOutput": "✓ embed edit executed successfully."
     },
     {
       "name": "embed send",
       "description": "Send your in-progress embed to a channel",
-      "usage": "|embed send",
+      "usage": "embed send",
       "category": "utility",
       "exampleOutput": "✓ embed send executed successfully."
     },
     {
       "name": "embed image",
       "description": "Set the large image URL on your embed",
-      "usage": "|embed image",
+      "usage": "embed image",
       "category": "utility",
       "exampleOutput": "✓ embed image executed successfully."
     },
     {
       "name": "embed thumbnail",
       "description": "Set the thumbnail URL on your embed",
-      "usage": "|embed thumbnail",
+      "usage": "embed thumbnail",
       "category": "utility",
       "exampleOutput": "✓ embed thumbnail executed successfully."
     },
     {
       "name": "embed color",
       "description": "Set the embed color",
-      "usage": "|embed color",
+      "usage": "embed color",
       "category": "utility",
       "exampleOutput": "✓ embed color executed successfully."
     },
     {
       "name": "embed footer",
       "description": "Set the embed footer",
-      "usage": "|embed footer",
+      "usage": "embed footer",
       "category": "utility",
       "exampleOutput": "✓ embed footer executed successfully."
     },
     {
       "name": "embed author",
       "description": "Set the embed author",
-      "usage": "|embed author",
+      "usage": "embed author",
       "category": "utility",
       "exampleOutput": "✓ embed author executed successfully."
     },
     {
       "name": "embed preview",
       "description": "Preview your current in-progress embed",
-      "usage": "|embed preview",
+      "usage": "embed preview",
       "category": "utility",
       "exampleOutput": "✓ embed preview executed successfully."
     },
     {
       "name": "embed clear",
       "description": "Clear your in-progress embed session",
-      "usage": "|embed clear",
+      "usage": "embed clear",
       "category": "utility",
       "exampleOutput": "✓ embed clear executed successfully."
     },
     {
       "name": "flavor",
       "description": "Discover your current ice cream flavor personality.",
-      "usage": "|flavor",
+      "usage": "flavor",
       "category": "utility",
       "exampleOutput": "✓ flavor  executed successfully."
     },
     {
       "name": "guilds",
       "description": "Owner only: list all guilds the bot is in",
-      "usage": "|guilds",
+      "usage": "guilds",
       "category": "utility",
       "exampleOutput": "✓ guilds  executed successfully.",
       "permission": "CreateInstantInvite"
@@ -1772,191 +1874,221 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "help",
       "description": "View the full list of available bot commands by category.",
-      "usage": "|help",
+      "usage": "help",
       "category": "utility",
       "exampleOutput": "✓ help  executed successfully."
     },
     {
+      "name": "honeypot setup",
+      "description": "Configure the honeypot trap channel and warning message.",
+      "usage": "honeypot setup",
+      "category": "utility",
+      "exampleOutput": "✓ honeypot setup executed successfully."
+    },
+    {
+      "name": "honeypot disable",
+      "description": "Disable the configured honeypot.",
+      "usage": "honeypot disable",
+      "category": "utility",
+      "exampleOutput": "✓ honeypot disable executed successfully."
+    },
+    {
+      "name": "honeypot delete",
+      "description": "Delete the configured honeypot.",
+      "usage": "honeypot delete",
+      "category": "utility",
+      "exampleOutput": "✓ honeypot delete executed successfully."
+    },
+    {
       "name": "invites check",
       "description": "Check invite stats for a user",
-      "usage": "|invites check",
+      "usage": "invites check",
       "category": "utility",
       "exampleOutput": "✓ invites check executed successfully."
     },
     {
       "name": "invites leaderboard",
       "description": "Top 10 inviters by net invites",
-      "usage": "|invites leaderboard",
+      "usage": "invites leaderboard",
       "category": "utility",
       "exampleOutput": "✓ invites leaderboard executed successfully."
     },
     {
       "name": "invites reset",
       "description": "Reset invite counts (staff only)",
-      "usage": "|invites reset",
+      "usage": "invites reset",
       "category": "utility",
       "exampleOutput": "✓ invites reset executed successfully."
     },
     {
       "name": "invites config",
       "description": "Set the invite log channel (staff only)",
-      "usage": "|invites config",
+      "usage": "invites config",
       "category": "utility",
       "exampleOutput": "✓ invites config executed successfully."
     },
     {
       "name": "invites add",
       "description": "Add bonus invites to a user (staff only)",
-      "usage": "|invites add",
+      "usage": "invites add",
       "category": "utility",
       "exampleOutput": "✓ invites add executed successfully."
     },
     {
       "name": "invites remove",
       "description": "Remove invites from a user (staff only)",
-      "usage": "|invites remove",
+      "usage": "invites remove",
       "category": "utility",
       "exampleOutput": "✓ invites remove executed successfully."
     },
     {
       "name": "invites toggle",
       "description": "Enable or disable invite tracking (staff only)",
-      "usage": "|invites toggle",
+      "usage": "invites toggle",
       "category": "utility",
       "exampleOutput": "✓ invites toggle executed successfully."
     },
     {
       "name": "invites stats",
       "description": "Server-wide invite statistics (staff only)",
-      "usage": "|invites stats",
+      "usage": "invites stats",
       "category": "utility",
       "exampleOutput": "✓ invites stats executed successfully."
     },
     {
       "name": "invites code",
       "description": "Look up a specific invite code (staff only)",
-      "usage": "|invites code",
+      "usage": "invites code",
       "category": "utility",
       "exampleOutput": "✓ invites code executed successfully."
     },
     {
       "name": "invites fake-threshold",
       "description": "Minimum account age in days (default 7)",
-      "usage": "|invites fake-threshold",
+      "usage": "invites fake-threshold",
       "category": "utility",
       "exampleOutput": "✓ invites fake-threshold executed successfully."
     },
     {
       "name": "mod-logs-toggle",
       "description": "Log all moderator actions into one channel.",
-      "usage": "|mod-logs-toggle",
+      "usage": "mod-logs-toggle",
       "category": "utility",
       "exampleOutput": "✓ mod-logs-toggle  executed successfully.",
       "permission": "ManageGuild"
     },
     {
       "name": "mydata",
-      "description": "No description",
-      "usage": "|mydata",
+      "description": "Owner only: export live MongoDB data",
+      "usage": "mydata",
       "category": "utility",
-      "exampleOutput": "✓ mydata  executed successfully."
-    },
-    {
-      "name": "premium about",
-      "description": "See what ServerMiser Premium is and how to get it",
-      "usage": "|premium about",
-      "category": "utility",
-      "exampleOutput": "✓ premium about executed successfully."
-    },
-    {
-      "name": "premium info",
-      "description": "Compare Free and Premium side by side",
-      "usage": "|premium info",
-      "category": "utility",
-      "exampleOutput": "✓ premium info executed successfully."
+      "exampleOutput": "✓ mydata  executed successfully.",
+      "permission": "Administrator"
     },
     {
       "name": "purpose",
       "description": "Learn about the bot and see its profile picture",
-      "usage": "|purpose",
+      "usage": "purpose",
       "category": "utility",
       "exampleOutput": "✓ purpose  executed successfully."
     },
     {
       "name": "rules",
       "description": "Generate and customize server rules.",
-      "usage": "|rules",
+      "usage": "rules",
       "category": "utility",
       "exampleOutput": "✓ rules  executed successfully.",
       "permission": "Administrator"
     },
     {
+      "name": "smartwelcome setup",
+      "description": "Configure smart welcome profiles",
+      "usage": "smartwelcome setup",
+      "category": "utility",
+      "exampleOutput": "✓ smartwelcome setup executed successfully."
+    },
+    {
+      "name": "smartwelcome disable",
+      "description": "Disable smart welcome profiles",
+      "usage": "smartwelcome disable",
+      "category": "utility",
+      "exampleOutput": "✓ smartwelcome disable executed successfully."
+    },
+    {
+      "name": "softban",
+      "description": "Ban a member, remove recent messages, then immediately unban them",
+      "usage": "softban",
+      "category": "utility",
+      "exampleOutput": "✓ softban  executed successfully.",
+      "permission": "BanMembers"
+    },
+    {
       "name": "starboard setup",
       "description": "Launch the setup wizard (or pass a channel to skip it)",
-      "usage": "|starboard setup",
+      "usage": "starboard setup",
       "category": "utility",
       "exampleOutput": "✓ starboard setup executed successfully."
     },
     {
       "name": "starboard config",
       "description": "Configure a starboard setting",
-      "usage": "|starboard config",
+      "usage": "starboard config",
       "category": "utility",
       "exampleOutput": "✓ starboard config executed successfully."
     },
     {
       "name": "starboard ignore",
       "description": "Add a channel to the ignore list",
-      "usage": "|starboard ignore",
+      "usage": "starboard ignore",
       "category": "utility",
       "exampleOutput": "✓ starboard ignore executed successfully."
     },
     {
       "name": "starboard unignore",
       "description": "Remove a channel from the ignore list",
-      "usage": "|starboard unignore",
+      "usage": "starboard unignore",
       "category": "utility",
       "exampleOutput": "✓ starboard unignore executed successfully."
     },
     {
       "name": "starboard toggle",
       "description": "Enable or disable the starboard module",
-      "usage": "|starboard toggle",
+      "usage": "starboard toggle",
       "category": "utility",
       "exampleOutput": "✓ starboard toggle executed successfully."
     },
     {
       "name": "starboard force",
       "description": "Force-star a message by its ID",
-      "usage": "|starboard force",
+      "usage": "starboard force",
       "category": "utility",
       "exampleOutput": "✓ starboard force executed successfully."
     },
     {
       "name": "starboard stats",
       "description": "View starboard statistics for this server",
-      "usage": "|starboard stats",
+      "usage": "starboard stats",
       "category": "utility",
       "exampleOutput": "✓ starboard stats executed successfully."
     },
     {
       "name": "stickies deploy",
       "description": "Deploy a sticky in the selected channel and delete the previous sticky",
-      "usage": "|stickies deploy",
+      "usage": "stickies deploy",
       "category": "utility",
       "exampleOutput": "✓ stickies deploy executed successfully."
     },
     {
       "name": "stickies clear",
       "description": "Remove the active sticky in the selected channel",
-      "usage": "|stickies clear",
+      "usage": "stickies clear",
       "category": "utility",
       "exampleOutput": "✓ stickies clear executed successfully."
     },
     {
       "name": "unwarn",
       "description": "Remove a warning from a server member",
-      "usage": "|unwarn",
+      "usage": "unwarn",
       "category": "utility",
       "exampleOutput": "✓ unwarn  executed successfully.",
       "permission": "ModerateMembers"
@@ -1966,105 +2098,105 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "automodrule setup",
       "description": "Launch the interactive configuration setup wizard node",
-      "usage": "|automodrule setup",
+      "usage": "automodrule setup",
       "category": "automod",
       "exampleOutput": "✓ automodrule setup executed successfully."
     },
     {
       "name": "automodrule edit",
       "description": "✏️ Modify your existing background filter parameter fields",
-      "usage": "|automodrule edit",
+      "usage": "automodrule edit",
       "category": "automod",
       "exampleOutput": "✓ automodrule edit executed successfully."
     },
     {
       "name": "automodrule delete",
       "description": "\uddd1️ Wipe current filter metrics cleanly out of memory rows",
-      "usage": "|automodrule delete",
+      "usage": "automodrule delete",
       "category": "automod",
       "exampleOutput": "✓ automodrule delete executed successfully."
     },
     {
       "name": "autoresponder setup",
       "description": "Open the step-by-step wizard to build a responder",
-      "usage": "|autoresponder setup",
+      "usage": "autoresponder setup",
       "category": "automod",
       "exampleOutput": "✓ autoresponder setup executed successfully."
     },
     {
       "name": "autoresponder add",
       "description": "Quickly add a responder",
-      "usage": "|autoresponder add",
+      "usage": "autoresponder add",
       "category": "automod",
       "exampleOutput": "✓ autoresponder add executed successfully."
     },
     {
       "name": "autoresponder list",
       "description": "List all auto responders",
-      "usage": "|autoresponder list",
+      "usage": "autoresponder list",
       "category": "automod",
       "exampleOutput": "✓ autoresponder list executed successfully."
     },
     {
       "name": "autoresponder info",
       "description": "View one responder in detail",
-      "usage": "|autoresponder info",
+      "usage": "autoresponder info",
       "category": "automod",
       "exampleOutput": "✓ autoresponder info executed successfully."
     },
     {
       "name": "autoresponder edit",
       "description": "Edit an existing responder in the wizard",
-      "usage": "|autoresponder edit",
+      "usage": "autoresponder edit",
       "category": "automod",
       "exampleOutput": "✓ autoresponder edit executed successfully."
     },
     {
       "name": "autoresponder remove",
       "description": "Delete a responder",
-      "usage": "|autoresponder remove",
+      "usage": "autoresponder remove",
       "category": "automod",
       "exampleOutput": "✓ autoresponder remove executed successfully."
     },
     {
       "name": "autoresponder toggle",
       "description": "Enable/disable a single responder",
-      "usage": "|autoresponder toggle",
+      "usage": "autoresponder toggle",
       "category": "automod",
       "exampleOutput": "✓ autoresponder toggle executed successfully."
     },
     {
       "name": "autoresponder test",
       "description": "Preview how a responder renders",
-      "usage": "|autoresponder test",
+      "usage": "autoresponder test",
       "category": "automod",
       "exampleOutput": "✓ autoresponder test executed successfully."
     },
     {
       "name": "autoresponder variables",
       "description": "See every placeholder variable you can use",
-      "usage": "|autoresponder variables",
+      "usage": "autoresponder variables",
       "category": "automod",
       "exampleOutput": "✓ autoresponder variables executed successfully."
     },
     {
       "name": "autoresponder config",
       "description": "View the module overview",
-      "usage": "|autoresponder config",
+      "usage": "autoresponder config",
       "category": "automod",
       "exampleOutput": "✓ autoresponder config executed successfully."
     },
     {
       "name": "autoresponder enable",
       "description": "Enable the auto responder module (Manage Server)",
-      "usage": "|autoresponder enable",
+      "usage": "autoresponder enable",
       "category": "automod",
       "exampleOutput": "✓ autoresponder enable executed successfully."
     },
     {
       "name": "autoresponder disable",
       "description": "Disable the auto responder module (Manage Server)",
-      "usage": "|autoresponder disable",
+      "usage": "autoresponder disable",
       "category": "automod",
       "exampleOutput": "✓ autoresponder disable executed successfully."
     }
@@ -2073,7 +2205,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "autorole all",
       "description": "Apply role to everyone",
-      "usage": "|autorole all",
+      "usage": "autorole all",
       "category": "roles",
       "exampleOutput": "✓ Autorole configured successfully.",
       "permission": "Manage Roles"
@@ -2081,7 +2213,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "autorole humans",
       "description": "Apply role to humans only",
-      "usage": "|autorole humans",
+      "usage": "autorole humans",
       "category": "roles",
       "exampleOutput": "✓ Autorole configured successfully.",
       "permission": "Manage Roles"
@@ -2089,7 +2221,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "autorole bots",
       "description": "Apply role to bots only",
-      "usage": "|autorole bots",
+      "usage": "autorole bots",
       "category": "roles",
       "exampleOutput": "✓ Autorole configured successfully.",
       "permission": "Manage Roles"
@@ -2097,7 +2229,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "autorole ongoing",
       "description": "Inspect current active configurations",
-      "usage": "|autorole ongoing",
+      "usage": "autorole ongoing",
       "category": "roles",
       "exampleOutput": "✓ Autorole configured successfully.",
       "permission": "Manage Roles"
@@ -2105,7 +2237,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "autorole delete",
       "description": "Purge all ongoing configs for everyone, bots, and humans",
-      "usage": "|autorole delete",
+      "usage": "autorole delete",
       "category": "roles",
       "exampleOutput": "✓ Autorole configured successfully.",
       "permission": "Manage Roles"
@@ -2113,7 +2245,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "reactionroles create",
       "description": "Build and deploy a custom role assignment panel",
-      "usage": "|reactionroles create",
+      "usage": "reactionroles create",
       "category": "roles",
       "exampleOutput": "✅ Role panel deployed successfully.",
       "permission": "Manage Roles"
@@ -2121,7 +2253,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "reactionroles edit",
       "description": "✏️ Update the title or description text fields of an existing deployed panel",
-      "usage": "|reactionroles edit",
+      "usage": "reactionroles edit",
       "category": "roles",
       "exampleOutput": "✅ Role panel deployed successfully.",
       "permission": "Manage Roles"
@@ -2129,7 +2261,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "reactionroles add-role",
       "description": "➕ Add a new assignment choice node directly into an existing active panel",
-      "usage": "|reactionroles add-role",
+      "usage": "reactionroles add-role",
       "category": "roles",
       "exampleOutput": "✅ Role panel deployed successfully.",
       "permission": "Manage Roles"
@@ -2137,7 +2269,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "reactionroles remove-role",
       "description": "➖ Remove a specific role assignment node out of an active panel framework",
-      "usage": "|reactionroles remove-role",
+      "usage": "reactionroles remove-role",
       "category": "roles",
       "exampleOutput": "✅ Role panel deployed successfully.",
       "permission": "Manage Roles"
@@ -2145,7 +2277,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "reactionroles delete-panel",
       "description": "\uddd1️ Wipe a role panel entirely out of active channel registries and database nodes",
-      "usage": "|reactionroles delete-panel",
+      "usage": "reactionroles delete-panel",
       "category": "roles",
       "exampleOutput": "✅ Role panel deployed successfully.",
       "permission": "Manage Roles"
@@ -2153,7 +2285,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "reactionroles test",
       "description": "🧪 Diagnostic Simulator: Test component menus safely in a private sandbox view",
-      "usage": "|reactionroles test",
+      "usage": "reactionroles test",
       "category": "roles",
       "exampleOutput": "✅ Role panel deployed successfully.",
       "permission": "Manage Roles"
@@ -2161,7 +2293,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "role user",
       "description": "The target member",
-      "usage": "|role user",
+      "usage": "role user",
       "category": "roles",
       "exampleOutput": "✓ Role management command executed successfully.",
       "permission": "Manage Roles"
@@ -2169,7 +2301,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "role remove",
       "description": "The target member",
-      "usage": "|role remove",
+      "usage": "role remove",
       "category": "roles",
       "exampleOutput": "✓ Role management command executed successfully.",
       "permission": "Manage Roles"
@@ -2177,7 +2309,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "role create",
       "description": "The name of the new role",
-      "usage": "|role create",
+      "usage": "role create",
       "category": "roles",
       "exampleOutput": "✓ Role management command executed successfully.",
       "permission": "Manage Roles"
@@ -2185,7 +2317,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "role delete",
       "description": "The role to delete",
-      "usage": "|role delete",
+      "usage": "role delete",
       "category": "roles",
       "exampleOutput": "✓ Role management command executed successfully.",
       "permission": "Manage Roles"
@@ -2193,7 +2325,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "role everyone",
       "description": "The role to give to everyone",
-      "usage": "|role everyone",
+      "usage": "role everyone",
       "category": "roles",
       "exampleOutput": "✓ Role management command executed successfully.",
       "permission": "Manage Roles"
@@ -2201,7 +2333,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "role bots",
       "description": "The role to give to all bots",
-      "usage": "|role bots",
+      "usage": "role bots",
       "category": "roles",
       "exampleOutput": "✓ Role management command executed successfully.",
       "permission": "Manage Roles"
@@ -2209,7 +2341,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "role humans",
       "description": "The role to give to all humans",
-      "usage": "|role humans",
+      "usage": "role humans",
       "category": "roles",
       "exampleOutput": "✓ Role management command executed successfully.",
       "permission": "Manage Roles"
@@ -2217,7 +2349,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "role info",
       "description": "The target role",
-      "usage": "|role info",
+      "usage": "role info",
       "category": "roles",
       "exampleOutput": "✓ Role management command executed successfully.",
       "permission": "Manage Roles"
@@ -2225,7 +2357,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "role color",
       "description": "The role to modify",
-      "usage": "|role color",
+      "usage": "role color",
       "category": "roles",
       "exampleOutput": "✓ Role management command executed successfully.",
       "permission": "Manage Roles"
@@ -2233,7 +2365,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "role rename",
       "description": "The role to rename",
-      "usage": "|role rename",
+      "usage": "role rename",
       "category": "roles",
       "exampleOutput": "✓ Role management command executed successfully.",
       "permission": "Manage Roles"
@@ -2241,7 +2373,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "role hoist",
       "description": "The role to toggle hoist status",
-      "usage": "|role hoist",
+      "usage": "role hoist",
       "category": "roles",
       "exampleOutput": "✓ Role management command executed successfully.",
       "permission": "Manage Roles"
@@ -2249,7 +2381,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "role mentionable",
       "description": "The role to toggle mention status",
-      "usage": "|role mentionable",
+      "usage": "role mentionable",
       "category": "roles",
       "exampleOutput": "✓ Role management command executed successfully.",
       "permission": "Manage Roles"
@@ -2259,7 +2391,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "ban",
       "description": "Ban a user from the server",
-      "usage": "|ban",
+      "usage": "ban",
       "category": "moderation",
       "exampleOutput": "✓ Banned member @user (Reason: Malicious activity)",
       "permission": "BanMembers"
@@ -2267,7 +2399,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "kick",
       "description": "Kick a user from the server",
-      "usage": "|kick",
+      "usage": "kick",
       "category": "moderation",
       "exampleOutput": "✓ Kicked member @user",
       "permission": "KickMembers"
@@ -2275,21 +2407,21 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "lockdown on",
       "description": "Lock down a channel to prevent standard users from messaging",
-      "usage": "|lockdown on",
+      "usage": "lockdown on",
       "category": "moderation",
       "exampleOutput": "✓ lockdown on executed successfully."
     },
     {
       "name": "lockdown off",
       "description": "Lift a lockdown and allow standard text activity again",
-      "usage": "|lockdown off",
+      "usage": "lockdown off",
       "category": "moderation",
       "exampleOutput": "✓ lockdown off executed successfully."
     },
     {
       "name": "mute",
       "description": "Mute a user for a custom duration (1m to 28d)",
-      "usage": "|mute",
+      "usage": "mute",
       "category": "moderation",
       "exampleOutput": "✓ Timed out @user for 10m",
       "permission": "ModerateMembers"
@@ -2297,63 +2429,63 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "purge any",
       "description": "Delete any recent messages matching no specific filter",
-      "usage": "|purge any",
+      "usage": "purge any",
       "category": "moderation",
       "exampleOutput": "✓ purge any executed successfully."
     },
     {
       "name": "purge user",
       "description": "Purge messages sent exclusively by a specific member",
-      "usage": "|purge user",
+      "usage": "purge user",
       "category": "moderation",
       "exampleOutput": "✓ purge user executed successfully."
     },
     {
       "name": "purge bot",
       "description": "Purge messages sent exclusively by automated bots",
-      "usage": "|purge bot",
+      "usage": "purge bot",
       "category": "moderation",
       "exampleOutput": "✓ purge bot executed successfully."
     },
     {
       "name": "purge links",
       "description": "Purge recent messages containing HTTP/HTTPS links",
-      "usage": "|purge links",
+      "usage": "purge links",
       "category": "moderation",
       "exampleOutput": "✓ purge links executed successfully."
     },
     {
       "name": "slowmode create",
       "description": "Establish a slowmode restriction on a channel",
-      "usage": "|slowmode create",
+      "usage": "slowmode create",
       "category": "moderation",
       "exampleOutput": "✓ slowmode create executed successfully."
     },
     {
       "name": "slowmode edit",
       "description": "Modify an existing channel slowmode interval",
-      "usage": "|slowmode edit",
+      "usage": "slowmode edit",
       "category": "moderation",
       "exampleOutput": "✓ slowmode edit executed successfully."
     },
     {
       "name": "slowmode remove",
       "description": "Completely remove slowmode restrictions from a channel",
-      "usage": "|slowmode remove",
+      "usage": "slowmode remove",
       "category": "moderation",
       "exampleOutput": "✓ slowmode remove executed successfully."
     },
     {
       "name": "slowmode exempt",
       "description": "Audit who bypasses the slowmode rule inside a channel",
-      "usage": "|slowmode exempt",
+      "usage": "slowmode exempt",
       "category": "moderation",
       "exampleOutput": "✓ slowmode exempt executed successfully."
     },
     {
       "name": "unban",
       "description": "Unban a user from the server using their username",
-      "usage": "|unban",
+      "usage": "unban",
       "category": "moderation",
       "exampleOutput": "✅ User Unbanned\n**john_doe** has been successfully unbanned.",
       "permission": "BanMembers"
@@ -2361,7 +2493,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "unmute",
       "description": "Unmute a user",
-      "usage": "|unmute",
+      "usage": "unmute",
       "category": "moderation",
       "exampleOutput": "✓ Removed timeout from @user",
       "permission": "ModerateMembers"
@@ -2369,7 +2501,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "warn",
       "description": "Warn a server member",
-      "usage": "|warn",
+      "usage": "warn",
       "category": "moderation",
       "exampleOutput": "⚠ Official warning registered for @user (1st warning point)",
       "permission": "ModerateMembers"
@@ -2377,7 +2509,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "warnings",
       "description": "View warnings for a user",
-      "usage": "|warnings",
+      "usage": "warnings",
       "category": "moderation",
       "exampleOutput": "Warnings profile for @user:\n- 1st Warn: Spam (Logged by @staff)\n- Total: 1",
       "permission": "ModerateMembers"
@@ -2387,189 +2519,189 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "birthdays set",
       "description": "Set your birthday",
-      "usage": "|birthdays set",
+      "usage": "birthdays set",
       "category": "social",
       "exampleOutput": "✓ birthdays set executed successfully."
     },
     {
       "name": "birthdays remove",
       "description": "Remove your birthday",
-      "usage": "|birthdays remove",
+      "usage": "birthdays remove",
       "category": "social",
       "exampleOutput": "✓ birthdays remove executed successfully."
     },
     {
       "name": "birthdays check",
       "description": "Check a birthday",
-      "usage": "|birthdays check",
+      "usage": "birthdays check",
       "category": "social",
       "exampleOutput": "✓ birthdays check executed successfully."
     },
     {
       "name": "birthdays today",
       "description": "Show all birthdays today in this server",
-      "usage": "|birthdays today",
+      "usage": "birthdays today",
       "category": "social",
       "exampleOutput": "✓ birthdays today executed successfully."
     },
     {
       "name": "birthdays upcoming",
       "description": "Show upcoming birthdays",
-      "usage": "|birthdays upcoming",
+      "usage": "birthdays upcoming",
       "category": "social",
       "exampleOutput": "✓ birthdays upcoming executed successfully."
     },
     {
       "name": "birthdays list",
       "description": "List all members with a birthday set",
-      "usage": "|birthdays list",
+      "usage": "birthdays list",
       "category": "social",
       "exampleOutput": "✓ birthdays list executed successfully."
     },
     {
       "name": "birthdays config",
       "description": "Show current birthday module configuration (staff only)",
-      "usage": "|birthdays config",
+      "usage": "birthdays config",
       "category": "social",
       "exampleOutput": "✓ birthdays config executed successfully."
     },
     {
       "name": "birthdays set-channel",
       "description": "Set the birthday announcement channel (staff only)",
-      "usage": "|birthdays set-channel",
+      "usage": "birthdays set-channel",
       "category": "social",
       "exampleOutput": "✓ birthdays set-channel executed successfully."
     },
     {
       "name": "birthdays set-role",
       "description": "Set the birthday role (staff only)",
-      "usage": "|birthdays set-role",
+      "usage": "birthdays set-role",
       "category": "social",
       "exampleOutput": "✓ birthdays set-role executed successfully."
     },
     {
       "name": "birthdays set-time",
       "description": "Time in HH:MM UTC format",
-      "usage": "|birthdays set-time",
+      "usage": "birthdays set-time",
       "category": "social",
       "exampleOutput": "✓ birthdays set-time executed successfully."
     },
     {
       "name": "birthdays toggle",
       "description": "Enable or disable the birthday module (staff only)",
-      "usage": "|birthdays toggle",
+      "usage": "birthdays toggle",
       "category": "social",
       "exampleOutput": "✓ birthdays toggle executed successfully."
     },
     {
       "name": "birthdays test",
       "description": "Test the birthday announcement for yourself right now (staff only)",
-      "usage": "|birthdays test",
+      "usage": "birthdays test",
       "category": "social",
       "exampleOutput": "✓ birthdays test executed successfully."
     },
     {
       "name": "giveaway start",
       "description": "Launch a fresh background scheduled giveaway pool",
-      "usage": "|giveaway start",
+      "usage": "giveaway start",
       "category": "social",
       "exampleOutput": "✓ giveaway start executed successfully."
     },
     {
       "name": "giveaway reroll",
       "description": "Pick new winners from an existing ended giveaway database profile",
-      "usage": "|giveaway reroll",
+      "usage": "giveaway reroll",
       "category": "social",
       "exampleOutput": "✓ giveaway reroll executed successfully."
     },
     {
       "name": "giveaway end",
       "description": "Forcefully end an active giveaway pool and draw winners immediately",
-      "usage": "|giveaway end",
+      "usage": "giveaway end",
       "category": "social",
       "exampleOutput": "✓ giveaway end executed successfully."
     },
     {
       "name": "poll create",
       "description": "Create a poll with vote buttons",
-      "usage": "|poll create",
+      "usage": "poll create",
       "category": "social",
       "exampleOutput": "✓ poll create executed successfully."
     },
     {
       "name": "poll setup",
       "description": "Configure who can create polls in this server (admin only)",
-      "usage": "|poll setup",
+      "usage": "poll setup",
       "category": "social",
       "exampleOutput": "✓ poll setup executed successfully."
     },
     {
       "name": "suggestions setup",
       "description": "Launch the guided setup wizard (or provide a channel directly)",
-      "usage": "|suggestions setup",
+      "usage": "suggestions setup",
       "category": "social",
       "exampleOutput": "✓ suggestions setup executed successfully."
     },
     {
       "name": "suggestions config",
       "description": "Configure suggestion settings",
-      "usage": "|suggestions config",
+      "usage": "suggestions config",
       "category": "social",
       "exampleOutput": "✓ suggestions config executed successfully."
     },
     {
       "name": "suggestions toggle",
       "description": "Enable or disable the suggestions module",
-      "usage": "|suggestions toggle",
+      "usage": "suggestions toggle",
       "category": "social",
       "exampleOutput": "✓ suggestions toggle executed successfully."
     },
     {
       "name": "suggestions submit",
       "description": "Submit a suggestion",
-      "usage": "|suggestions submit",
+      "usage": "suggestions submit",
       "category": "social",
       "exampleOutput": "✓ suggestions submit executed successfully."
     },
     {
       "name": "suggestions approve",
       "description": "Approve a suggestion",
-      "usage": "|suggestions approve",
+      "usage": "suggestions approve",
       "category": "social",
       "exampleOutput": "✓ suggestions approve executed successfully."
     },
     {
       "name": "suggestions deny",
       "description": "Deny a suggestion",
-      "usage": "|suggestions deny",
+      "usage": "suggestions deny",
       "category": "social",
       "exampleOutput": "✓ suggestions deny executed successfully."
     },
     {
       "name": "suggestions implement",
       "description": "Mark a suggestion as implemented",
-      "usage": "|suggestions implement",
+      "usage": "suggestions implement",
       "category": "social",
       "exampleOutput": "✓ suggestions implement executed successfully."
     },
     {
       "name": "suggestions delete",
       "description": "Delete a suggestion entirely",
-      "usage": "|suggestions delete",
+      "usage": "suggestions delete",
       "category": "social",
       "exampleOutput": "✓ suggestions delete executed successfully."
     },
     {
       "name": "suggestions list",
       "description": "List suggestions",
-      "usage": "|suggestions list",
+      "usage": "suggestions list",
       "category": "social",
       "exampleOutput": "✓ suggestions list executed successfully."
     },
     {
       "name": "suggestions my",
       "description": "View your own suggestions",
-      "usage": "|suggestions my",
+      "usage": "suggestions my",
       "category": "social",
       "exampleOutput": "✓ suggestions my executed successfully."
     }
@@ -2578,7 +2710,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "cute",
       "description": "Configure cute text layouts for server setup templates",
-      "usage": "|cute",
+      "usage": "cute",
       "category": "setup",
       "exampleOutput": "✨ Cute Mode Configured! Layouts will now use Small Caps (sᴍᴀʟʟ ᴄᴀᴘs)!",
       "permission": "ManageGuild"
@@ -2586,7 +2718,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "fun-module",
       "description": "Enable or disable the fun commands module.",
-      "usage": "|fun-module",
+      "usage": "fun-module",
       "category": "setup",
       "exampleOutput": "✓ fun-module  executed successfully.",
       "permission": "ManageGuild"
@@ -2594,23 +2726,39 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "setup-audit",
       "description": "Configure, enable, or disable the server audit log channel.",
-      "usage": "|setup-audit",
+      "usage": "setup-audit",
       "category": "setup",
       "exampleOutput": "✓ setup-audit  executed successfully.",
       "permission": "Administrator"
     },
     {
-      "name": "setup",
-      "description": "️ Provision specialized, high-density server configurations from blueprint templates.",
-      "usage": "|setup",
+      "name": "setup provision",
+      "description": "Build the server from a blueprint template",
+      "usage": "setup provision",
       "category": "setup",
       "exampleOutput": "✓ Setup complete! Deployed: 📁 Welcome, 📁 Chats, 7 channels, and Admin/Mod/Member roles.",
-      "permission": "ManageGuild"
+      "permission": "Manage Server"
+    },
+    {
+      "name": "setup backup",
+      "description": "Save the current server as a setup template",
+      "usage": "setup backup",
+      "category": "setup",
+      "exampleOutput": "✓ Setup complete! Deployed: 📁 Welcome, 📁 Chats, 7 channels, and Admin/Mod/Member roles.",
+      "permission": "Manage Server"
+    },
+    {
+      "name": "setup restore",
+      "description": "Restore selected data from a setup template",
+      "usage": "setup restore",
+      "category": "setup",
+      "exampleOutput": "✓ Setup complete! Deployed: 📁 Welcome, 📁 Chats, 7 channels, and Admin/Mod/Member roles.",
+      "permission": "Manage Server"
     },
     {
       "name": "welcome",
       "description": "Configure or toggle the welcome/leave system",
-      "usage": "|welcome",
+      "usage": "welcome",
       "category": "setup",
       "exampleOutput": "✓ welcome  executed successfully.",
       "permission": "ManageGuild"
@@ -2620,56 +2768,56 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "level xp add",
       "description": "Add XP to a user",
-      "usage": "|level xp add",
+      "usage": "level xp add",
       "category": "leveling",
       "exampleOutput": "📈 Leveling system updated."
     },
     {
       "name": "level xp remove",
       "description": "Remove XP from a user",
-      "usage": "|level xp remove",
+      "usage": "level xp remove",
       "category": "leveling",
       "exampleOutput": "📈 Leveling system updated."
     },
     {
       "name": "level xp set",
       "description": "Target user",
-      "usage": "|level xp set",
+      "usage": "level xp set",
       "category": "leveling",
       "exampleOutput": "📈 Leveling system updated."
     },
     {
       "name": "level xp reset",
       "description": "Target user",
-      "usage": "|level xp reset",
+      "usage": "level xp reset",
       "category": "leveling",
       "exampleOutput": "📈 Leveling system updated."
     },
     {
       "name": "level rank",
       "description": "User to check (defaults to you)",
-      "usage": "|level rank",
+      "usage": "level rank",
       "category": "leveling",
       "exampleOutput": "📈 Leveling system updated."
     },
     {
       "name": "level leaderboard",
       "description": "Show the top 10 users by XP",
-      "usage": "|level leaderboard",
+      "usage": "level leaderboard",
       "category": "leveling",
       "exampleOutput": "📈 Leveling system updated."
     },
     {
       "name": "level settings",
       "description": "Configure leveling settings",
-      "usage": "|level settings",
+      "usage": "level settings",
       "category": "leveling",
       "exampleOutput": "📈 Leveling system updated."
     },
     {
       "name": "level multiplier",
       "description": "Set a server-wide XP multiplier (e.g., 2 for Double XP)",
-      "usage": "|level multiplier",
+      "usage": "level multiplier",
       "category": "leveling",
       "exampleOutput": "📈 Leveling system updated."
     }
@@ -2678,7 +2826,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "selfvoice create",
       "description": "Create your own temporary voice channel (must be enabled by staff).",
-      "usage": "|selfvoice create",
+      "usage": "selfvoice create",
       "category": "voice",
       "exampleOutput": "🔊 Voice room created successfully.",
       "permission": "Manage Server"
@@ -2686,7 +2834,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "selfvoice setup",
       "description": "[Staff] Launch the guided Self Voice setup wizard.",
-      "usage": "|selfvoice setup",
+      "usage": "selfvoice setup",
       "category": "voice",
       "exampleOutput": "🔊 Voice room created successfully.",
       "permission": "Manage Server"
@@ -2694,7 +2842,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "selfvoice enable",
       "description": "[Staff] Enable the Self Voice module for this server.",
-      "usage": "|selfvoice enable",
+      "usage": "selfvoice enable",
       "category": "voice",
       "exampleOutput": "🔊 Voice room created successfully.",
       "permission": "Manage Server"
@@ -2702,7 +2850,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "selfvoice disable",
       "description": "[Staff] Disable the Self Voice module for this server.",
-      "usage": "|selfvoice disable",
+      "usage": "selfvoice disable",
       "category": "voice",
       "exampleOutput": "🔊 Voice room created successfully.",
       "permission": "Manage Server"
@@ -2710,7 +2858,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "selfvoice config",
       "description": "View the current Self Voice configuration.",
-      "usage": "|selfvoice config",
+      "usage": "selfvoice config",
       "category": "voice",
       "exampleOutput": "🔊 Voice room created successfully.",
       "permission": "Manage Server"
@@ -2718,7 +2866,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "selfvoice panel",
       "description": "Resend the control panel for your active room.",
-      "usage": "|selfvoice panel",
+      "usage": "selfvoice panel",
       "category": "voice",
       "exampleOutput": "🔊 Voice room created successfully.",
       "permission": "Manage Server"
@@ -2726,7 +2874,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "selfvoice set",
       "description": "[Staff] Tweak a single Self Voice setting.",
-      "usage": "|selfvoice set",
+      "usage": "selfvoice set",
       "category": "voice",
       "exampleOutput": "🔊 Voice room created successfully.",
       "permission": "Manage Server"
@@ -2736,28 +2884,28 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "ticket setup",
       "description": "Launch the interactive ticket panel deployment wizard",
-      "usage": "|ticket setup",
+      "usage": "ticket setup",
       "category": "tickets",
       "exampleOutput": "🎫 Ticket system configured."
     },
     {
       "name": "ticket ongoing",
       "description": "\udccb View all live, active support ticket sessions",
-      "usage": "|ticket ongoing",
+      "usage": "ticket ongoing",
       "category": "tickets",
       "exampleOutput": "🎫 Ticket system configured."
     },
     {
       "name": "ticket history",
       "description": "\udcdc View all ticket history with pagination and transcript search",
-      "usage": "|ticket history",
+      "usage": "ticket history",
       "category": "tickets",
       "exampleOutput": "🎫 Ticket system configured."
     },
     {
       "name": "ticket purge",
       "description": "⚠️ Instantly delete all active tickets from the datastore",
-      "usage": "|ticket purge",
+      "usage": "ticket purge",
       "category": "tickets",
       "exampleOutput": "🎫 Ticket system configured."
     }
@@ -2766,7 +2914,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "verification setup",
       "description": "Launch the interactive wizard configuration questionnaire drops",
-      "usage": "|verification setup",
+      "usage": "verification setup",
       "category": "verification",
       "exampleOutput": "✓ Verification system activated.",
       "permission": "Administrator"
@@ -2774,7 +2922,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "verification edit",
       "description": "✏️ Modify an existing verification configuration with a skippable wizard",
-      "usage": "|verification edit",
+      "usage": "verification edit",
       "category": "verification",
       "exampleOutput": "✓ Verification system activated.",
       "permission": "Administrator"
@@ -2782,7 +2930,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "verification delete",
       "description": "\uddd1️ Safely purge verification records with an absolute safety screen",
-      "usage": "|verification delete",
+      "usage": "verification delete",
       "category": "verification",
       "exampleOutput": "✓ Verification system activated.",
       "permission": "Administrator"
@@ -2790,7 +2938,7 @@ export const COMMANDS_BY_CATEGORY = {
     {
       "name": "verification disable",
       "description": "\udd34 Instantly shut down the lock validation gatekeeper layer",
-      "usage": "|verification disable",
+      "usage": "verification disable",
       "category": "verification",
       "exampleOutput": "✓ Verification system activated.",
       "permission": "Administrator"

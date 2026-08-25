@@ -50,9 +50,7 @@ module.exports = {
       if (!message || !message.author || message.author.bot || message.webhookId || !message.guild) return;
       if (!message.content) return;
 
-      // Never let the bot's prefix commands double as responder triggers.
-      const prefix = (client && client.prefix) || message.client?.prefix || '|';
-      if (message.content.startsWith(prefix)) return;
+      // Never trigger auto-responders on bot/webhook messages.
 
       const AutoResponder = mongoose.models.AutoResponder;
       if (!AutoResponder) return; // command file not loaded / model not registered yet

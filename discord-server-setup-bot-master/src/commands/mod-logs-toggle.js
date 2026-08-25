@@ -76,6 +76,15 @@ module.exports = {
       { upsert: true }
     ).catch(() => null);
 
+    try {
+      const settings = (await database.readData('settings.json').catch(() => ({}))) || {};
+      const guildSettings = settings[guildId] || {};
+      settings[guildId] = { ...guildSettings, modLogsEnabled, unifiedLogChannelId };
+      await database.writeData('settings.json', settings).catch(() => null);
+    } catch (error) {
+      console.warn('[mod-logs-toggle] Legacy settings sync failed:', error.message);
+    }
+
     const embed = new EmbedBuilder()
       .setTitle('🛡️ Unified Mod Logging Configuration')
       .setColor(status === 'on' ? '#00FF00' : '#FF0000')

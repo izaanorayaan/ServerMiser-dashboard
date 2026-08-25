@@ -17,7 +17,7 @@ function extractHeading(rule) {
 
 const RULE_TEMPLATES = {
   lenient: {
-    title: 'Server Rules',
+    title: 'Rules',
     description: 'Keep things easygoing, respectful, and friendly for everyone.',
     rules: [
       '**🔹 NO HARASSMENT**\nTreat everyone with respect. Absolutely no harassment, witch hunting, racism or hate speech will be tolerated.',
@@ -28,7 +28,7 @@ const RULE_TEMPLATES = {
     ]
   },
   medium: {
-    title: 'Community Rules',
+    title: 'Rules',
     description: 'A clear standard for a safe, respectful, and productive community.',
     rules: [
       '**🔹 NO HARASSMENT**\nTreat everyone with respect. Absolutely no harassment, witch hunting, racism or hate speech will be tolerated.',
@@ -42,7 +42,7 @@ const RULE_TEMPLATES = {
     ]
   },
   strict: {
-    title: 'Strict Community Standards',
+    title: 'Rules',
     description: 'This server is run under clear moderation standards to keep the environment safe, professional, and welcoming.',
     rules: [
       '**🔹 NO HARASSMENT**\nTreat everyone with respect. Absolutely no harassment, witch hunting, racism or hate speech will be tolerated.',
@@ -71,7 +71,7 @@ const RULE_TEMPLATES = {
 
 function buildRulesEmbed(template, blacklist = []) {
   const filtered = template.rules.filter((_, idx) => !blacklist.includes(idx));
-  const color = template === RULE_TEMPLATES.strict ? '#ED4245' : template === RULE_TEMPLATES.lenient ? '#57F287' : '#5865F2';
+  const color = template === RULE_TEMPLATES.strict ? '#8E44AD' : template === RULE_TEMPLATES.lenient ? '#3498DB' : '#1ABC9C';
   const embed = new EmbedBuilder()
     .setColor(color)
     .setTitle(`📜 ${template.title}`)
@@ -131,12 +131,12 @@ module.exports = {
     .addStringOption((option) =>
       option
         .setName('template')
-        .setDescription('Choose how strict the rules should be')
+        .setDescription('Choose the rules set to publish')
         .setRequired(true)
         .addChoices(
-          { name: 'Lenient', value: 'lenient' },
-          { name: 'Medium', value: 'medium' },
-          { name: 'Strict', value: 'strict' }
+          { name: 'Community', value: 'lenient' },
+          { name: 'Extended', value: 'medium' },
+          { name: 'Complete', value: 'strict' }
         )
     )
     .addChannelOption((option) =>

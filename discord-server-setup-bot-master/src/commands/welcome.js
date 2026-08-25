@@ -10,11 +10,12 @@ module.exports = {
     .addStringOption(option => option.setName('join_message').setDescription('Custom join message. Variables: {user} {server} {memberCount}').setRequired(false))
     .addStringOption(option => option.setName('leave_message').setDescription('Custom leave message. Variables: {user} {server} {memberCount}').setRequired(false))
     .addBooleanOption(option => option.setName('embed').setDescription('Send messages as embeds? (default: true)').setRequired(false))
+    .addBooleanOption(option => option.setName('image').setDescription('Send the custom chud welcome image instead of an embed').setRequired(false))
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
   name: 'welcome',
 
   async execute(interaction, client) {
-    const isInteraction = interaction.isCommand ? interaction.isCommand() : false;
+    const isInteraction = interaction.isChatInputCommand ? interaction.isChatInputCommand() : false;
     const guildId = interaction.guildId;
     const memberExecutor = interaction.member;
 
@@ -30,6 +31,7 @@ module.exports = {
       const leaveMessage = interaction.options.getString('leave_message') || null;
       let useEmbed = interaction.options.getBoolean('embed');
       if (useEmbed === null) useEmbed = true;
+      const useImage = interaction.options.getBoolean('image') || false;
 
       if (!targetChannel || isEnabled === null) {
         const msg = '❌ Invalid Syntax! Use: `|welcome <#channel> <true/false> [join message] [leave message]`\n**Variables:** `{user}` `{server}` `{memberCount}`';
@@ -50,6 +52,7 @@ module.exports = {
         welcomeChannelId: targetChannel.id,
         welcomeEnabled: isEnabled,
         welcomeEmbed: useEmbed,
+        welcomeImage: useImage,
       };
 
       // Only overwrite messages when the user actually supplied one,
@@ -69,7 +72,8 @@ module.exports = {
         .setDescription(
           `**Channel:** ${targetChannel}\n` +
           `**System Enabled:** \`${isEnabled}\`\n` +
-          `**Use Embed:** \`${useEmbed}\`\n\n` +
+          `**Use Embed:** \`${useEmbed}\`\n` +
+          `**Use Image:** \`${useImage}\`\n\n` +
           `**Join Message:**\n\`${savedJoin}\`\n\n` +
           `**Leave Message:**\n\`${savedLeave}\`\n\n` +
           `**Available Variables:**\n\`{user}\` — mentions the member\n\`{server}\` — server name\n\`{memberCount}\` — current member count`
@@ -83,37 +87,5 @@ module.exports = {
     }
   },
 
-  async executePrefix(message, argsArray, client) {
-    const guild = message.guild;
-    if (!guild) return;
-
-    const member = message.member;
-    if (!member.permissions.has(PermissionFlagsBits.ManageGuild)) {
-      return message.reply('❌ You need Manage Server permissions!').catch(() => null);
-    }
-
-    // Resolves channel from prefix arguments
-    const targetChannel = message.mentions.channels.first() || (argsArray && argsArray[0] ? guild.channels.cache.get(argsArray[0]) : null);
-    const statusArg = argsArray && argsArray[1] ? argsArray[1].toLowerCase() : null;
-    const isEnabled = statusArg === 'true';
-
-    // Parse messages safely by slicing out the custom join/leave blocks if present
-    const joinMessage = argsArray && argsArray[2] ? argsArray.slice(2).join(' ') : null;
-
-    const mockInteraction = {
-      guild: message.guild,
-      guildId: message.guild.id,
-      member: message.member,
-      user: message.author,
-      isCommand: () => false,
-      options: {
-        getChannel: (name) => targetChannel,
-        getBoolean: (name) => (name === 'embed' ? null : isEnabled),
-        getString: (name) => (name === 'join_message' ? joinMessage : null),
-      },
-      reply: async (options) => message.reply(options)
-    };
-
-    await this.execute(mockInteraction, client).catch(err => console.error('Error handling inline welcome prefix wrapper:', err));
-  }
+  
 };

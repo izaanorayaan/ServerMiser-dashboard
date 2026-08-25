@@ -51,34 +51,5 @@ module.exports = {
     await interaction.reply({ embeds: [embed] }).catch(() => null);
   },
 
-  async executePrefix(message, argsArray, client) {
-    const settings = db.readData('settings.json') || {};
-    const currentGuildSettings = settings[message.guild?.id] || {};
-
-    if (currentGuildSettings.funModule === 'disabled' || currentGuildSettings.funModule === false) {
-      return message.reply('❌ The complete **Fun Command Suite** has been globally disabled by a server administrator.').catch(() => null);
-    }
-
-    const rawInput = argsArray ? argsArray.join(' ').trim() : '';
-    if (!rawInput) {
-      return message.reply('❌ Usage: `|rate <item or user>`').catch(() => null);
-    }
-
-    // Construct the context wrapper compatibility variables
-    const mockContextInteraction = {
-      guild: message.guild,
-      guildId: message.guild.id,
-      user: message.author,
-      member: message.member,
-      options: {
-        getString: (name) => rawInput
-      },
-      reply: async (options) => message.reply(options)
-    };
-
-    const targetCommand = client.commands.get('rate');
-    if (targetCommand) {
-      await targetCommand.execute(mockContextInteraction).catch(err => console.error('Error in rate prefix route execution:', err));
-    }
-  }
+  
 };

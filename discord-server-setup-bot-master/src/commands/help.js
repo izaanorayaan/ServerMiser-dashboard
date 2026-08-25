@@ -11,8 +11,6 @@ const {
 // Every command in the bot is listed here, grouped into browsable categories.
 // Navigation uses a select menu so new categories scale cleanly.
 // ============================================================================
-const PREFIX_NOTE = '💡 All commands work with both `/` and the `|` prefix.';
-
 const PAGES = [
   {
     key: 'general',
@@ -134,7 +132,7 @@ function buildEmbed(page, index) {
     .setColor(page.color)
     .setTitle(`${page.title}`)
     .setDescription(page.body)
-    .setFooter({ text: `${PREFIX_NOTE}  •  Category ${index + 1}/${PAGES.length}` })
+    .setFooter({ text: `Category ${index + 1}/${PAGES.length}` })
     .setTimestamp();
 }
 
@@ -164,7 +162,8 @@ module.exports = {
     const first = PAGES[0];
     const payload = { embeds: [buildEmbed(first, 0)], components: [buildMenu(first.key)] };
 
-    const response = await interaction.reply({ ...payload, fetchReply: true }).catch(() => null);
+    await interaction.reply(payload).catch(() => null);
+    const response = await interaction.fetchReply().catch(() => null);
     if (!response) return;
 
     const authorId = isInteraction ? interaction.user.id : interaction.author.id;

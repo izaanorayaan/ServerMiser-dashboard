@@ -1,6 +1,8 @@
 const { Events, EmbedBuilder } = require('discord.js');
 const { readData } = require('../utils/database');
 const mongoose = require('mongoose');
+const { AttachmentBuilder } = require('discord.js');
+const { generateWelcomeImage } = require('../utils/welcomeImage');
 
 function resolveMessage(template, member, guild) {
   return template
@@ -53,7 +55,14 @@ module.exports = {
           if (targetChannel) {
             const template = serverSettings.joinMessage || '✨ Welcome to {server}, {user}! We are glad to have you here. ✨';
             const finalMessage = resolveMessage(template, member, guild);
-            if (serverSettings.welcomeEmbed !== false) {
+            if (serverSettings.welcomeImage) {
+              const image = await generateWelcomeImage({
+                username: member.displayName || member.user.username,
+                serverName: guild.name,
+                avatarURL: member.user.displayAvatarURL({ extension: 'png', size: 256 }),
+              });
+              await targetChannel.send({ content: finalMessage, files: [new AttachmentBuilder(image, { name: 'welcome.png' })] }).catch(() => null);
+            } else if (serverSettings.welcomeEmbed !== false) {
               const embed = new EmbedBuilder()
                 .setColor('#00FF00')
                 .setTitle('✨ Welcome! ✨')
@@ -75,6 +84,11 @@ module.exports = {
       const invitesCmd = client?.commands?.get('invites');
       if (invitesCmd?.handleMemberJoin) {
         await invitesCmd.handleMemberJoin(member, client).catch(() => null);
+      }
+
+      const smartWelcomeCmd = client?.commands?.get('smartwelcome');
+      if (smartWelcomeCmd?.handleMemberJoin) {
+        await smartWelcomeCmd.handleMemberJoin(member, client).catch(() => null);
       }
 
     } catch (error) {

@@ -34,20 +34,47 @@ const client = new Client({
 
 client.commands = new Collection();
 
+const rawToken = process.env.DISCORD_TOKEN || process.env.TOKEN || '';
+const TOKEN = String(rawToken).trim();
+const TOKEN_HAS_HIDDEN_WHITESPACE = /[\u200B\u00A0\t\r\n ]/.test(String(rawToken));
+
+if (!TOKEN) {
+  console.error('❌ [FATAL] DISCORD_TOKEN / TOKEN environment variable is not set.');
+  process.exit(1);
+}
+
+console.log(`[DISCORD] Token present: true, length=${TOKEN.length}, hiddenWhitespace=${TOKEN_HAS_HIDDEN_WHITESPACE}`);
+
+client.on('warn', (warning) => {
+  console.warn(`[DISCORD WARN] ${warning}`);
+});
+
+client.on('error', (error) => {
+  console.error('[DISCORD CLIENT ERROR]', error);
+});
+
+client.on('shardError', (error, shardId) => {
+  console.error(`[WS ERROR] shard=${shardId}`, error);
+});
+
+client.on('shardDisconnect', (event, shardId) => {
+  console.warn(`[WS DISCONNECT] shard=${shardId} code=${event?.code ?? 'n/a'} reason=${event?.reason ?? 'n/a'}`);
+});
+
 const commandsPath = path.join(__dirname, 'commands');
 if (fs.existsSync(commandsPath)) {
   const commandFiles = fs.readdirSync(commandsPath).filter(f => f.endsWith('.js'));
   console.log(`📂 [LOADER] Loading ${commandFiles.length} commands from ${commandsPath}`);
-  
+
   for (const file of commandFiles) {
     try {
       const command = require(path.join(commandsPath, file));
       const name = command.name || command.data?.name;
-      
+
       if (name) {
         client.commands.set(name.toLowerCase(), command);
         console.log(` ✅ Loaded command: ${name}`);
-        
+
         if (command.init) {
           command.init(client);
         }
@@ -56,38 +83,53 @@ if (fs.existsSync(commandsPath)) {
       console.error(` ❌ Failed to load ${file}:`, err.message);
     }
   }
-  
+
   console.log(`✅ [LOADER] Total commands loaded: ${client.commands.size}`);
 } else {
   console.error(`❌ [LOADER ERROR] Commands path not found at: ${commandsPath}`);
 }
 
 const eventsPath = path.join(__dirname, 'events');
-let readyEventHandler = null;
+const readyEventHandlers = [];
 if (fs.existsSync(eventsPath)) {
   const eventFiles = fs.readdirSync(eventsPath).filter(f => f.endsWith('.js'));
-  console.log(`📂 [LOADER] Loading ${eventFiles.length} events from ${eventsPath}`);
-  
-  for (const file of eventFiles) {
-    const event = require(path.join(eventsPath, file));
-    
-    if (event.name === 'ready' || event.name === 'clientReady') {
-      console.log(` ✅ Loaded event: ${event.name} (once) - will execute inline`);
-      readyEventHandler = event;
-      continue;
-    }
+  console.log(`📂 [LOADER] Loading ${eventFiles.length} event files from ${eventsPath}`);
 
-    if (event.once) {
-      client.once(event.name, (...args) => event.execute(...args, client));
-    } else {
-      client.on(event.name, (...args) => event.execute(...args, client));
+  for (const file of eventFiles) {
+    const loaded = require(path.join(eventsPath, file));
+    const eventList = Array.isArray(loaded) ? loaded : [loaded];
+
+    for (const event of eventList) {
+      if (!event || !event.name) {
+        console.warn(` ⚠️ Skipping invalid event export in ${file}`);
+        continue;
+      }
+
+      if (event.name === 'ready' || event.name === 'clientReady') {
+        console.log(` ✅ Loaded event: ${event.name} (once) - will execute inline`);
+        readyEventHandlers.push(event);
+        continue;
+      }
+
+      if (event.once) {
+        client.once(event.name, (...args) => event.execute(...args, client));
+      } else {
+        client.on(event.name, (...args) => event.execute(...args, client));
+      }
+
+      console.log(` ✅ Loaded event: ${event.name}${event.once ? ' (once)' : ''}`);
     }
-    
-    console.log(` ✅ Loaded event: ${event.name}${event.once ? ' (once)' : ''}`);
   }
 }
 
+let readyTimer = null;
+
 client.once('ready', async () => {
+  if (readyTimer) {
+    clearTimeout(readyTimer);
+    readyTimer = null;
+  }
+
   console.log(`\n✅ [BOT ONLINE] ${client.user.tag} is live!`);
   console.log(` Guilds: ${client.guilds.cache.size}`);
   console.log(` Users: ${client.guilds.cache.reduce((acc, g) => acc + (g.memberCount || 0), 0)}`);
@@ -96,7 +138,7 @@ client.once('ready', async () => {
   console.log('\n' + '='.repeat(60));
   console.log('🔄 [BOTNEXUS] Starting command sync...');
   console.log('='.repeat(60));
-  
+
   try {
     await syncCommandsToBotNexus();
     console.log('✅ [BOTNEXUS] Command sync completed successfully!');
@@ -114,7 +156,7 @@ client.once('ready', async () => {
       }
     }
 
-    const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
+    const rest = new REST({ version: '10' }).setToken(TOKEN);
     await rest.put(
       Routes.applicationCommands(client.user.id),
       { body: commandPayloads }
@@ -142,7 +184,6 @@ client.once('ready', async () => {
     birthdaysCmd.startScheduler(client);
   }
 
-  // FIX: Populate invite cache properly
   const invitesCmd = client.commands.get('invites');
   if (invitesCmd?.inviteCache != null) {
     console.log('🔄 Populating invite cache...');
@@ -150,7 +191,7 @@ client.once('ready', async () => {
       try {
         const invites = await guild.invites.fetch();
         const guildMap = new Map();
-        
+
         for (const invite of invites.values()) {
           guildMap.set(invite.code, {
             uses: invite.uses,
@@ -159,7 +200,7 @@ client.once('ready', async () => {
             expiresAt: invite.expiresAt,
           });
         }
-        
+
         invitesCmd.inviteCache.set(guild.id, guildMap);
         console.log(` ✅ Cached ${invites.size} invites for ${guild.name}`);
       } catch (err) {
@@ -176,18 +217,18 @@ client.once('ready', async () => {
     return [
       { text: 'go buy ServerMiser Premium yo i need this', type: ActivityType.Watching },
       { text: '1.99 dollars per week is actually not bad lol', type: ActivityType.Watching },
-      { text: 'whop.com/servermiser/servermiser-premium work in progress don\'t blame me yo', type: ActivityType.Watching},
-      { text: 'how can a server with 30 members have 239 cases.', type: ActivityType.Streaming},
-      { text: 'yo uh, why is the moon blue..', type: ActivityType.Watching},
-      { text: 'psst, hey you want some candy..', type: ActivityType.Listening},
-      { text: 'your chats are so stupid man.', type: ActivityType.Watching},
+      { text: 'whop.com/servermiser/servermiser-premium work in progress don\'t blame me yo', type: ActivityType.Watching },
+      { text: 'how can a server with 30 members have 239 cases.', type: ActivityType.Streaming },
+      { text: 'yo uh, why is the moon blue..', type: ActivityType.Watching },
+      { text: 'psst, hey you want some candy..', type: ActivityType.Listening },
+      { text: 'your chats are so stupid man.', type: ActivityType.Watching },
       { text: '|help for noobs.', type: ActivityType.Playing },
       { text: 'i am the observer and i will always be observing', type: ActivityType.Watching },
       { text: "formal's new beat is peak", type: ActivityType.Listening },
       { text: 'in a coding match', type: ActivityType.Competing },
       { text: `over ${guildCount.toLocaleString()} servers`, type: ActivityType.Watching },
       { text: `${userCount.toLocaleString()} humans (and bots pretending)`, type: ActivityType.Watching },
-      { text: `discord-server-setup-bot-w22o.onrender.com`, type: ActivityType.Watching },
+      { text: 'servermiser.pntr.dev', type: ActivityType.Watching },
       { text: `at ${ping}ms ping, basically teleporting`, type: ActivityType.Competing },
       { text: 'therapist for your server\'s trust issues', type: ActivityType.Competing },
       { text: 'mute button go brrr', type: ActivityType.Playing },
@@ -210,10 +251,10 @@ client.once('ready', async () => {
       client.user.setActivity(current.text, { type: current.type });
       statusIndex = (statusIndex + 1) % statuses.length;
     } catch (err) {
-      // Silently fail
+      // silently fail
     }
   };
-  
+
   updateStatus();
   setInterval(updateStatus, 3 * 60 * 1000);
 
@@ -229,17 +270,32 @@ client.once('ready', async () => {
       pingBotList(serverCount, userCount, shardCount);
       pushStatsToBotNexus(serverCount);
     } catch (syncErr) {
-      // Silent fail
+      // silently fail
     }
   };
-  
+
   sendStatsUpdate();
   pingDashboard(client).catch(() => null);
   setInterval(sendStatsUpdate, 10 * 1000);
   setInterval(() => pingDashboard(client).catch(() => null), 10 * 1000);
 
   console.log('💻 [DASHBOARD] Starting dashboard metrics...');
-  const dashboardUrl = process.env.DASHBOARD_URL || 'https://discord-server-setup-bot-w22o.onrender.com/api/bot-stats';
+  const fallbackDashboardUrl = 'https://servermiser.pntr.dev/api/bot-stats';
+  const configuredDashboardUrl = process.env.DASHBOARD_URL;
+  const dashboardUrl = (() => {
+    if (!configuredDashboardUrl) return fallbackDashboardUrl;
+    try {
+      const url = new URL(configuredDashboardUrl);
+      if (url.hostname.toLowerCase().includes('onrender.com') && url.hostname.toLowerCase().includes('discord-server-setup-bot')) {
+        console.warn('⚠️ [DASHBOARD] Ignoring Render bot URL in DASHBOARD_URL and using the dashboard host instead.');
+        return fallbackDashboardUrl;
+      }
+      return configuredDashboardUrl;
+    } catch (error) {
+      console.warn('⚠️ [DASHBOARD] Invalid DASHBOARD_URL configured; falling back to the dashboard host.');
+      return fallbackDashboardUrl;
+    }
+  })();
   const statsApiKey = process.env.STATS_API_KEY;
 
   async function pushDashboardStats() {
@@ -247,7 +303,7 @@ client.once('ready', async () => {
       console.warn('⚠️ [DASHBOARD] STATS_API_KEY not set, skipping dashboard sync');
       return;
     }
-    
+
     try {
       const totalGuilds = client.guilds.cache.size;
       const totalMembers = client.guilds.cache.reduce((acc, g) => acc + (g.memberCount || 0), 0);
@@ -270,7 +326,7 @@ client.once('ready', async () => {
         database.getGuildCategories().catch(() => []),
         database.getTotalXp().catch(() => 0),
         database.getTotalTickets().catch(() => 0),
-        database.getDailySetupCounts().catch(() => [0, 0, 0, 0, 0, 0, 0])
+        database.getDailySetupCounts().catch(() => [0, 0, 0, 0, 0, 0, 0]),
       ]);
 
       const totalSetups = Number(counters.totalSetups || 0);
@@ -283,42 +339,41 @@ client.once('ready', async () => {
         uptime,
         ramUsage,
         activeShards: `1 / ${shardCount}`,
-        securityCompliance: "100%",
+        securityCompliance: '100%',
         totalTickets,
         totalXp,
         totalSetups,
-        setupSuccessRate: totalSetups > 0 ? `${((successfulSetups / totalSetups) * 100).toFixed(1)}%` : "0%",
+        setupSuccessRate: totalSetups > 0 ? `${((successfulSetups / totalSetups) * 100).toFixed(1)}%` : '0%',
         ...(Array.isArray(guildCategories) && guildCategories.length > 0 ? { guildCategories } : {}),
-        ...(Array.isArray(dailySetups) && dailySetups.length === 7 ? { dailySetups } : {})
+        ...(Array.isArray(dailySetups) && dailySetups.length === 7 ? { dailySetups } : {}),
       };
-
-      console.log('[DASHBOARD] Posting payload:', payload);
 
       await fetch(dashboardUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${statsApiKey}`
+          Authorization: `Bearer ${statsApiKey}`,
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
     } catch (error) {
-      // Silent fail
+      // silently fail
     }
   }
 
   pushDashboardStats();
   setInterval(pushDashboardStats, 10 * 1000);
 
-  // ==========================================
-  // Execute ready.js module for analytics auto-update
-  // ==========================================
-  if (readyEventHandler && typeof readyEventHandler.execute === 'function') {
-    console.log('🔄 [READY EVENT] Executing ready.js module...');
-    try {
-      readyEventHandler.execute(client);
-    } catch (err) {
-      console.error('❌ [READY EVENT] Error executing ready.js:', err.message);
+  if (readyEventHandlers.length > 0) {
+    console.log(`🔄 [READY EVENT] Executing ${readyEventHandlers.length} ready handler(s)...`);
+    for (const readyEventHandler of readyEventHandlers) {
+      if (readyEventHandler && typeof readyEventHandler.execute === 'function') {
+        try {
+          readyEventHandler.execute(client);
+        } catch (err) {
+          console.error('❌ [READY EVENT] Error executing ready handler:', err.message);
+        }
+      }
     }
   }
 });
@@ -340,20 +395,65 @@ const PORT = process.env.PORT || 3000;
 
 app.get('/', (_req, res) => res.json({ status: 'online', tag: client.user?.tag || 'starting' }));
 
+app.get('/test/health', (_req, res) => {
+  res.json({
+    ok: true,
+    status: 'online',
+    uptime: process.uptime(),
+    time: new Date().toISOString(),
+    user: client.user?.tag || null,
+    isReady: client.isReady(),
+    wsStatus: client.ws?.status ?? null,
+    wsReady: client.ws?.ready ?? null,
+    guilds: client.guilds.cache.size,
+  });
+});
+
+app.get('/test/discord-login', async (_req, res) => {
+  const ws = client.ws;
+  const payload = {
+    ok: Boolean(TOKEN),
+    tokenLength: TOKEN.length,
+    tokenTrimmed: TOKEN !== (process.env.DISCORD_TOKEN || process.env.TOKEN || ''),
+    hiddenWhitespace: TOKEN_HAS_HIDDEN_WHITESPACE,
+    user: client.user?.tag || null,
+    isReady: client.isReady(),
+    wsStatus: ws?.status ?? null,
+    wsReady: ws?.ready ?? null,
+    envSource: process.env.DISCORD_TOKEN ? 'DISCORD_TOKEN' : (process.env.TOKEN ? 'TOKEN' : 'missing'),
+  };
+
+  try {
+    const response = await fetch('https://discord.com/api/v10/gateway/bot', {
+      method: 'GET',
+      headers: { Authorization: `Bot ${TOKEN}` },
+    });
+    payload.gatewayHttpStatus = response.status;
+    payload.gatewayHttpStatusText = response.statusText;
+    payload.gatewayMessage = response.ok ? 'Discord API reachable' : 'Discord API responded with error';
+  } catch (err) {
+    payload.gatewayHttpStatus = null;
+    payload.gatewayError = err.message || String(err);
+    payload.gatewayMessage = 'Discord API unreachable from this environment';
+  }
+
+  res.json(payload);
+});
+
 app.listen(PORT, () => {
   console.log(`✅ [WEB] Keep-alive server running on port ${PORT}.`);
 });
 
 client.on('guildCreate', async (guild) => {
   console.log(`➕ [GUILD] Joined: ${guild.name} (${guild.id})`);
-  
+
   const invitesCmd = client.commands.get('invites');
   if (!invitesCmd?.inviteCache) return;
-  
+
   try {
     const invites = await guild.invites.fetch();
     const guildMap = new Map();
-    
+
     for (const invite of invites.values()) {
       guildMap.set(invite.code, {
         uses: invite.uses,
@@ -362,7 +462,7 @@ client.on('guildCreate', async (guild) => {
         expiresAt: invite.expiresAt,
       });
     }
-    
+
     invitesCmd.inviteCache.set(guild.id, guildMap);
     console.log(` ✅ Cached ${invites.size} invites for new guild ${guild.name}`);
   } catch (err) {
@@ -378,14 +478,51 @@ process.on('uncaughtException', (err) => {
   console.error('❌ [UNCAUGHT EXCEPTION]', err);
 });
 
-const TOKEN = process.env.DISCORD_TOKEN || process.env.TOKEN;
-if (!TOKEN) {
-  console.error('❌ [FATAL] DISCORD_TOKEN / TOKEN environment variable is not set.');
-  process.exit(1);
-}
+let loginAttempts = 0;
+const MAX_LOGIN_ATTEMPTS = 3;
+
+const loginBot = async () => {
+  loginAttempts += 1;
+  console.log(`🔑 [DISCORD] Login attempt ${loginAttempts}/${MAX_LOGIN_ATTEMPTS}...`);
+
+  if (readyTimer) clearTimeout(readyTimer);
+  readyTimer = setTimeout(() => {
+    if (!client.user) {
+      console.warn('[DISCORD] Gateway did not become ready after 30s. Retrying login...');
+      if (loginAttempts < MAX_LOGIN_ATTEMPTS) {
+        client.destroy().catch(() => {});
+        setTimeout(loginBot, 10000);
+      } else {
+        console.error('[DISCORD] Max login retries reached. Exiting.');
+        process.exit(1);
+      }
+    }
+  }, 30000);
+
+  try {
+    await client.login(TOKEN);
+    if (readyTimer) {
+      clearTimeout(readyTimer);
+      readyTimer = null;
+    }
+  } catch (err) {
+    console.error('❌ [FATAL] Login failed:', err.message || err);
+
+    if (readyTimer) {
+      clearTimeout(readyTimer);
+      readyTimer = null;
+    }
+
+    if (loginAttempts < MAX_LOGIN_ATTEMPTS) {
+      console.warn('[DISCORD] Retrying login in 10s...');
+      setTimeout(loginBot, 10000);
+      return;
+    }
+
+    console.error('❌ [DISCORD] Max login attempts reached. Exiting.');
+    process.exit(1);
+  }
+};
 
 console.log('🔑 [DISCORD] Logging in...');
-client.login(TOKEN).catch(err => {
-  console.error('❌ [FATAL] Login failed:', err.message);
-  process.exit(1);
-});
+loginBot();

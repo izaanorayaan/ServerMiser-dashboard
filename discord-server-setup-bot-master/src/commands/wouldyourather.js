@@ -131,41 +131,6 @@ const {
       });
     },
   
-    async executePrefix(message, args, client) {
-      const settings = db.readData('settings.json') || {};
-      const currentGuildSettings = settings[message.guild?.id] || {};
-  
-      if (currentGuildSettings.funModule === 'disabled' || currentGuildSettings.funModule === false) {
-        return message.reply('❌ The complete **Fun Command Suite** has been globally disabled by a server administrator.').catch(() => null);
-      }
-  
-      // Emulate proper architecture to feed properties straight down to the master router block
-      const mockContextInteraction = {
-        id: message.id,
-        guildId: message.guild.id,
-        guild: message.guild,
-        user: message.author,
-        member: message.member,
-        reply: async (options) => message.reply(options),
-        editReply: async (options) => {
-          if (mockContextInteraction.sentBotMessage) {
-            return mockContextInteraction.sentBotMessage.edit(options);
-          }
-          return message.reply(options);
-        }
-      };
-  
-      const targetCommand = client.commands.get('wouldyourather');
-      if (targetCommand) {
-        const originalReply = mockContextInteraction.reply;
-        mockContextInteraction.reply = async (options) => {
-          const responseRef = await originalReply(options);
-          mockContextInteraction.sentBotMessage = responseRef;
-          return responseRef;
-        };
-  
-        await targetCommand.execute(mockContextInteraction).catch(err => console.error('Interactive wouldyourather runtime routing error:', err));
-      }
-    }
+    
   };
   

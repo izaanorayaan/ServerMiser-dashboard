@@ -65,22 +65,5 @@ module.exports = {
     await interaction.reply({ embeds: [embed] }).catch(() => null);
   },
 
-  async executePrefix(message, args, client) {
-    const settings = db.readData('settings.json') || {};
-    const currentGuildSettings = settings[message.guild?.id] || {};
-
-    if (currentGuildSettings.funModule === 'disabled' || currentGuildSettings.funModule === false) {
-      return message.reply('❌ The complete **Fun Command Suite** has been globally disabled by a server administrator.').catch(() => null);
-    }
-
-    // Pass downstream structural keys accurately to prevent profile drops
-    const mockInteraction = {
-      guild: message.guild,
-      guildId: message.guild.id,
-      flagsToStrip: true, // Tells response layer to prevent bitwise flag object validation crashes
-      reply: async (options) => message.reply(options)
-    };
-    
-    await this.execute(mockInteraction).catch(err => console.error('Error handling inline fun-menu prefix logic:', err));
-  }
+  
 };

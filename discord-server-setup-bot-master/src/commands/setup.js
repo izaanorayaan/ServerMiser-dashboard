@@ -2,13 +2,87 @@ const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder, ChannelType } = 
 const { logAction } = require('../utils/auditLog');
 const database = require('../utils/database'); // Points to your live MongoDB model connection
 const { formatCute } = require('../utils/textFormatter.js'); 
+const mongoose = require('mongoose');
+
+const setupTemplateSchema = new mongoose.Schema({
+  guildId: { type: String, required: true },
+  name: { type: String, required: true },
+  snapshot: { type: mongoose.Schema.Types.Mixed, required: true },
+  createdBy: { type: String, required: true },
+  updatedAt: { type: Date, default: Date.now },
+});
+setupTemplateSchema.index({ guildId: 1, name: 1 }, { unique: true });
+const SetupTemplate = mongoose.models.SetupTemplate || mongoose.model('SetupTemplate', setupTemplateSchema);
+
+function snapshotGuild(guild, config) {
+  return {
+    roles: guild.roles.cache.filter(role => role.id !== guild.id).map(role => ({ name: role.name, color: role.hexColor, permissions: role.permissions.bitfield.toString(), hoist: role.hoist, mentionable: role.mentionable })),
+    channels: guild.channels.cache.map(channel => ({ name: channel.name, type: channel.type, parentName: channel.parent?.name || null, topic: channel.topic || null, nsfw: channel.nsfw || false, position: channel.position, permissionOverwrites: channel.permissionOverwrites?.cache.map(overwrite => ({ id: overwrite.id, type: overwrite.type, allow: overwrite.allow.bitfield.toString(), deny: overwrite.deny.bitfield.toString() })) || [] })),
+    config,
+    automessages: (mongoose.models.AutoMessage ? [] : []),
+    reactionRolePanels: config.reactionRolePanels || [],
+  };
+}
+
+async function handleBackup(interaction) {
+  const name = interaction.options.getString('name').trim().toLowerCase();
+  const config = await database.findOne({ guildId: interaction.guildId }).catch(() => ({}));
+  const snapshot = snapshotGuild(interaction.guild, config || {});
+  if (mongoose.models.AutoMessage) {
+    snapshot.automessages = await mongoose.models.AutoMessage.find({ guildId: interaction.guildId }).lean().catch(() => []);
+  }
+  await SetupTemplate.findOneAndUpdate({ guildId: interaction.guildId, name }, { snapshot, createdBy: interaction.user.id, updatedAt: new Date() }, { upsert: true, new: true });
+  return interaction.reply({ content: `Setup template **${name}** saved with ${snapshot.roles.length} roles and ${snapshot.channels.length} channels.`, ephemeral: true });
+}
+
+async function handleRestore(interaction) {
+  const name = interaction.options.getString('name').trim().toLowerCase();
+  const section = interaction.options.getString('section');
+  const template = await SetupTemplate.findOne({ guildId: interaction.guildId, name });
+  if (!template) return interaction.reply({ content: `Setup template **${name}** was not found.`, ephemeral: true });
+  const snapshot = template.snapshot || {};
+  let restored = [];
+  if (section === 'config' && snapshot.config) {
+    const config = { ...snapshot.config };
+    delete config.guildId;
+    await database.findOneAndUpdate({ guildId: interaction.guildId }, { $set: config }, { upsert: true });
+    restored.push('saved settings');
+  }
+  if (section === 'automessages' && snapshot.automessages?.length && mongoose.models.AutoMessage) {
+    for (const task of snapshot.automessages) {
+      const { _id, __v, ...data } = task;
+      await mongoose.models.AutoMessage.findOneAndUpdate({ uniqueId: data.uniqueId }, data, { upsert: true, new: true }).catch(() => null);
+    }
+    restored.push('automessages');
+  }
+  if (section === 'reactionroles' && snapshot.reactionRolePanels) {
+    await database.findOneAndUpdate({ guildId: interaction.guildId }, { $set: { reactionRolePanels: snapshot.reactionRolePanels } }, { upsert: true });
+    restored.push('reaction-role panels');
+  }
+  if (section === 'roles' && snapshot.roles?.length) {
+    for (const role of snapshot.roles) {
+      if (!interaction.guild.roles.cache.some(existing => existing.name === role.name)) await interaction.guild.roles.create({ name: role.name, color: role.color, permissions: role.permissions, hoist: role.hoist, mentionable: role.mentionable, reason: `Restore setup template ${name}` }).catch(() => null);
+    }
+    restored.push('roles');
+  }
+  if (section === 'channels' && snapshot.channels?.length) {
+    for (const channel of snapshot.channels) {
+      if (!interaction.guild.channels.cache.some(existing => existing.name === channel.name && existing.type === channel.type)) await interaction.guild.channels.create({ name: channel.name, type: channel.type, topic: channel.topic, nsfw: channel.nsfw, permissionOverwrites: channel.permissionOverwrites, reason: `Restore setup template ${name}` }).catch(() => null);
+    }
+    restored.push('channels');
+  }
+  return interaction.reply({ content: restored.length ? `Restored **${restored.join(', ')}** from setup template **${name}**.` : 'Nothing was restored from that template.', ephemeral: true });
+}
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('setup')
     .setDescription('⚙️ Provision specialized, high-density server configurations from blueprint templates.')
-    .addStringOption(option =>
-      option.setName('template')
+    .addSubcommand(sub => sub
+      .setName('provision')
+      .setDescription('Build the server from a blueprint template')
+      .addStringOption(option =>
+        option.setName('template')
         .setDescription('Select a specialized template blueprint architecture model')
         .setRequired(true)
         .addChoices(
@@ -24,23 +98,40 @@ module.exports = {
           { name: '⏳ History & Archives Guild', value: 'history' },
           { name: '🌍 Geography & Earth Explorer', value: 'geography' }
         )
-    )
-    .addBooleanOption(option =>
-      option.setName('clear')
-        .setDescription('Delete all existing server channels before deploying the layout')
-        .setRequired(false)
-    )
+      )
+      .addBooleanOption(option =>
+        option.setName('clear')
+          .setDescription('Delete all existing server channels before deploying the layout')
+          .setRequired(false)
+      ))
+    .addSubcommand(sub => sub
+      .setName('backup')
+      .setDescription('Save the current server as a setup template')
+      .addStringOption(option => option.setName('name').setDescription('Template name').setRequired(true).setMaxLength(40)))
+    .addSubcommand(sub => sub
+      .setName('restore')
+      .setDescription('Restore selected data from a setup template')
+      .addStringOption(option => option.setName('name').setDescription('Template name').setRequired(true))
+      .addStringOption(option => option.setName('section').setDescription('Data to restore').setRequired(true).addChoices(
+        { name: 'Roles', value: 'roles' }, { name: 'Channels', value: 'channels' }, { name: 'Automessages', value: 'automessages' }, { name: 'Reaction-role panels', value: 'reactionroles' }, { name: 'Saved settings', value: 'config' }
+      )))
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
   name: 'setup',
 
   async execute(interaction, client) {
-    const isInteraction = interaction.isCommand ? interaction.isCommand() : false;
+    const isInteraction = interaction.isChatInputCommand ? interaction.isChatInputCommand() : false;
     const memberExecutor = interaction.member;
 
     if (!memberExecutor.permissions.has(PermissionFlagsBits.Administrator) && 
         !memberExecutor.permissions.has(PermissionFlagsBits.ManageGuild)) {
       const msg = '❌ You need **Administrator** or **Manage Server** permissions to use the setup configurations!';
       return isInteraction ? interaction.reply({ content: msg, ephemeral: true }) : interaction.reply(msg);
+    }
+
+    if (isInteraction) {
+      const subcommand = interaction.options.getSubcommand();
+      if (subcommand === 'backup') return handleBackup(interaction);
+      if (subcommand === 'restore') return handleRestore(interaction);
     }
 
     if (isInteraction) {
@@ -352,7 +443,7 @@ module.exports = {
           { name: 'Categories Provisioned', value: '5 Layout Rows', inline: true },
           { name: 'Channels Spawned', value: Object.keys(channels).length.toString(), inline: true },
           { name: 'Role Tree Density', value: `${newlyCreatedRoleIds.length} Total Ranks`, inline: true },
-          { name: 'Prefix Gateway', value: '|', inline: true },
+           { name: 'Gateway', value: 'slash commands', inline: true },
           { name: 'Permissions Matrix', value: '🟢 Corrected Split Logic Verified' }
         );
 
@@ -383,43 +474,5 @@ module.exports = {
     }
   },
 
-  async executePrefix(message, argsArray, client) {
-    const guild = message.guild;
-    if (!guild) return;
-
-    const member = message.member;
-    if (!member.permissions.has(PermissionFlagsBits.Administrator) && !member.permissions.has(PermissionFlagsBits.ManageGuild)) {
-      return message.reply('❌ You require Manager or Administrator permissions to initiate setups.').catch(() => null);
-    }
-
-    const templateArg = argsArray ? argsArray.toLowerCase().trim() : null;
-    const clearArg = argsArray ? argsArray.toLowerCase().trim() : null;
-    
-    const validTemplates = ['gaming', 'community', 'study', 'business', 'creative', 'development', 'finance', 'roleplay', 'minimalist', 'history', 'geography'];
-    if (!templateArg || !validTemplates.includes(templateArg)) {
-      return message.reply(`❌ **Usage:** \`|setup <${validTemplates.join('|')}> [clear]\``).catch(() => null);
-    }
-
-    const isClearSet = (clearArg === 'clear' || clearArg === 'true');
-
-    const mockInteraction = {
-      guild: message.guild,
-      guildId: message.guild.id,
-      channelId: message.channelId,
-      channel: message.channel,
-      member: message.member,
-      user: message.author,
-      options: {
-        getString: (name) => templateArg,
-        getBoolean: (name) => isClearSet
-      },
-      reply: async (options) => message.reply(options),
-      editReply: async (options) => {
-        if (typeof options === 'string') return message.channel.send({ content: options });
-        return message.channel.send(options);
-      }
-    };
-
-    await this.execute(mockInteraction, client).catch(err => console.error('Error handling inline server setup prefix wrapper:', err));
-  }
+  
 };

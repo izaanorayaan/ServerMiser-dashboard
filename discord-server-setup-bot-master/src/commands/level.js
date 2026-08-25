@@ -10,8 +10,8 @@ const path = require('path');
 // fixes text silently failing to render on minimal hosts like Render.
 try {
     const registered = GlobalFonts.registerFromPath(
-        path.join(__dirname, '..', 'assets', 'fonts', 'LevelFont.ttf'),
-        'LevelFont'
+        path.join(__dirname, '..', 'assets', 'fonts', 'La Femina.ttf'),
+        'La Femina'
     );
     console.log('[Leveling] Card font registered:', registered);
 } catch (fontError) {
@@ -63,9 +63,9 @@ async function generateLevelUpCard(user, oldLevel, newLevel) {
         ctx.fillText(text, 450, y);
     };
 
-    drawCenteredText('CONGRATS!', 80, 'bold 40px LevelFont', '#FFFFFF');
-    drawCenteredText(`@${user.username}`, 130, 'bold 30px LevelFont', '#FFFFFF');
-    drawCenteredText(`Level ${oldLevel}  =>  Level ${newLevel}`, 200, 'bold 50px LevelFont', '#5865F2');
+    drawCenteredText('CONGRATS!', 80, 'bold 32px "La Femina"', '#FFFFFF');
+    drawCenteredText(`@${user.username}`, 128, 'bold 24px "La Femina"', '#FFFFFF');
+    drawCenteredText(`Level ${oldLevel}  =>  Level ${newLevel}`, 196, 'bold 42px "La Femina"', '#5865F2');
 
     return new AttachmentBuilder(canvas.toBuffer('image/png'), { name: 'levelup.png' });
 }
@@ -99,12 +99,20 @@ module.exports = {
         ),
 
     name: 'level',
-    prefix: '|level',
+    // NOTE: not currently invoked directly — slash commands are routed
 
     async execute(interaction, client) {
-        // Permission check for admin commands
         const subcommandGroup = interaction.options.getSubcommandGroup(false);
         const subcommand = interaction.options.getSubcommand();
+
+        if (!subcommand && !subcommandGroup) {
+            return interaction.reply({
+                content: 'Use one of these: `/level rank`, `/level leaderboard`, `/level settings`, or `/level xp add` / `remove` / `set` / `reset`.',
+                ephemeral: true,
+            }).catch(() => null);
+        }
+
+        // Permission check for admin commands
         const adminCommands = ['settings', 'multiplier', 'xp'];
 
         if (adminCommands.includes(subcommand) || adminCommands.includes(subcommandGroup)) {
@@ -207,38 +215,7 @@ module.exports = {
     // NOTE: not currently invoked directly — prefix commands are routed
     // through messageCreate.js's mockInteraction into execute() above.
     // Kept here in case that routing changes.
-    async executePrefix(message, args, client) {
-        const subcommand = args[0]?.toLowerCase();
-
-        if (!subcommand || subcommand === 'help') {
-            return message.reply('Usage: `|level rank [@user]`, `|level leaderboard`, `|level settings`');
-        }
-
-        const mockInteraction = {
-            deferReply: async () => {},
-            editReply: async (content) => message.reply(content),
-            reply: async (content) => message.reply(content),
-            guild: message.guild,
-            member: message.member,
-            user: message.author,
-            client: client,
-            channel: message.channel,
-            options: {
-                getSubcommand: () => subcommand,
-                getUser: (name) => message.mentions.users.first(),
-                getInteger: (name) => parseInt(args[2]),
-                getSubcommandGroup: () => args[0]?.toLowerCase() === 'xp' ? 'xp' : null
-            }
-        };
-
-        if (subcommand === 'xp') {
-            const xpAction = args[1]?.toLowerCase();
-            mockInteraction.options.getSubcommand = () => xpAction;
-            return this.execute(mockInteraction, client);
-        }
-
-        return this.execute(mockInteraction, client);
-    },
+    
 
     // --- Handlers ---
 

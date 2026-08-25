@@ -82,26 +82,5 @@ module.exports = {
         await interaction.reply({ embeds: [embed] }).catch(() => null);
     },
 
-    async executePrefix(message, args, client) {
-        // Synchronous structural check for prefix operations
-        const mainSettings = db.readData('settings.json') || {};
-        const currentGuildSettings = mainSettings[message.guild?.id] || {};
-
-        if (currentGuildSettings.funModule === 'disabled' || currentGuildSettings.funModule === false) {
-            return message.reply('❌ The complete **Fun Command Suite** has been globally disabled by a server administrator.').catch(() => null);
-        }
-
-        const item = capitalPool[Math.floor(Math.random() * capitalPool.length)];
-        
-        let cuteStyle = 'off';
-        try { const cuteData = db.readData('cute.json') || {}; cuteStyle = cuteData[message.guild?.id] || 'off'; } catch (e) {}
-        const isCuteActive = cuteStyle !== 'off';
-
-        const embed = new EmbedBuilder()
-            .setTitle(isCuteActive ? '✨ 🗺️ CAPITAL QUIZ ✨' : '🗺️ Capital Quiz')
-            .setDescription(`**What is the capital city of ${item.country}?**\n\n||*Answer: ${item.capital}*||`)
-            .setColor(isCuteActive ? '#FF69B4' : '#9B59B6');
-
-        await message.reply({ embeds: [embed] }).catch(() => null);
-    }
+    
 };

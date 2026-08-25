@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
 const { logAction } = require('../utils/auditLog');
 const db = require('../utils/database'); // Restored your internal adapter mapping
+const { createCase } = require('../utils/moderationCases');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -69,12 +70,13 @@ module.exports = {
       // DM the user safely
       await user.send(`⚠️ You have been warned in **${guild.name}**.\n**Reason:** ${reason}`).catch(() => null);
 
-      const settings = (await db.readData('settings.json')) || {};
-      const currentGuildSettings = settings[guildId] || {};
-      
+      const guildConfig = (await db.findOne({ guildId })) || {};
+      const legacySettings = (await db.readData('settings.json')) || {};
+      const currentGuildSettings = { ...(legacySettings[guildId] || {}), ...(guildConfig || {}) };
+
       if (currentGuildSettings.modLogsEnabled && currentGuildSettings.unifiedLogChannelId) {
         const modLogsChannel = guild.channels.cache.get(currentGuildSettings.unifiedLogChannelId) || await guild.channels.fetch(currentGuildSettings.unifiedLogChannelId).catch(() => null);
-        
+
         if (modLogsChannel) {
           const embedLog = new EmbedBuilder()
             .setColor('#FFD700')
@@ -91,11 +93,12 @@ module.exports = {
       }
 
       await logAction(guild, 'User Warned', author, `User: ${user.username}, Reason: ${reason}`);
+      const moderationCase = await createCase({ guildId, action: 'warn', target: user, moderator: author, reason });
 
       const embed = new EmbedBuilder()
         .setColor('#FFD700')
         .setTitle('⚠️ User Warned')
-        .setDescription(`${user.username} has been warned.\nReason: ${reason}\nTotal warnings: **${totalWarnings}**`);
+        .setDescription(`${user.username} has been warned.\nReason: ${reason}\nTotal warnings: **${totalWarnings}**\nCase: **#${moderationCase.caseNumber}**`);
 
       return isInteraction ? interaction.editReply({ embeds: [embed] }) : interaction.reply({ embeds: [embed] });
     } catch (error) {
@@ -106,40 +109,5 @@ module.exports = {
   },
 
   // 🌟 FIXED: Implemented clean argument text parsing index and status update redirects
-  async executePrefix(message, argsArray, client) {
-    let targetUser = message.mentions.users.first();
-    
-    // Correct index check targeting index 0 directly to prevent crashes
-    if (!targetUser && argsArray && argsArray.length > 0) {
-      const pureId = argsArray[0].replace(/[^0-9]/g, '');
-      if (pureId.length >= 17 && pureId.length <= 20) {
-        targetUser = await client.users.fetch(pureId).catch(() => null);
-      }
-    }
-    const reasonText = argsArray && argsArray.length > 1 ? argsArray.slice(1).join(' ') : '';
-
-    const mockInteraction = {
-      isMock: true,
-      guild: message.guild,
-      guildId: message.guild?.id,
-      member: message.member,
-      author: message.author,
-      processingMessage: null,
-      options: {
-        getUser: (name) => targetUser,
-        getString: (name) => reasonText
-      },
-      reply: async (options) => {
-        return message.reply(options);
-      },
-      // Redirect state updates back to the temporary message reference seamlessly
-      editReply: async (options) => {
-        if (mockInteraction.processingMessage) {
-          return mockInteraction.processingMessage.edit(options);
-        }
-        return message.reply(options);
-      }
-    };
-    await this.execute(mockInteraction, client).catch(() => null);
-  }
+  
 };
